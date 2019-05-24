@@ -1,12 +1,44 @@
-1.��Ⱦ����
-3D ģ��ͨ����Ⱦ��������Ⱦ�� 2D ����Ļ�ϡ���Ⱦ���ߵ��������� GPU �н��еģ�����Ҫռ�м�������Դ沿�֡���Ⱦ��������������н����˶��㴦�����洦������դ�������ش�����
+1.渲染管线
+3D 模型通过渲染管线来渲染到 2D 的屏幕上。渲染管线的流程是在 GPU 中进行的，它主要占有计算机的显存部分。渲染管线在这个过程中进行了顶点处理、面处理、光栅化、像素处理。
 
 2.shader
-�ɱ����ɫ�� Shader��Shader ������Ⱦ��ͼ��չʾ�������Ӿ�Ч����
-shader�ǲ�����Ⱦ�ܵ�����ĳ�����GPUִ�еģ����ܺá��ɿ���ǿ�����Կ��Ƶ�ÿ�����㣬ÿ�����ص���ɫ��
+可编程着色器 Shader。Shader 能让渲染的图形展示出多种视觉效果。
+shader是插在渲染管道里面的程序，是GPU执行的，性能好。可控性强，可以控制到每个顶点，每个像素的着色。
 
 3.UGUI
-����Canvas ����������Ӧ������ģʽ ��UI�ؼ��Ĳ��֣�Rect ToolС���ߣ�RectTransform��� ��Anchors���� 
+画布Canvas ，设置自适应，绘制模式 ，UI控件的布局，Rect Tool小工具，RectTransform组件 ，Anchors属性 
+
+4.AssetBundle加载方式
+AssetBundle是从unity项目中打包出来的资源文件。
+要加载一个资源A，必须先去加载它的所有依赖资源。加载AssetBundleManifest，获取它依赖的所有资源。
+分为从文件加载和从网络加载	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
