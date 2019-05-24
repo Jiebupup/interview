@@ -5,6 +5,8 @@
 可编程着色器 Shader。Shader 能让渲染的图形展示出多种视觉效果。
 shader是插在渲染管道里面的程序，是GPU执行的，性能好。可控性强，可以控制到每个顶点，每个像素的着色。
 
+四大渲染模式：Opaque（不透明），Cutout（镂空），Fade（隐现），Transparent（透明）。
+
 3.UGUI
 画布Canvas ，设置自适应，绘制模式 ，UI控件的布局，Rect Tool小工具，RectTransform组件 ，Anchors属性 
 
@@ -13,10 +15,18 @@ AssetBundle是从unity项目中打包出来的资源文件。
 要加载一个资源A，必须先去加载它的所有依赖资源。加载AssetBundleManifest，获取它依赖的所有资源。
 分为从文件加载和从网络加载	
 
+打包：资源的搜集，读取，调用BuildPipeline.BuildAssetBundle来进行打包：主资源，资源数组，路径，依赖，平台。
 
+优点：热更新，动态更新游戏资源；压缩，灵活。
 
+内存：在使用WWW加载Bundle时，会开辟一块内存，这块内存是Bundle文件解压之后的内存，这意味着这块内存很大，通过Bundle.Unload可以释放掉这块内存。
+得到Bundle之后，我们用Bundle.Load来加载资源，这些资源会从Bundle的内存被复制出来，作为Asset放到内存中，这意味着，这块内存，也很大，Asset内存的释放，与Unity其他资源的释放机制一样，可以通过Resources.UnloadUnuseAsset来释放没有引用的资源，也可以通过Bundle.Unload(true)来强制释放Asset，这会导致所有引用到这个资源的对象丢失该资源
 
+5.对象池
+对象池是一种Unity经常用到的内存管理服务，它的作用在于可以减少创建每个对象的系统开销。
+为了解决大量创建重复对象造成的内存损耗，我们采用对象池的方式来解决。
 
+实现：SetActive true or false  
 
 
 
