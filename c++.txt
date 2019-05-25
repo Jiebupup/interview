@@ -68,9 +68,9 @@ inline是在编译器将函数类容替换到函数调用处，是静态编译�
 
 delegate、Action、Func、predicate
 
-
-
-
+11.Dictionary
+集合，Key/Value(键值对的形式来存放数据，查找元素的时间复杂度接近O(1)
+Hash
 
 
 
