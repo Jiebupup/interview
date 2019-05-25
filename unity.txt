@@ -7,8 +7,10 @@ shader是插在渲染管道里面的程序，是GPU执行的，性能好。可�
 
 四大渲染模式：Opaque（不透明），Cutout（镂空），Fade（隐现），Transparent（透明）。
 
-3.UGUI
+3.UGUI NGUI
 画布Canvas ，设置自适应，绘制模式 ，UI控件的布局，Rect Tool小工具，RectTransform组件 ，Anchors属性 
+
+NGUI组件：Editor，Examples，Resources，Scripts
 
 4.AssetBundle加载方式
 AssetBundle是从unity项目中打包出来的资源文件。
@@ -45,9 +47,10 @@ AssetBundle是从unity项目中打包出来的资源文件。
 8.透视相机 正交相机
 透视图有很强的立体空间的表现力而正交视图能准确表达物体在空间中的位置和状态
 
-
-
-
+9.Sprite精灵和Texture纹理
+Sprite 用在 Image 组件上,Texture用在Raw Image组件上。
+Sprite 有图集的概念,需要把整个图集导入到内存中。texture没有图集的概念。
+Sprite可以直接拖入场景，不可以直接拖入场景中。
 
 
 
