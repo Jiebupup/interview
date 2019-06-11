@@ -50,7 +50,7 @@ AssetBundle是从unity项目中打包出来的资源文件。
 9.Sprite精灵和Texture纹理
 Sprite 用在 Image 组件上,Texture用在Raw Image组件上。
 Sprite 有图集的概念,需要把整个图集导入到内存中。texture没有图集的概念。
-Sprite可以直接拖入场景，不可以直接拖入场景中。
+Sprite可以直接拖入场景，Texture不可以直接拖入场景中。
 
 
 
