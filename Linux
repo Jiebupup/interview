@@ -6,3 +6,7 @@ cp 命令，作用复制
 rm命令作用为删除
 mkdir命令创建目录
 tar命令，用于压缩解压
+
+2.Linux系统上查看项目的运行状态
+查看日志: tail -f 日志.log
+查看运行  ps -ef |grep tomcat
