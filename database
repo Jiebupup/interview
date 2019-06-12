@@ -28,3 +28,11 @@ WHERE过滤行：AND 和 OR 用于连接多个过滤条件，IN子查询，NOT�
 关闭游标；
 
 触发器：会在某个表执行以下语句时而自动执行：DELETE、INSERT、UPDATE。
+
+
+学生表，课程表，成绩表，一条sql写出每门课程的及格和不及格的学生数量。
+select course
+sum(case when score>=60 then 1 else 0)as 及格人数
+sum(case when score<60 then 1 else 0)as 不及格人数
+from score自然连接course自然连接student
+group by course
