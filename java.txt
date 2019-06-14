@@ -94,7 +94,7 @@ HashMap和Hashtable的区别：
 3、因为线程安全的问题，HashMap效率比HashTable的要高。
 4、Hashtable是同步的，而HashMap不是。因此，HashMap更适合于单线程环境，而Hashtable适合于多线程环境。
 
-    一般现在不建议用HashTable, ①是HashTable是遗留类，内部实现很多没优化和冗余。②即使在多线程环境下，现在也有同步的ConcurrentHashMap替代，没有必要因为是多线程而用HashTable。HashMap提供了可供应用迭代的键的集合，Hashtable提供了对键的列举(Enumeration)。
+一般现在不建议用HashTable, ①是HashTable是遗留类，内部实现很多没优化和冗余。②即使在多线程环境下，现在也有同步的ConcurrentHashMap替代，没有必要因为是多线程而用HashTable。HashMap提供了可供应用迭代的键的集合，Hashtable提供了对键的列举(Enumeration)。
 
 18.Array和ArrayList，LinkedList
 Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。Array大小是固定的，ArrayList的大小是动态变化的，如果空间不够，它会创建一个空间比原空间大50%的新数组，然后将所有元素复制到新数组中，接着抛弃旧数组。而且，每次添加新的元素的时候都会检查内部数组的空间是否足够。ArrayList提供了更多的方法和特性，比如：addAll()，removeAll()，iterator()等等。对于基本类型数据，集合使用自动装箱来减少编码工作量。但是，当处理固定大小的基本数据类型的时候，这种方式相对比较慢。
@@ -289,3 +289,6 @@ Java引用变量有两个类型：编译时类型，运行时类型
 动态代理：使用了反射
 优点：代理对象无需实现接口，免去了编写很多代理类的烦恼，同时接口增加方法也无需再维护目标对象和代理对象，只需在事件处理器中添加对方法的判断即可。
 缺点：代理对象不需要实现接口，但是目标对象一定要实现接口，否则无法使用JDK动态代理。
+
+44.Object类
+hashCode, equals，toString, wait, notify，notifyAll，clone，getClass，finalize
