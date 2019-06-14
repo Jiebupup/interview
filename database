@@ -1,14 +1,13 @@
-1.sql
+1.sql数据查询
 SELECT，FROM
+WHERE过滤行：AND 和 OR 用于连接多个过滤条件，IN子查询，NOT否定。
 DISTINCT相同值只会出现一次，所有列的值都相同才算相同。
 LIMIT限制返回的行数。
-ORDER BY排序ASC ：升序（默认），DESC ：降序，可以按多个列进行排序，并且为每个列指定不同的排序方式。
-GROUP BY分组，HAVING 过滤分组。
-UNION组合查询。
+ORDER BY排序：ASC ：升序（默认），DESC ：降序，可以按多个列进行排序，并且为每个列指定不同的排序方式。
+GROUP BY分组：HAVING 过滤分组。
+函数与表达式。
 
-WHERE过滤行：AND 和 OR 用于连接多个过滤条件，IN子查询，NOT否定。
-
-自然连接
+嵌套查询，条件连接查询，子查询，集合运算UNION，连接查询，递归查询
 
 2.其他
 表table：CRUD创建，读取，更新，删除。
@@ -30,9 +29,8 @@ WHERE过滤行：AND 和 OR 用于连接多个过滤条件，IN子查询，NOT�
 触发器：会在某个表执行以下语句时而自动执行：DELETE、INSERT、UPDATE。
 
 3.事务
-事务（Transaction）是用户定义的不可分割一个操作序列
+事务（Transaction）是一系列不可分割的数据库操作
 事务特性（ACID）：原子性，一致性，隔离性，持久性
-事务隔离级别
 
 
 学生表，课程表，成绩表，一条sql写出每门课程的及格和不及格的学生数量。
