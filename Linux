@@ -18,52 +18,74 @@ shutdown
 sudo 允许一般用户使用 root 可执行的命令，不过只有在 /etc/sudoers 配置文件中添加的用户才能使用该指令。
 
 2.文件
+文件系统：Ext2
 inode：一个文件占用一个 inode，记录文件的属性，同时记录此文件的内容所在的 block 编号；
 block：记录文件的内容，文件太大时，会占用多个 block。
+superblock
 
-文件与目录的基本操作：
+基本操作：
 ls：列出文件或者目录的信息，目录的信息就是其中包含的文件。
-cd：更换当前目录
-mkdir和rmdir：创建和删除目录。
-touch：更新文件时间或者建立新文件。
-cp、rm和mv：复制、删除和移动文件
-
-修改权限：chmod
-链接ln
-
-获取文件内容：
-cat取得文件内容，more和 cat 不同的是它可以一页一页查看文件内容，比较适合大文件的查看。
-
-指令与文件搜索：
-which指令搜索，whereis、locate和find文件搜索。
+cp、rm和mv：复制、删除和移动文件或目录
+cat：取得文件内容
+more：一页一页查看文件内容
+head:只看文件的头几行
+touch：修改文件时间或者建立新文件。
+file:查看文件类型
+which：命令查找，通过PATH变量来查找文件名
+whereis、locate和find：文件名查找，whereis和locate到数据库文件去查找，而不实际查找文件系统；find直接查询文件系统。
+修改权限chmod:rwx
+连接文件ln
 
 3.目录
+Linux目录配置标准FHS：/bin,/dev...
+目录树
+绝对路径和相对路径
+
+基本操作：
+cd：更换当前目录
+pwd：显示当前目录
+mkdir和rmdir：创建和删除目录。
+df和du：目录和磁盘的容量
 
 4.磁盘
+fdisk:磁盘分区
+mkfs：文件系统格式化
+fsck和badblocks：磁盘检验
+mount：磁盘挂载
+mknod：磁盘参数修改
 
 5.压缩和打包
-压缩：gzip,bzip2,xz
+压缩：gzip,bzip2
 打包：tar
+完整备份与恢复：dump和restore
 
-6.Bash
-可以通过 Shell 请求内核提供服务，Bash 正是 Shell 的一种。
+6.vi和vim
+文本编辑器vi：一般模式，编辑模式和命令行模式。i,ESC,:wq
+程序编辑器：vim
 
-7.管道
+7.bash
+可以通过 Shell 请求内核提供服务，Bash 正是 Shell 的一种。Shell是Kernel和硬件的接口
+type:判断命令是否为bash内置命令
+echo：显示变量
+set：查看变量
+alias：命令别名设置
+history：历史命令
+
+变量：环境变量和自定义变量
+数据流重定向
+管道命令
+shell script
 
 8.正则表达式
+处理字符串的方法，通过一些特殊符号的辅助，可以让用户轻易达到查找、删除、替换某特定字符串的处理程序。
+grep、sed和awk工具
 
 9.进程管理
+ps：查看某个时间点的进程信息。
+pstree：查看进程树。
+top：实时显示进程信息。
+netstat：查看占用端口的进程。
 
-
-
-常用命令
-find查找文件
-ls 命令，展示文件夹内内容
-cd 命令切换目录
-cp 命令，作用复制
-rm命令作用为删除
-mkdir命令创建目录
-tar命令，用于压缩解压
 
 Linux系统上查看项目的运行状态
 查看日志: tail -f 日志.log
