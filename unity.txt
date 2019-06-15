@@ -65,47 +65,22 @@ Sprite可以直接拖入场景，Texture不可以直接拖入场景中。
 四个阶段：三角形设置，三角形遍历，片元着色器，逐片元操作，
 
 
-unity3D小游戏：
+unity3D小游戏：Roll-a-ball
+键盘控制小球滚动收集方块
+scene
+camera
+tag
+build
+Plane:ground
+Sphere:player
+Material:background上色
+Rigidbody:static和dynamic  
+Wall
+Cube
+Prefab:将预制件应用到多个物体
+Text
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-1.
+Scripts:
+PlayerController:键盘输入控制小球运动，并使用触发器完成收集，用文本显示分数 用到Rigidbody和Vector3，Collider.gameObject.CompareTag和SetActive，SetCountText 
+CameraController:相机正确地跟随小球运动 transform.position
+Rotator：让方块旋转 transform.Rotate
