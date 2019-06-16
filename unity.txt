@@ -8,9 +8,10 @@ Unity Shader 分为表面着色器和顶点片段着色器。
 
 四大渲染模式：Opaque（不透明），Cutout（镂空），Fade（隐现），Transparent（透明）。
 
-实战表面着色器demo：在Properties{}中定义着色器属性，在这里定义的属性将被作为输入提供给所有的子着色器；
+实战表面着色器demo：在Properties{}中定义着色器纹理和颜色属性，在这里定义的属性将被作为输入提供给所有的子着色器；
 表面着色器可以被若干的标签（tags）所修饰，而硬件将通过判定这些标签来决定什么时候调用该着色器；
-SubShader将输入转变为输出，使用光照模型
+编写表面着色函数；
+SubShader将输入转变为输出，使用兰伯特光照模式，渲染类型为Opaque不透明。
 
 3.UGUI NGUI
 画布Canvas ，设置自适应，绘制模式 ，UI控件的布局，Rect Tool小工具，RectTransform组件 ，Anchors属性 
