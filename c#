@@ -1,0 +1,29 @@
+1.公共语言运行时CLR
+相当于java虚拟机
+
+2.对象
+属性property
+方法method
+事件event
+
+3.类型
+值类型：简单类型、结构类型和枚举类型
+引用类型：类类型、接口类型、委托类型和数组类型
+
+等价类型相当于java包装类型
+推断类型var，Nullable类型？，动态类型dynamic
+
+一个类中：字段+方法
+属性相当于对字段的访问set和get
+索引相当于访问字段的下标
+
+this用于构造方法调用另一个构造方法与java不同：pubilc Person():this(0,""){}
+
+4.继承
+class 子类 ： 父类{}
+子类对父类方法的重载，new增加和虚方法的覆盖
+
+访问控制符：internel相同程序集的非子类可见
+
+const和readonly
+sealed类表示不可继承，abstract类和方法
