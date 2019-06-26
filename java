@@ -55,16 +55,20 @@ abstract抽象类和抽象方法，抽象类不能被实例化，需要继承抽
 在很多情况下，接口优先于抽象类，比较：
 抽象类是 IS-A 关系，接口是 LIKE-A 关系
 一个类可以实现多个接口，但只能继承一个抽象类。
+接口中所有的方法隐含的都是抽象的。而抽象类则可以同时包含抽象和非抽象的方法。
 接口的字段只能是 static 和 final 类型的，而抽象类的字段没有这种限制。
 接口的成员只能是 public 的，而抽象类的成员可以有多种访问权限。
-Comparator接口
+
+Comparator接口：外部排序，专用的比较器。
+Comparable接口是在集合内部定义的方法实现的排序，提供compareTo()方法。
+
 lambda表达式，函数式接口
 内部类
 代理proxy
 
 super：访问父类的构造函数或访问父类的成员
 
-重写Override：@Override 注解，存在于继承体系中，指子类实现了一个与父类在方法声明上完全相同的一个方法。
+重写Override：@Override 注解，存在于继承体系中，指子类实现了一个与父类在方法声明上完全相同的一个方法。final，private，static方法不能被重写，其他方法都是运行时绑定。
 重载Overload：存在于同一个类中，指一个方法与已经存在的方法名称上相同，但是参数类型、个数、顺序至少有一个不同。返回值不同，其它都相同不算是重载。
 
 多态：
@@ -97,8 +101,8 @@ final：
 类：声明类不允许被继承。
 
 static：
-静态变量：又称为类变量，也就是说这个变量属于类的，类所有的实例都共享静态变量，可以直接通过类名来访问它。静态变量在内存中只存在一份。
-静态方法：在类加载的时候就存在了，它不依赖于任何实例。所以静态方法必须有实现，也就是说它不能是抽象方法。只能访问所属类的静态字段和静态方法，方法中不能有 this 和 super 关键字。
+静态变量：又称为类变量，也就是说这个变量属于类的，类所有的实例都共享静态变量，可以直接通过类名来访问它。静态变量在内存中只存在一份。当类被Java虚拟机载入的时候，会对static变量进行初始化。
+静态方法：在类加载的时候就存在了，它不依赖于任何实例。所以静态方法必须有实现，也就是说它不能是抽象方法。只能访问所属类的静态字段和静态方法，方法中不能有 this 和 super 关键字。Java中static方法不能被覆盖
 静态语句块：在类初始化时运行一次。
 静态内部类：静态内部类不需要依赖于外部类的实例，不能访问外部类的非静态的变量和方法。
 静态导包
@@ -119,6 +123,12 @@ Constructor：创建新的对象。
 7.异常
 Throwable 可以用来表示任何可以作为异常抛出的类，分为两种： Error 和 Exception。
 Error 用来表示 JVM 无法处理的错误，Exception 分为两种：受检异常 ：需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复；非受检异常 ：是程序运行时错误。
+
+throw和throws的区别：
+1、Throw用于方法内部，Throws用于方法声明上
+2、Throw后跟异常对象，Throws后跟异常类型
+3、Throw后只能跟一个异常对象，Throws后可以一次声明多种异常类型
+
 断言和日志
 
 8.泛型
@@ -156,26 +166,27 @@ Fail-Fast
 
 Vector：和 ArrayList 类似，但它是线程安全的，使用了 synchronized 进行同步。
 与 ArrayList 的比较：Vector 是同步的，因此开销就比 ArrayList 要大，访问速度更慢。最好使用 ArrayList 而不是 Vector，因为同步操作完全可以由程序员自己来控制；Vector 每次扩容请求其大小的 2 倍空间，而 ArrayList 是 1.5 倍。
+Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。Array大小是固定的，ArrayList的大小是动态变化的。
 
 CopyOnWriteArrayList：写操作在一个复制的数组上进行，读操作还是在原始数组中进行，读写分离，互不影响。写操作需要加锁，防止并发写入时导致写入数据丢失。写操作结束之后需要把原始数组指向新的复制数组。
 CopyOnWriteArrayList 在写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景。由于内存占用和数据不一致，不适合内存敏感以及对实时性要求很高的场景。
 
-LinkedList：基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。不仅如此，LinkedList 还可以用作栈、队列和双向队列。
+LinkedList：基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList为每一个节点存储了两个引用，一个指向前一个元素，一个指向下一个元素。
 与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。
 
 Queue：
 双向队列：通过LinkedList实现。
-PriorityQueue：基于堆结构实现。
+PriorityQueue：基于堆结构实现。调用remove方法，总会获得当前优先级队列中的最小元素。PriorityQueue不是线程安全的，入队和出队的时间复杂度是O(log(n))。
 
 Map：
 TreeMap：基于红黑树实现。
 
-HashMap：基于哈希表实现。
+HashMap：基于哈希表实现。hashmap数组只允许一个key为null，允许多个value为null。
 拉链法：put操作使用链表的头插法
 扩容：table 长度为 M，需要存储的键值对数量为 N，平均查找次数的复杂度为 O(N/M)， table 要尽可能大。HashMap 采用动态扩容来根据当前的 N 值来调整 M 值，使得空间效率和时间效率都能得到保证。
 从 JDK 1.8 开始，一个桶存储的链表长度大于 8 时会将链表转换为红黑树。
 
-HashTable：和 HashMap 类似，但它是线程安全的。
+HashTable：和 HashMap 类似，但它是线程安全的，因此也效率低。
 与 HashMap 的比较：HashTable 使用 synchronized 来进行同步。HashMap 可以插入键为 null 的 Entry。HashMap 的迭代器是 fail-fast 迭代器。HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。
 
 ConcurrentHashMap 来支持线程安全，并且 ConcurrentHashMap 的效率会更高，因为 ConcurrentHashMap 引入了分段锁。
@@ -190,7 +201,12 @@ WeakHashMap：Entry 继承自 WeakReference，被 WeakReference 关联的对象�
 容器中的设计模式：
 迭代器模式：Collection 继承了 Iterable 接口，其中的 iterator() 方法能够产生一个 Iterator 对象，通过这个对象就可以迭代遍历 Collection 中的元素。
 使用 foreach 方法来遍历实现了 Iterable 接口的聚合对象。
+Java中的Iterator可用来遍历Set和List集合，并且只能单向移动。ListIterator实现了Iterator接口，既可以前向也可以后向遍历。
+Enumeration接口和Iterator接口的区别：Enumeration速度是Iterator的2倍，同时占用更少的内存。但是，Iterator远远比Enumeration安全，因为其他线程不能够修改正在被iterator遍历的集合里面的对象。同时，Iterator允许调用者删除底层集合里面的元素，这对Enumeration来说是不可能的。
+快速失败(fail-fast)：在用迭代器遍历一个集合对象时，如果遍历过程中对集合对象的结构进行了修改（增加、删除），则会抛出Concurrent Modification Exception。因此不能在多线程下发生并发修改（迭代过程中被修改）。
 
 适配器模式
+
+集合类没有实现Cloneable和Serializable接口：应该由集合类的具体实现来决定如何被克隆或者是序列化。
 
 13.I/O
