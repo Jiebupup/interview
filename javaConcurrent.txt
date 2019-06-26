@@ -3,23 +3,53 @@
 可运行（Runnable）：Running 和 Ready，正在运行或正在等待 CPU 时间片
 阻塞（Blocked）：等待获取一个排它锁，如果其线程释放了锁就会结束此状态
 无限期等待（Waiting）：等待其它线程显式地唤醒
-限期等待（Timed Waiting）：
+限期等待（Timed Waiting）：在指定的时间自行返回
 死亡（Terminated）：线程自己结束任务，或者产生了异常而结束
 
 Thread.sleep()线程睡眠，进入限期等待状态
 Object.wait()挂起线程，进入限期等待或者无限期等待
+sleep() 方法和 wait() 方法区别点：
+1.两者最主要的区别在于：sleep 方法没有释放锁，而 wait 方法释放了锁 。
+2.Wait 通常被用于线程间交互/通信，sleep 通常被用于暂停执行。
+3.wait() 方法被调用后，线程不会自动苏醒，需要别的线程调用同一个对象上的 notify() 或者 notifyAll() 方法。sleep() 方法执行完成后，线程会自动苏醒。
+
 阻塞和等待的区别在于，阻塞是被动的，它是在等待获取一个排它锁。而等待是主动的，通过调用 Thread.sleep() 和 Object.wait() 等方法进入。
+
+问：为什么我们调用 start() 方法时会执行 run() 方法，为什么我们不能直接调用 run() 方法？
+调用 start 方法方可启动线程并使线程进入就绪状态，再自动执行 run() 方法。而直接执行 run() 方法，会把 run 方法当成一个 main 线程下的普通方法去执行，并不会在某个线程中执行它。
+
+上下文切换：多线程编程中一般线程的个数都大于 CPU 核心的个数，而一个 CPU 核心在任意时刻只能被一个线程使用，为了让这些线程都能得到有效执行，CPU 采取的策略是为每个线程分配时间片并轮转的形式。当一个线程的时间片用完的时候就会重新处于就绪状态让给其他线程使用。
+Linux 相比与其他操作系统（包括其他类 Unix 系统）有很多的优点，其中有一项就是，其上下文切换和模式切换的时间消耗非常少。
+
+volatile变量：保证变量的可见性，防止 JVM 的指令重排。
+多线程访问volatile关键字不会发生阻塞。
+volatile关键字能保证数据的可见性，但不能保证数据的原子性。
 
 2.使用线程
 实现 Runnable 接口；
 实现 Callable 接口；
+两者的区别在于 Runnable 接口不会返回结果但是 Callable 接口可以返回结果。
+execute() 方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功与否；submit() 方法用于提交需要返回值的任务。线程池会返回一个Future类型的对象，通过这个Future对象可以判断任务是否执行成功。
+工具类Executors可以实现Runnable对象和Callable对象之间的相互转换。
+
 继承 Thread 类。
+ThreadLocal类：访问这个本地线程变量的每个线程都会有这个变量的本地副本，从而避免了线程安全问题。
+ThreadLocalMap 中使用的 key 为 ThreadLocal 的弱引用,而 value 是强引用。所以，如果 ThreadLocal 没有被外部强引用的情况下，在垃圾回收的时候会 key 会被清理掉，而 value 不会被清理掉。
 
 3.基础线程机制
 Executor管理多个异步任务的执行，而无需程序员显式地管理线程的生命周期。这里的异步是指多个任务的执行互不干扰，不需要进行同步操作。
 CachedThreadPool：一个任务创建一个线程；
+ScheduledThreadPool
+可能会创建大量线程
 FixedThreadPool：所有任务只能使用固定大小的线程；
 SingleThreadExecutor：相当于大小为 1 的 FixedThreadPool。
+可能堆积大量的请求
+
+强制线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式，这样的处理方式规避资源耗尽的风险。
+线程池的优点：
+降低资源消耗。 通过重复利用已创建的线程降低线程创建和销毁造成的消耗。
+提高响应速度。 当任务到达时，任务可以不需要的等到线程创建就能立即执行。
+提高线程的可管理性。 线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。
 
 Daemon守护线程是程序运行时在后台提供服务的线程，当所有非守护线程结束时，程序也就终止，同时会杀死所有守护线程。main() 属于非守护线程。
 
@@ -34,15 +64,20 @@ interrupt() 方法会设置线程的中断标记，此时调用 interrupted() �
 调用 Executor 的 shutdown() 方法会等待线程都执行完毕之后再关闭，但是如果调用的是 shutdownNow() 方法，则相当于调用每个线程的 interrupt() 方法。
 
 5.互斥同步
-Java 提供了两种锁机制来控制多个线程对共享资源的互斥访问，第一个是 JVM 实现的 synchronized，而另一个是 JDK 实现的 ReentrantLock。
+Java 提供了两种锁机制来控制多个线程对共享资源的互斥访问，第一个是 JVM 实现的 synchronized，而另一个是 JDK 实现的 ReentrantLock（需要 lock() 和 unlock() 方法配合 try/finally 语句块来完成）。都可重入。
 
-当持有锁的线程长期不释放锁的时候，正在等待的线程可以选择放弃等待，改为处理其他事情。
+synchronized关键字解决的是多个线程之间访问资源的同步性，synchronized关键字可以保证被它修饰的方法或者代码块在任意时刻只能有一个线程执行。
+synchronized同步代码块，同步方法。
+
+synchronized和ReentrantLock 的区别：
+1.等待可中断：当持有锁的线程长期不释放锁的时候，正在等待的线程可以选择放弃等待，改为处理其他事情。
 ReentrantLock 可中断，而 synchronized 不行。
 
-公平锁是指多个线程在等待同一个锁时，必须按照申请锁的时间顺序来依次获得锁。
+2.实现公平锁：公平锁是指多个线程在等待同一个锁时，必须按照申请锁的时间顺序来依次获得锁。
 synchronized 中的锁是非公平的，ReentrantLock 默认情况下也是非公平的，但是也可以是公平的。
 
-一个 ReentrantLock 可以同时绑定多个 Condition 对象。
+3.实现选择性通知：wait()和notify()/notifyAll()实现等待-通知机制。
+一个 ReentrantLock 可以同时绑定多个 Condition 对象实现选择性通知。
 
 除非需要使用 ReentrantLock 的高级功能，否则优先使用 synchronized。并且使用 synchronized 不用担心没有释放锁而导致死锁问题，因为 JVM 会确保锁的释放。
 
