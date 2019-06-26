@@ -25,6 +25,8 @@ volatile变量：保证变量的可见性，防止 JVM 的指令重排。
 多线程访问volatile关键字不会发生阻塞。
 volatile关键字能保证数据的可见性，但不能保证数据的原子性。
 
+AtomicInteger 类主要利用 CAS (compare and swap) + volatile 和 native 方法来保证原子操作，从而避免 synchronized 的高开销，执行效率大为提升。
+
 2.使用线程
 实现 Runnable 接口；
 实现 Callable 接口；
@@ -96,7 +98,8 @@ java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协
 相比于 wait() 这种等待方式，await() 可以指定等待的条件，因此更加灵活。
 
 7.J.U.C - AQS
-java.util.concurrent（J.U.C）大大提高了并发性能，AQS 被认为是 J.U.C 的核心。
+java.util.concurrent（J.U.C）大大提高了并发性能，AQS 被认为是 J.U.C 的核心。AQS是一个用来构建锁和同步器的框架，使用AQS能简单且高效地构造出应用广泛的大量的同步器
+
 CountDownLatch，用来控制一个线程等待多个线程。维护了一个计数器 cnt，每次调用 countDown() 方法会让计数器的值减 1，减到 0 的时候，那些因为调用 await() 方法而在等待的线程就会被唤醒。
 
 CyclicBarrier，用来控制多个线程互相等待，只有当多个线程都到达时，这些线程才会继续执行。
