@@ -89,8 +89,8 @@ this 和 super必须处于构造器的首行，且不能用在static方法中。
 例子：普通员工类和经理类是员工类的子类，使用父类来引用普通员工类和经理类对象，并调用设置工资方法，会执行子类的方法。
 
 4.Object类通用方法
-equals()：类没有覆盖 equals() 方法。则通过 equals() 比较该类的两个对象时，等价于通过“==”比较这两个对象。类覆盖了 equals() 方法。一般，我们都覆盖 equals() 方法来比较两个对象的内容是否相等；若它们的内容相等，则返回 true (即，认为这两个对象相等)。
-==：它的作用是判断两个对象的地址是不是相等。即，判断两个对象是不是同一个对象(基本数据类型==比较的是值，引用数据类型==比较的是内存地址)。
+equals()：equals() 判断引用的对象是否等价。equals方法不能作用于基本数据类型的变量。类没有覆盖 equals() 方法，则通过 equals() 比较该类的两个对象时，等价于通过“==”比较这两个对象。一般，我们都覆盖 equals() 方法来比较两个对象的内容是否相等。
+==：基本数据类型==比较的是值，引用数据类型==判断两个变量是否引用同一个对象。
 String 中的 equals 方法是被重写过的，因为 object 的 equals 方法是比较的对象的内存地址，而 String 的 equals 方法比较的是对象的值。
 
 hashCode()：
@@ -181,12 +181,12 @@ Java 不支持条件编译，C++ 通过 #ifdef #ifndef 等预处理命令从而�
 容器主要包括 Collection 和 Map 两种，Collection 存储着对象的集合，而 Map 存储着键值对（两个对象）的映射表。
 
 Collection：
-Set：
+Set：不允许重复
 TreeSet：基于红黑树实现，有序，查找的时间复杂度为O(logN)。
-HashSet：基于哈希表实现，无序，查找的时间复杂度为 O(1)。
+HashSet：基于HashMap实现，无序，查找的时间复杂度为 O(1)。
 LinkedHashSet：内部使用双向链表维护元素的插入顺序，具有 HashSet 的查找效率。
 
-List：
+List：有序
 ArrayList：基于动态数组实现，支持随机访问。
 扩容：新容量的大小为旧容量的 1.5 倍，把原数组整个复制到新数组中。
 Fail-Fast
@@ -199,27 +199,32 @@ Array可以包含基本类型和对象类型，ArrayList只能包含对象类型
 CopyOnWriteArrayList：写操作在一个复制的数组上进行，读操作还是在原始数组中进行，读写分离，互不影响。写操作需要加锁，防止并发写入时导致写入数据丢失。写操作结束之后需要把原始数组指向新的复制数组。
 CopyOnWriteArrayList 在写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景。由于内存占用和数据不一致，不适合内存敏感以及对实时性要求很高的场景。
 
-LinkedList：基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList为每一个节点存储了两个引用，一个指向前一个元素，一个指向下一个元素。
-与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。
+LinkedList：基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList为双向链表。JDK1.6之前为循环链表，JDK1.7取消了循环。
+与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。ArrayList 和 LinkedList 都是不同步的，不保证线程安全。
+
+实现了 RandomAccess 接口的list，优先选择普通 for 循环 ，其次 foreach。
+未实现 RandomAccess 接口的list，优先选择iterator遍历（foreach遍历底层也是通过iterator实现的,），大size的数据，千万不要使用普通for循环。
 
 Queue：
 双向队列：通过LinkedList实现。
 PriorityQueue：基于堆结构实现。调用remove方法，总会获得当前优先级队列中的最小元素。PriorityQueue不是线程安全的，入队和出队的时间复杂度是O(log(n))。
 
-Map：
+Map：键值对
 TreeMap：基于红黑树实现。
 
 HashMap：基于哈希表实现。hashmap数组只允许一个key为null，允许多个value为null。
 拉链法：put操作使用链表的头插法
 扩容：table 长度为 M，需要存储的键值对数量为 N，平均查找次数的复杂度为 O(N/M)， table 要尽可能大。HashMap 采用动态扩容来根据当前的 N 值来调整 M 值，使得空间效率和时间效率都能得到保证。
 从 JDK 1.8 开始，一个桶存储的链表长度大于 8 时会将链表转换为红黑树。
+HashMap 的长度是2的幂次方：能让存取高效，尽量较少碰撞，尽量把数据分配均匀。
+并发下的Rehash 会造成元素之间会形成一个循环链表。
 
 HashTable：和 HashMap 类似，但它是线程安全的，因此也效率低。
-与 HashMap 的比较：HashTable 使用 synchronized 来进行同步。HashMap 可以插入键为 null 的 Entry。HashMap 的迭代器是 fail-fast 迭代器。HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。
+与 HashMap 的比较：HashTable 使用 synchronized 来进行同步。HashMap 可以一个 key 为 null ，多个 value 为 null，HashTable不可以。HashMap 的迭代器是 fail-fast 迭代器。HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。初始容量和扩容不同。HashMap链表长度大于8时，会转换为红黑树。
 
 ConcurrentHashMap 来支持线程安全，并且 ConcurrentHashMap 的效率会更高，因为 ConcurrentHashMap 引入了分段锁。
 JDK 1.7 分段锁：将数据分成一段一段的存储，然后给每一段数据配一把锁。当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效的提高并发访问效率。
-JDK 1.8 使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized。
+JDK 1.8 取消了分段锁，使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized。synchronized只锁定当前链表或红黑二叉树的首节点。
 
 LinkedHashMap：使用双向链表来维护元素的顺序，顺序为插入顺序或者最近最少使用（LRU）顺序。
 使用 LinkedHashMap 实现的一个 LRU 缓存。
@@ -282,7 +287,30 @@ BIO：同步阻塞I/O模式，数据的读取写入必须阻塞在一个线程�
 
 AIO：NIO 2，在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻塞的IO模型。异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。 
 
-14.补充
+14.servlet
+在Java Web程序中，Servlet主要负责接收用户请求 HttpServletRequest,在doGet(),doPost()中做相应的处理，并将回应HttpServletResponse反馈给用户。
+Servlet需要在web.xml中配置。
+Servlet不能够自行创建并执行，它是在Servlet容器中运行的。
+一个Servlet可以设置多个URL访问。Servlet不是线程安全。
+
+优点：
+只需要启动一个操作系统进程以及加载一个JVM，大大降低了系统的开销。
+如果多个请求需要做同样处理的时候，这时候只需要加载一个类，这也大大降低了开销。
+所有动态加载的类可以实现对网络协议以及请求解码的共享，大大降低了工作量。
+Servlet能直接和Web服务器交互，还能在各个程序之间共享数据，使数据库连接池之类的功能很容易实现。
+
+生命周期： Web容器加载Servlet并将其实例化后，Servlet生命周期开始，容器运行其init()方法进行Servlet的初始化；请求到达时调用Servlet的service()方法，service()方法会根据需要调用与请求对应的doGet或doPost等方法；当服务器关闭或项目被卸载时服务器会将Servlet实例销毁，此时会调用Servlet的destroy()方法。
+
+转发是服务器行为，重定向是客户端行为。重定向是利用服务器返回的状态码来实现的。客户端浏览器请求服务器的时候，服务器会返回一个状态码。
+
+session和cookie的区别：
+Cookie 和 Session都是用来跟踪浏览器用户身份的会话方式。Cookie 一般用来保存用户信息，Session 的主要作用就是通过服务端记录用户的状态。
+cookie实际上是一小段的文本信息。客户端请求服务器，如果服务器需要记录该用户的状态，就使用response向客户端浏览器颁发一个cookie。客户端浏览器会把cookie保存起来。当浏览器再次请求该网站时，浏览器就会把请求地址和cookie一同给服务器。服务器检查该cookie，从而判断用户的状态。服务器还可以根据需要修改cookie的内容。 
+session是另一种记录客户状态的机制。不同的是cookie保存在客户端浏览器中，而session保存在服务器上。客户端浏览器访问服务器的时候，服务器把客户端信息以某种形式记录在服务器上，这就是session。客户端浏览器再次访问时只需要从该session中查找该客户的状态就可以了。 如果说cookie机制是通过检查客户身上的“通信证”，那么session机制就是通过检查服务器上的“客户明细表”来确认客户身份。
+客户端可以选择禁用cookie，但是，session仍然是能够工作的，因为客户端无法禁用服务端的session。
+session能够存储任意的Java对象，cookie只能存储String类型的对象。
+
+15.补充
 Oracle JDK 和 OpenJDK：
 OpenJDK 是一个参考模型并且是完全开源的，而Oracle JDK是OpenJDK的一个实现，并不是完全开源的；
 Oracle JDK 比 OpenJDK 更稳定。
