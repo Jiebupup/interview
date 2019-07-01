@@ -248,7 +248,7 @@ Queue：
 PriorityQueue：基于堆结构实现。调用remove方法，总会获得当前优先级队列中的最小元素。PriorityQueue不是线程安全的，入队和出队的时间复杂度是O(log(n))。
 
 Map：键值对
-TreeMap：基于红黑树实现。
+TreeMap：基于红黑树实现。由Comparable或Comparator排序。
 
 HashMap：基于哈希表实现。hashmap数组只允许一个key为null，允许多个value为null。
 拉链法：put操作使用链表的头插法
@@ -268,6 +268,7 @@ LinkedHashMap：使用双向链表来维护元素的顺序，顺序为插入顺�
 使用 LinkedHashMap 实现的一个 LRU 缓存。
 
 WeakHashMap：Entry 继承自 WeakReference，被 WeakReference 关联的对象在下一次垃圾回收时会被回收。主要用来实现缓存。
+IdentityHashMap:使用==代替equals对键进行比较。
 
 容器中的设计模式：
 迭代器模式：Collection 继承了 Iterable 接口，其中的 iterator() 方法能够产生一个 Iterator 对象，通过这个对象就可以迭代遍历 Collection 中的元素。
