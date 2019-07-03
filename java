@@ -265,7 +265,7 @@ HashMap：基于哈希表实现。hashmap数组只允许一个key为null，允�
 扩容：table 长度为 M，需要存储的键值对数量为 N，平均查找次数的复杂度为 O(N/M)， table 要尽可能大。HashMap 采用动态扩容来根据当前的 N 值来调整 M 值，使得空间效率和时间效率都能得到保证。
 从 JDK 1.8 开始，一个桶存储的链表长度大于 8 时会将链表转换为红黑树。
 HashMap 的长度是2的幂次方：能让存取高效，尽量较少碰撞，尽量把数据分配均匀。
-rehash：当添加对象超过阈值，需要创建一个新的数组=当前数组的长度乘以加载因子，并将原有的对象放到新数组中。并发下的rehash 会造成元素之间会形成一个循环链表。
+rehash：当添加对象的数量超过阈值threshold，需要创建一个新的数组=当前数组的长度乘以装载因子loadFactor（*2），并将原有的对象插入到新数组中。并发下的rehash 会造成元素之间会形成一个循环链表。
 
 HashTable：和 HashMap 类似，但它是线程安全的，因此也效率低。
 与 HashMap 的比较：HashTable 使用 synchronized 来进行同步。HashMap 可以一个 key 为 null ，多个 value 为 null，HashTable不可以。HashMap 的迭代器是 fail-fast 迭代器。HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。初始容量和扩容不同。HashMap链表长度大于8时，会转换为红黑树。
