@@ -12,10 +12,9 @@
 实现将组件间的关系从程序内部提到外部容器（spring的xml）来管理。
 首先外部容器（spring.xml）中会动态的注册业务所需的对象（接口/类）。
 
-或者叫DI：依赖注入
+或者叫DI依赖注入:
 组件之间的依赖关系由容器在应用系统运行期来决定， 也就是由容器动态地将某种依赖关系的目标对象实例注入到应用系统中的各个关联的组件之中。
-
-创建被调用者实例的工作通常由spring容器来完成，然后注入调用者
+创建被调用者实例的工作通常由spring容器来完成，然后注入调用者。
 
 IOC是工厂模式
 AOP是代理模式
@@ -33,13 +32,15 @@ Controller（控制器）是应用程序中处理用户交互的部分。
 设置对象属性(setter等)（依赖注入）
 如果Bean实现了BeanNameAware接口，工厂调用Bean的setBeanName()方法传递Bean的ID。（和下面的一条均属于检查Aware接口）
 如果Bean实现了BeanFactoryAware接口，工厂调用setBeanFactory()方法传入工厂自身
-将Bean实例传递给Bean的前置处理器的postProcessBeforeInitialization(Object bean, String beanname)方法
-调用Bean的初始化方法
-将Bean实例传递给Bean的后置处理器的postProcessAfterInitialization(Object bean, String beanname)方法
-使用Bean
-容器关闭之前，调用Bean的销毁方法
+将Bean实例传递给Bean的前置处理器的postProcessBeforeInitialization()
+调用InitializingBean的afterPropertiesSet()
+调用自定义的初始化方法
+将Bean实例传递给Bean的后置处理器的postProcessAfterInitialization()
+使用Bean，将一直存在于应用上下文中，直到该应用上下文被销毁。
+调用DisposableBean的destroy()
+调用自定义的销毁方法
 
-spring中bean生存的容器BeanFactory 、 ApplicationContext 、webApplicationContext 。
+spring中bean生存的容器BeanFactory 、 ApplicationContext 、webApplicationContext 。应用上下文更好。
 
 5.bean的作用域
 通过声明scope配置项，可以灵活定义Bean的作用范围。
