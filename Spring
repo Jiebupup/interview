@@ -50,3 +50,5 @@ singleton：IOC容器仅创建一个Bean实例，IOC容器每次返回的是同�
 prototype：IOC容器可以创建多个Bean实例，每次返回的都是一个新的实例。
 
 request、、session、global-session。
+
+6.注解
