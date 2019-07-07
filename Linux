@@ -91,3 +91,7 @@ netstat：查看占用端口的进程。
 Linux系统上查看项目的运行状态
 查看日志: tail -f 日志.log
 查看运行  ps -ef |grep tomcat
+
+namespace:是 Linux 内核用来隔离内核资源的方式。
+使得处于不同 namespace 的进程拥有独立的全局系统资源，通过 namespace 可以让一些进程只能看到与自己相关的一部分资源，其他namespace内的进程不可见。
+Linux 内核实现 namespace 的一个主要目的就是实现轻量级虚拟化(容器)服务。为 docker 等容器技术的出现和发展提供了基础条件。
