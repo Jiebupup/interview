@@ -1,8 +1,8 @@
 1.AOP
 面向切面编程
-使用"横切"技术，AOP把软件系统分为两个部分：核心关注点和横切关注点。业务处理的主要流程是核心关注点，与之关系不大的部分是横切关注点。
+横切关注点可以被描述为影响应用多处的功能，切面能帮助我们模块化横切关注点。
 基于代理思想，对原来目标对象，创建代理对象，在不修改原对象代码情况下，通过代理对象，调用增强功能的代码，从而对原有业务方法进行增强 ！
-分为JDK动态代理和Cglib动态代理（对没有实现接口的类增强）。
+Spring的AOP基于动态代理基础上，分为JDK动态代理和Cglib动态代理（对没有实现接口的类增强）。
 
 实现AOP的技术，主要分为两大类：一是采用动态代理技术，利用截取消息的方式，对该消息进行装饰，以取代原有对象行为的执行；
 二是采用静态织入的方式，引入特定的语法创建“方面”，从而使得编译器可以在编译期间织入有关“方面”的代码.
@@ -43,12 +43,23 @@ Controller（控制器）是应用程序中处理用户交互的部分。
 spring中bean生存的容器BeanFactory 、 ApplicationContext 、webApplicationContext 。应用上下文更好。
 
 5.bean的作用域
-通过声明scope配置项，可以灵活定义Bean的作用范围。
+@scope注解定义Bean的作用域。
 
 singleton：IOC容器仅创建一个Bean实例，IOC容器每次返回的是同一个Bean实例。
 
-prototype：IOC容器可以创建多个Bean实例，每次返回的都是一个新的实例。
+prototype：每次注入或者通过Spring应用上下文获取时，都会创建一个新的Bean实例。
 
-request、、session、global-session。
+session&request：web应用中，为每次会话或请求创建一个Bean实例。
 
 6.注解
+启动类@SpringBootApplication元注解：无实际功能
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+
+@SpringbootConfiguration：
+@ComponentScan：
+@EnableAutoConfiguration：
+
+@Enable开头的注解
