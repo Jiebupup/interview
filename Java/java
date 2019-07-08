@@ -54,7 +54,7 @@ new String("abc")会创建两个字符串对象（前提是 String Pool 中还�
 
 继承：
 里式替换原则
-private
+private，可以通过反射访问
 默认包可见
 protected
 public
