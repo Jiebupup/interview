@@ -4,3 +4,4 @@
 4.Redis复制原理
 5.Redis持久化原理
 6.海量数据问题
+7.除了@ResponseBody，controller层如何标准返回给前端所要的数据类型？
