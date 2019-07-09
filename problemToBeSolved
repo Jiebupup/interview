@@ -5,3 +5,4 @@
 5.Redis持久化原理
 6.海量数据问题
 7.除了@ResponseBody，controller层如何标准返回给前端所要的数据类型？
+8.Redis的缓存淘汰策略
