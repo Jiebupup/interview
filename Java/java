@@ -260,18 +260,19 @@ PriorityQueue：基于堆结构实现。调用remove方法，总会获得当前�
 Map：键值对
 TreeMap：基于红黑树实现。由Comparable或Comparator排序。
 
-HashMap：基于哈希表实现。hashmap数组只允许一个key为null，允许多个value为null。
+HashMap：基于哈希表实现。hashmap数组只允许一个key为null，允许多个value为null。Entry 对象存储着键值对。数组中的每个位置被当成一个桶，一个桶存放一个链表。
 拉链法：put操作使用链表的头插法
-扩容：table 长度为 M，需要存储的键值对数量为 N，平均查找次数的复杂度为 O(N/M)， table 要尽可能大。HashMap 采用动态扩容来根据当前的 N 值来调整 M 值，使得空间效率和时间效率都能得到保证。
-从 JDK 1.8 开始，一个桶存储的链表长度大于 8 时会将链表转换为红黑树。
+扩容：默认的容量capacity是16，默认的负载因子loadFactor是0.75。
+从 JDK 1.8 开始，一个桶存储的链表长度大于 8 时会将链表转换为红黑树。Entry改为了Node。
 HashMap 的长度是2的幂次方：能让存取高效，尽量较少碰撞，尽量把数据分配均匀。
-rehash：当添加对象的数量超过阈值threshold，需要创建一个新的数组=当前数组的长度乘以装载因子loadFactor（*2），并将原有的对象插入到新数组中。并发下的rehash 会造成元素之间会形成一个循环链表。
+rehash：当添加对象的数量超过阈值threshold，数组大小*2，并将原有的Entry对象插入到新数组中。并发下的rehash 会造成元素之间会形成一个循环链表。
 
 HashTable：和 HashMap 类似，但它是线程安全的，因此也效率低。
 与 HashMap 的比较：HashTable 使用 synchronized 来进行同步。HashMap 可以一个 key 为 null ，多个 value 为 null，HashTable不可以。HashMap 的迭代器是 fail-fast 迭代器。HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。初始容量和扩容不同。HashMap链表长度大于8时，会转换为红黑树。
 
 ConcurrentHashMap 来支持线程安全，并且 ConcurrentHashMap 的效率会更高，因为 ConcurrentHashMap 引入了分段锁。
-JDK 1.7 分段锁：将数据分成一段一段的存储，然后给每一段数据配一把锁。当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效的提高并发访问效率。
+JDK 1.7 分段锁：将数据分成一段一段的存储，然后给每一段数据配一把锁。当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效的提高并发访问效率。默认创建 16 个 Segment锁，并发度与 Segment 数量相等。volatile 修饰数据。
+ConcurrentHashMap 的 get 方法是非常高效的，因为整个过程都不需要加锁。put需要加锁。
 JDK 1.8 取消了分段锁，使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized。synchronized只锁定当前链表或红黑二叉树的首节点。
 
 LinkedHashMap：使用双向链表来维护元素的顺序，顺序为插入顺序或者最近最少使用（LRU）顺序。
