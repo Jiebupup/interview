@@ -90,3 +90,16 @@ session&request：web应用中，为每次会话或请求创建一个Bean实例�
 适配器模式 :Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配Controller。
 
 8.事务
+
+9.Mybatis
+MyBatis 是一款持久层框架，它支持定制化 SQL、存储过程以及高级映射。
+
+在Mybatis中我们可以定义一个叫做TypeHandler类型处理器的东西，通过它可以实现Java类型跟数据库类型的相互转换。
+
+MyBatis XML 标签类型：
+resultMap 标签的类型属性为 type（必填）。
+id, result 标签的类型属性为javaType（可选）。
+idArg, arg 标签和上面两个类似，也都是 javaType（可选）。
+association 标签的类型属性为 javaType（可选）。
+discriminator 标签的类型属性为 javaType（可选）。
+collection 这个标签最特殊，有两个类型属性，分别为 javaType（可选） 和 ofType（结果映射时必填）。
