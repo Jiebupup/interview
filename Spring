@@ -92,7 +92,7 @@ session&request：web应用中，为每次会话或请求创建一个Bean实例�
 8.事务
 
 9.Mybatis
-MyBatis 是一款持久层框架，它支持定制化 SQL、存储过程以及高级映射。
+MyBatis 是一款持久层框架，它支持定制化 SQL、存储过程以及高级映射。和Hibernate一样都是ORM对象关系映射，负责数据库和java对象之间的映射。
 
 在Mybatis中我们可以定义一个叫做TypeHandler类型处理器的东西，通过它可以实现Java类型跟数据库类型的相互转换。
 
