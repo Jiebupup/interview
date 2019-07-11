@@ -106,3 +106,8 @@ idArg, arg 标签和上面两个类似，也都是 javaType（可选）。
 association 标签的类型属性为 javaType（可选）。
 discriminator 标签的类型属性为 javaType（可选）。
 collection 这个标签最特殊，有两个类型属性，分别为 javaType（可选） 和 ofType（结果映射时必填）。
+
+10.springBoot Starter
+starter会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater机制帮我们完成了项目起步所需要的的相关jar包。
+ConfigurationProperties和AutoConfiguration，application.properties 文件满足自定义配置。
+利用starter实现自动化配置只需要两个条件——maven依赖、配置文件。
