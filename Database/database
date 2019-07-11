@@ -32,6 +32,19 @@ GROUP BY分组：HAVING 过滤分组。
 事务（Transaction）是一系列不可分割的数据库操作
 事务特性（ACID）：原子性，一致性，隔离性，持久性
 
+4.sql注入攻击
+服务器上的数据库运行非法的 SQL 语句，主要通过拼接来完成。
+过程：
+strSQL = "SELECT * FROM users WHERE (name = '" + userName + "') and (pw = '"+ passWord +"');"
+userName = "1' OR '1'='1";
+passWord = "1' OR '1'='1";
+strSQL = "SELECT * FROM users WHERE (name = '1' OR '1'='1') and (pw = '1' OR '1'='1');"
+无需验证通过就能执行查询：strSQL = "SELECT * FROM users;"
+
+防止手段： 
+使用参数化查询：Java 中的 PreparedStatement 是预先编译的 SQL 语句，可以传入适当参数并且多次执行，没有拼接的过程。
+单引号转换：将传入的参数中的单引号转换为连续两个单引号，PHP 中的 Magic quote 可以完成这个功能。
+
 
 学生表，课程表，成绩表，一条sql写出每门课程的及格和不及格的学生数量。
 select course
