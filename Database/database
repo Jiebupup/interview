@@ -33,7 +33,7 @@ GROUP BY分组：HAVING 过滤分组。
 事务特性（ACID）：原子性，一致性，隔离性，持久性
 
 4.sql注入攻击
-服务器上的数据库运行非法的 SQL 语句，主要通过拼接来完成。
+服务器上的数据库运行非法的 SQL 语句，主要通过拼接来完成。访问用户通过网站前端对网站可以输入参数的地方进行提交参数，参数里插入了一些恶意参数传入到服务器后端，执行了数据库的sql语句并访问敏感信息。                         
 过程：
 strSQL = "SELECT * FROM users WHERE (name = '" + userName + "') and (pw = '"+ passWord +"');"
 userName = "1' OR '1'='1";
@@ -42,8 +42,9 @@ strSQL = "SELECT * FROM users WHERE (name = '1' OR '1'='1') and (pw = '1' OR '1'
 无需验证通过就能执行查询：strSQL = "SELECT * FROM users;"
 
 防止手段： 
-使用参数化查询：Java 中的 PreparedStatement 是预先编译的 SQL 语句，可以传入适当参数并且多次执行，没有拼接的过程。
-单引号转换：将传入的参数中的单引号转换为连续两个单引号，PHP 中的 Magic quote 可以完成这个功能。
+使用参数化查询：Java 中的 PreparedStatement 是预先编译的 SQL 语句，可以传入适当参数并且多次执行，没有拼接的过程。sql注入只对sql语句的编译过程有破坏作用。
+单引号转换：将传入的参数中的单引号转换为连续两个单引号，PHP 中的 Magic quote 可以完成这个功能。转化成一些其他符号导致sql语句无法执行。
+正则表达式过滤传入的参数
 
 
 学生表，课程表，成绩表，一条sql写出每门课程的及格和不及格的学生数量。
