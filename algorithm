@@ -3,29 +3,41 @@
 2.交换
 
 快排：
-public void quicksort(int[] a int l, int r) {
-    if (l < r)
-    {
-        int i = l, j = r, x = s[l];
-        while (i < j)
-        {
-            while(i < j && s[j] >= x) 
-                j--;  
-            if(i < j) 
-                s[i++] = s[j];
-            while(i < j && s[i] < x) 
-                i++;  
-            if(i < j) 
-                s[j--] = s[i];
+private int Partiton(int[] a,int l,int r) {
+    int i=l,j=r,pivot=a[l];
+    while(i<j){
+        while(i<j&&pivot<=a[j]) j--;
+        a[i]=a[j];
+        while(i<j&&pivot>=a[i]) i++;
+        a[j]=a[i];
+    }
+    a[i]=pivot;
+    return i;
+}
+public void QuickSort1(int[] a,int l,int r){
+    if(l<r){
+        int idx=Partition(a,l,r);
+        QuickSort(a,l,idx-1);
+        QuickSort(a,idx+1,r);
+    }
+}
+    
+public void QuickSort2(int[] a,int l,int r){
+    if(l<r){
+        int i=l,j=r,pivot=a[l];
+        while(i<j){
+            while(i<j&&pivot<=a[j]) j--;
+            if(i<j) a[i++]=a[j];
+            while(i<j&&pivot>=a[i]) i++;
+            if(i<j) a[i]=a[j--];
         }
-        s[i] = x;
-        quick_sort(s, l, i - 1); 
-        quick_sort(s, i + 1, r);
+        a[i]=pivot;
+        QuickSort2(a,l,i-1); 
+        QuickSort2(a,i+1,r);
     }
 }
 
-稳定版：创建一个数组存储要交换的数据
-记录位置信息
+稳定版：创建一个数组存储要交换的数据，记录位置信息
 
 3.选择
 
