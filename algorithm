@@ -1,4 +1,8 @@
-1.快排
+1.插入
+
+2.交换
+
+快排：
 public void quicksort(int[] a int l, int r) {
     if (l < r)
     {
@@ -22,3 +26,7 @@ public void quicksort(int[] a int l, int r) {
 
 稳定版：创建一个数组存储要交换的数据
 记录位置信息
+
+3.选择
+
+4.归并
