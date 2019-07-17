@@ -136,7 +136,7 @@ CyclicBarrier 和 CountdownLatch 的一个区别是，CyclicBarrier 的计数器
 
 Semaphore，类似于操作系统中的信号量，可以控制对互斥资源的访问线程数。
 
-ReentrantReadWriterLock读写锁：
+ReentrantReadWriterLock读写锁：维护了一对相关的锁，一个用于只读操作，另一个用于写入操作。只要没有writer，读取锁可以由多个reader线程同时保持。写入锁是独占的。同时可以有一个线程写操作，多个线程读操作。 
 StampedLock读写锁：乐观锁，在读线程非常多而写线程非常少的场景下非常适用，同时还避免了写饥饿情况的发生。
 
 8.J.U.C - 其它组件
