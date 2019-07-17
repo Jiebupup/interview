@@ -47,6 +47,8 @@ Spring MVC 下我们一般把后端项目分为 Service层（处理业务）、D
 
 spring中bean生存的容器BeanFactory 、 ApplicationContext 、webApplicationContext 。应用上下文更好。
 
+BeanDefinition：用来管理bean的属性和对象间的相互依赖关系
+
 5.bean的作用域
 @scope注解定义Bean的作用域。
 
