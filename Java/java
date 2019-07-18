@@ -202,7 +202,9 @@ Java 注解是附加在代码中的一些元信息，用于一些工具在编译
 
 10.Java SE 8新特性
 Lambda表达式和函数式接口
-Stream
+Stream：Stream 使用一种类似用 SQL 语句从数据库查询数据的直观方式来提供一种对 Java 集合运算和表达的高阶抽象。
+流在管道中传输， 并且可以在管道的节点上进行处理， 比如筛选， 排序，聚合等。
+
 新的日期和时间API
 接口的默认方法
 
@@ -254,7 +256,7 @@ PriorityQueue：基于堆结构实现。调用remove方法，总会获得当前�
 Map：键值对
 TreeMap：基于红黑树实现。由Comparable或Comparator排序。
 
-HashMap：基于哈希表实现。hashmap数组只允许一个key为null，允许多个value为null。Entry 对象存储着键值对。数组中的每个位置被当成一个桶，一个桶存放一个链表。
+HashMap：基于哈希表实现。hashmap数组只允许一个key为null，允许多个value为null。HashMap 使用第 0 个桶存放键为 null 的键值对。Entry 对象存储着键值对。数组中的每个位置被当成一个桶，一个桶存放一个链表。
 拉链法：put操作使用链表的头插法
 扩容：默认的容量capacity是16，默认的负载因子loadFactor是0.75。
 从 JDK 1.8 开始，一个桶存储的链表长度大于 8 时会将链表转换为红黑树。Entry改为了Node。
@@ -361,5 +363,10 @@ Oracle JDK 和 OpenJDK：
 OpenJDK 是一个参考模型并且是完全开源的，而Oracle JDK是OpenJDK的一个实现，并不是完全开源的；
 Oracle JDK 比 OpenJDK 更稳定。
 Oracle JDK与OpenJDK相比提供了更好的性能；
+
+JRE和JDK：
+JRE是java运行时环境，包含了java虚拟机，java基础类库。是使用java语言编写的程序运行所需要的软件环境，是提供给想运行java程序的用户使用的。
+JDK是java开发工具包，是程序员使用java语言编写java程序所需的开发工具包，是提供给程序员使用的。JDK包含了JRE，同时还包含了编译java源码的编译器javac和调试器等。
+如果你需要运行java程序，只需安装JRE就可以了。如果你需要编写java程序，需要安装JDK。
 
 javax 是扩展的 API 包。
