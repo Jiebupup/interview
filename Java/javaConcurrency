@@ -49,8 +49,24 @@ ThreadLocalMap 中使用的 key 为 ThreadLocal 的弱引用,而 value 是强引
 Executor简化任务与线程的生命周期管理，将任务的提交和执行解耦，基于生产者-消费者模式，管理多个异步任务的执行。
 
 线程池：
-管理一组同构工作线程的资源池。线程池过大会使大量的线程CPU和内存资源上竞争，过小会空闲降低吞吐率。
+管理一组同构工作线程的资源池。线程池过大会使大量的线程CPU和内存资源上竞争，过小会空闲降低吞吐率。使得线程可以复用，就是执行完一个任务，并不被销毁，而是可以继续执行其他的任务。
+线程池状态：
+RUNNING：当创建线程池后，初始时，线程池处于RUNNING状态；
+SHUTDOWN：如果调用了shutdown()方法，则线程池处于SHUTDOWN状态，此时线程池不能够接受新的任务，它会等待所有任务执行完毕；
+STOP：如果调用了shutdownNow()方法，则线程池处于STOP状态，此时线程池不能接受新的任务，并且会去尝试终止正在执行的任务；
+TERMINATED：当线程池处于SHUTDOWN或STOP状态，并且所有工作线程已经销毁，任务缓存队列已经清空或执行结束后，线程池被设置为TERMINATED状态。
+
+任务提交给线程池：
+corePoolSize核心池大小：在没有任务需要执行的时候线程池的大小，并且只有在工作队列满了的情况下才会创建超出这个数量的线程。
+maximumPoolSize线程池中允许的最大线程数：线程池中的当前线程数目不会超过该值。
+
+如果当前线程池中的线程数目小于corePoolSize，则每来一个任务，就会创建一个线程去执行这个任务；
+如果当前线程池中的线程数目>=corePoolSize，则每来一个任务，会尝试将其添加到任务缓存队列当中，若添加成功，则该任务会等待空闲线程将其取出去执行；若添加失败（一般来说是任务缓存队列已满），则会尝试创建新的线程去执行这个任务；
+如果当前线程池中的线程数目达到maximumPoolSize，则会采取任务拒绝策略进行处理；
+如果线程池中的线程数量大于 corePoolSize时，如果某线程空闲时间超过keepAliveTime，线程将被终止，直至线程池中的线程数目不大于corePoolSize；如果允许为核心池中的线程设置存活时间，那么核心池中的线程空闲时间超过keepAliveTime，线程也会被终止。
+
 线程池的创建： ThreadPoolExecutor 和 ExecutorService。
+
 分类：
 CachedThreadPool：一个任务创建一个线程，使用SynchronousQueue
 ScheduledThreadPool
@@ -74,7 +90,7 @@ FIFO 队列 ：LinkedBlockingQueue（单向链表）、ArrayBlockingQueue（固�
 优先级队列 ：PriorityBlockingQueue
 提供了阻塞的 take() 和 put() 方法：如果队列为空 take() 将阻塞，直到队列中有内容；如果队列为满 put() 将阻塞，直到队列有空闲位置。
 
-LinkedBlockingQueue满了的饱和策略：
+LinkedBlockingQueue满了的饱和（拒绝）策略：
 中止：抛出运行时异常
 抛弃
 抛弃最老的任务：丢弃队列最前面的任务，然后重新尝试执行任务（重复此过程）
