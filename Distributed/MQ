@@ -66,15 +66,32 @@ Kafka 的高可用性（分布式）：
 
 7.如何保证消息的可靠性传输（处理消息丢失的问题）
 RabbitMQ：
-生产者弄丢了数据：事务机制（同步）和confirm机制（异步）。一般在生产者这块避免数据丢失，都是用 confirm 机制的。
-               
-RabbitMQ 弄丢了数据：开启 RabbitMQ 的持久化。可以跟生产者那边的 confirm 机制配合起来。               
-               
+生产者弄丢了数据：事务机制（同步）和confirm机制（异步）。一般在生产者这块避免数据丢失，都是用 confirm 机制的。               
+RabbitMQ 弄丢了数据：开启 RabbitMQ 的持久化。可以跟生产者那边的 confirm 机制配合起来。                            
 消费端弄丢了数据：ack 机制
 
 Kafka：
+生产者设置了 acks=all，一定不会丢。
+Kafka 弄丢了数据:配置topic,Kafka 服务端,producer 端。在 Kafka broker 端就可以保证在 leader 所在 broker 发生故障，进行 leader 切换时，数据不会丢失。
+消费端弄丢了数据:关闭自动提交 offset，在处理完之后自己手动提交 offset，就可以保证数据不会丢。
 
-               
-               
+8.如何保证消息的顺序性？
+RabbitMQ：拆分多个 queue，每个 queue 一个 consumer，就是多一些 queue 而已，确实是麻烦点；或者就一个 queue 但是对应一个 consumer，然后这个 consumer 内部用内存队列做排队，然后分发给底层不同的 worker 来处理。 
+Kafka：
+一个 topic，一个 partition，一个 consumer，内部单线程消费，单线程吞吐量太低，一般不会用这个。
+写 N 个内存 queue，具有相同 key 的数据都到同一个内存 queue；然后对于 N 个线程，每个线程分别消费一个内存 queue 即可，这样就能保证顺序性。
 
+9.如何解决大量消息在 mq 里积压
+先修复 consumer 的问题，确保其恢复消费速度，然后将现有 consumer 都停掉。
+新建一个 topic，partition 是原来的 10 倍，临时建立好原先 10 倍的 queue 数量。
+然后写一个临时的分发数据的 consumer 程序，这个程序部署上去消费积压的数据，消费之后不做耗时的处理，直接均匀轮询写入临时建立好的 10 倍数量的 queue。
+接着临时征用 10 倍的机器来部署 consumer，每一批 consumer 消费一个临时 queue 的数据。这种做法相当于是临时将 queue 资源和 consumer 资源扩大 10 倍，以正常的 10 倍速度来消费数据。
+等快速消费完积压数据之后，得恢复原先部署的架构
 
+mq 中的消息过期失效了导致数据丢失：批量重导，把丢失的数据补回来
+
+10.让你写一个消息队列，该如何进行架构设计？
+可伸缩性：需要的时候快速扩容以增加吞吐量和容量。参考kakfa分布式系统，broker -> topic -> partition，每个 partition 放一个机器，就存一部分数据。如果现在资源不够了，给 topic 增加 partition，然后做数据迁移，增加机器。
+持久化：保证数据不会丢失，顺序I/O读写性能高
+可用性
+可靠性
