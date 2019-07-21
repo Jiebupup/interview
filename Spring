@@ -82,6 +82,8 @@ session&request：web应用中，为每次会话或请求创建一个Bean实例�
 @Service : 对应服务层，主要涉及一些复杂的逻辑，需要用到 Dao层。
 @Controller : 对应 Spring MVC 控制层，主要用户接受用户请求并调用 Service 层返回数据给前端页面。
 
+@RequestMapping：处理请求地址映射，并返回数据。
+
 7.Spring用到的设计模式
 工厂设计模式 : Spring使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。
 代理设计模式 : Spring AOP 功能的实现。
