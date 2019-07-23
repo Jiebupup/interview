@@ -1,18 +1,23 @@
 1.AOP
 面向切面编程
-横切关注点可以被描述为影响应用多处的系统服务，切面能帮助我们模块化横切关注点，在系统运行时需要的地方进行动态插入运行。分离业务逻辑与系统服务，应用对象只完成业务逻辑。
+横切关注点可以被描述为影响应用多处的系统服务，切面能帮助我们模块化横切关注点，在系统运行时需要的地方进行动态插入运行。分离业务逻辑与系统服务，应用对象只完成业务逻辑。扩展功能。                                             
 基于代理模式：JDK和CGLIB动态代理。JDK只能代理接口，CGLIB代理类。
 ASPECTJ静态织入。
 
 2.IOC
 控制反转，或者叫DI依赖注入
-将对象之间的相互依赖关系交给IOC容器来管理，并由IOC容器完成对象的注入。Spring通过XML文件来配置Bean，SpringBoot使用注解配置。
+将对象之间的相互依赖关系交给IOC容器来管理，并由IOC容器完成对象的注入。Spring通过XML文件来配置Bean，SpringBoot使用注解配置。创建对象。
 IOC容器的初始化过程：读取XML资源，解析，最终注册到Bean Factory中。
 然后创建bean的实例，并利用反射注入property。
 
 IOC是工厂模式
 
-3.MVC
+3.分层
+DAO层：jdbcTemplate
+service层：IOC
+web层：springMVC
+
+4.MVC
 Model（模型）是应用程序中用于处理应用程序数据逻辑的部分。
 通常模型对象负责在数据库中存取数据。
 
@@ -32,7 +37,7 @@ Spring MVC 下我们一般把后端项目分为 Service层（处理业务）、D
 第4步：DispatcherServlet通过ViewResolver视图解析器找到对应的视图对象View 
 第5步：DispatcherServlet把返回的Model传给View（视图渲染），并返回到浏览器
 
-4.bean的生命周期
+5.bean的生命周期
 实例化bean对象(通过构造方法或者工厂方法)
 设置对象属性(setter等)（依赖注入）
 如果Bean实现了BeanNameAware接口，工厂调用Bean的setBeanName()方法传递Bean的ID。（和下面的一条均属于检查Aware接口）
@@ -49,7 +54,7 @@ spring中bean生存的容器BeanFactory 、 ApplicationContext 、webApplication
 
 BeanDefinition：用来管理bean的属性和对象间的相互依赖关系
 
-5.bean的作用域
+6.bean的作用域
 @scope注解定义Bean的作用域。
 
 singleton：IOC容器仅创建一个Bean实例，IOC容器每次返回的是同一个Bean实例。
@@ -60,7 +65,7 @@ prototype：每次注入或者通过Spring应用上下文获取时，都会创�
 
 session&request：web应用中，为每次会话或请求创建一个Bean实例。
 
-6.注解
+7.注解
 启动类@SpringBootApplication元注解：无实际功能
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -85,7 +90,7 @@ session&request：web应用中，为每次会话或请求创建一个Bean实例�
 @RequestMapping：处理请求地址映射
 @ResponseBody：返回json数据。
 
-7.Spring用到的设计模式
+8.Spring用到的设计模式
 工厂设计模式 : Spring使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。
 代理设计模式 : Spring AOP 功能的实现。
 单例设计模式 : Spring 中的 Bean 默认都是单例的。
@@ -94,9 +99,9 @@ session&request：web应用中，为每次会话或请求创建一个Bean实例�
 观察者模式: Spring 事件驱动模型就是观察者模式很经典的一个应用。
 适配器模式 :Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配Controller。
 
-8.事务
+9.事务
 
-9.Mybatis
+10.Mybatis
 MyBatis 是一款持久层框架，它支持定制化 SQL、存储过程以及高级映射。和Hibernate一样都是ORM对象关系映射，负责数据库和java对象之间的映射。区别是MyBatis自己控制SQL。
 
 在Mybatis中我们可以定义一个叫做TypeHandler类型处理器的东西，通过它可以实现Java类型跟数据库类型的相互转换。
@@ -112,7 +117,7 @@ association 标签的类型属性为 javaType（可选）。
 discriminator 标签的类型属性为 javaType（可选）。
 collection 这个标签最特殊，有两个类型属性，分别为 javaType（可选） 和 ofType（结果映射时必填）。
 
-10.springBoot Starter
+11.springBoot Starter
 starter会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater机制帮我们完成了项目起步所需要的的相关jar包。
 ConfigurationProperties和AutoConfiguration，application.properties 文件满足自定义配置。
 利用starter实现自动化配置只需要两个条件——maven依赖、配置文件。
