@@ -6,7 +6,11 @@ ASPECTJ静态织入。
 
 2.IOC
 控制反转，或者叫DI依赖注入
-将对象之间的相互依赖关系交给IOC容器来管理，并由IOC容器完成对象的注入。Spring通过XML文件来配置Bean，SpringBoot使用注解配置。创建对象。
+将对象之间的相互依赖关系交给IOC容器来管理，并由IOC容器完成对象的注入。Spring通过XML文件来配置Bean，SpringBoot使用注解配置。创建对象由Spring来管理。
+
+底层原理：xml配置文件，dom4j解决xml，工厂设计模式，反射。
+<bean id=""class=""/>只需要变化这一部分来降低耦合,Class.forName(), .newInstance()。
+
 IOC容器的初始化过程：读取XML资源，解析，最终注册到Bean Factory中。
 然后创建bean的实例，并利用反射注入property。
 
