@@ -126,3 +126,13 @@ Session Server：使用一个单独的服务器存储 Session 数据，可以使
 缺点:需要去实现存取 Session 的代码。
 
 tomcat + redis或spring session + redis实现。
+
+8.如何设计一个高并发系统？
+高峰期每秒并发量千万级，读多写少
+  
+dubbo系统拆分，每个系统连一个数据库
+redis缓存，读的时候大量走缓存
+MQ，大量的写请求灌入 MQ 里排队，控制在 mysql 承载范围之内
+分库分表
+读写分离
+ElasticSearch
