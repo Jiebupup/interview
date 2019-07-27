@@ -1,5 +1,8 @@
-1.基本架构
-基于 lucene 的分布式搜索引擎—— ElasticSearch
+1.简介
+ElasticSearch是一个基于Lucene的分布式搜索服务器。它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。
+Elasticsearch是用Java语言开发的，并作为Apache许可条款下的开放源码发布，是一种流行的企业级搜索引擎。
+ElasticSearch用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。
+
 es 中存储数据的基本单位是索引
 index -> type -> mapping -> document -> field。
 索引拆分多个 shard 是有好处的，一是支持横向扩展，二是提高性能（所有的操作都会在多台机器上并行分布式执行，提高了吞吐量和性能。）
