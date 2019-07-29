@@ -196,8 +196,20 @@ throw和throws的区别：
 元组：仅一次方法调用就能返回多个对象。通过创建一个对象，来持有想要返回的多个对象。
 通配符：被限制为单一边界。
 
-9.注解
+9.注解Annontation
 Java 注解是附加在代码中的一些元信息，用于一些工具在编译、运行时进行解析和使用，起到说明、配置的功能。注解不会也不能影响代码的实际逻辑，仅仅起到辅助性的作用。
+
+注解的用处:
+生成文档。
+跟踪代码依赖性，实现替代配置文件功能。
+在编译时进行格式检查。
+
+注解的原理：注解本质是一个继承了Annotation 的特殊接口，其具体实现类是Java 运行时生成的动态代理类。
+而我们通过反射获取注解时，返回的是Java 运行时生成的动态代理对象$Proxy1。通过代理对象调用自定义注解（接口）的方法，会最终调用AnnotationInvocationHandler 的invoke 方法。该方法会从memberValues 这个Map 中索引出对应的值。而memberValues 的来源是Java 常量池。
+
+元注解（专门注解其他的注解）：@Documented、@Retention、@Target、@Inherited。
+常见注解：@Override重载、@Deprecated不被推荐使用、@SuppressWarnings抑制警告
+
 单元测试JUnit
 
 10.Java SE 8新特性
