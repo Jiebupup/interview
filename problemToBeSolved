@@ -1,8 +1,1 @@
-1.微服务架构
-2.分布式数据一致性
-3.缓存数据一致性
-4.Redis复制原理
-5.Redis持久化原理
-6.海量数据问题
-7.除了@ResponseBody，controller层如何标准返回给前端所要的数据类型？
-8.MySQL锁机制
+除了@ResponseBody，controller层如何标准返回给前端所要的数据类型？
