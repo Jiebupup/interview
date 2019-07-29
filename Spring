@@ -11,6 +11,8 @@ ASPECTJ静态织入。
 底层原理：xml配置文件，dom4j解决xml，工厂设计模式，反射。
 <bean id=""class=""/>只需要变化这一部分来降低耦合,Class.forName(), .newInstance()。
 
+IOC创建对象：1.导入jar包，2.创建类和方法，3.写配置文件，4.ApplicationContext context=new ClassPathXmlApplicationContext(".xml")和context.getBean("")。
+
 IOC容器的初始化过程：读取XML资源，解析，最终注册到Bean Factory中。
 然后创建bean的实例，并利用反射注入property。
 
