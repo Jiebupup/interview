@@ -11,7 +11,7 @@ RPC方案：RMI（JDK自带）、Hessian、Dubbo以及Thrift等。RESTful也可�
 http请求和rpc：良好的rpc调用是面向服务的封装，针对服务的可用性和效率等都做了优化。单纯使用http调用则缺少了这些特性。
 
 总体思路都是服务提供方暴露服务，消费方通过服务方提供的接口使用动态代理获取代理对象，然后调用代理对象的方法，代理对象在内部进行远程调用，获得计算结果。
-一个完整的RPC架构里面包含了四个核心的组件，分别是Client，Client Stub，Server以及Server Stub，这个Stub可以理解为存根。
+一个完整的RPC架构里面包含了四个核心的组件，分别是Client，Client Stub，Server以及Server Stub（skeleton），这个Stub可以理解为存根。
 RPC调用过程：
 (1) 客户端（client）以本地调用方式（即以接口的方式）调用服务；
 (2) 客户端存根（client stub）接收到调用后，负责将方法、参数等组装成能够进行网络传输的消息体（将消息体对象序列化为二进制）；
