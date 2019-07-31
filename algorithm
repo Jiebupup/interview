@@ -44,13 +44,56 @@ public void QuickSort2(int[] a,int l,int r){
 4.归并
 
 5.二分查找
-public int binarySearch(int[] a, int n) {
+public int binarySearch1(int[] a, int n) {
     int i=0,j=a.length-1;
     while(i<=j){
-        int mid=(i+j)>>1;
+        int mid=i+(j-i)>>1;
         if(a[mid]<n) i=mid+1;
         else if(a[mid]>n)j=mid-1;
         else return mid;
     }
     return -1;
+}
+
+public int binarySearch2(int[] a, int n) {
+    int i=0,j=a.length-1;
+    while(i<j){
+        int mid=i+(j-i)>>1;
+        if(a[mid]<n) i=mid+1;
+        else j=mid;
+    }
+    return i;
+}
+
+6.单例模式
+双检锁
+public class Singleton{
+    private volatile static Singleton instance;
+    private Singleton(){}
+    public static Singleton getInstance(){
+        if(instance==null){
+            synchronized(Singleton.class){
+                if(instance==null){
+                    instance=new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+静态内部类
+public class Singleton {  
+    private static class SingletonHolder {  
+        private static final Singleton INSTANCE = new Singleton();  
+    }  
+    private Singleton (){}  
+    public static final Singleton getInstance() {  
+        return SingletonHolder.INSTANCE;  
+    }  
+}
+枚举
+public enum Singleton {  
+    INSTANCE;  
+    public void whateverMethod() {  
+    }  
 }
