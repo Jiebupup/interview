@@ -3,15 +3,15 @@
 可运行（Runnable）：包含了操作系统线程状态中的 Running 和 Ready，可能正在运行或正在等待 CPU 时间片
 阻塞（Blocked）：等待获取一个排它锁，如果其线程释放了锁就会结束此状态
 
-无限期等待（Waiting）：等待其它线程显式地唤醒。
+等待（Waiting）：等待其它线程显式地唤醒。
 进入方法：没有设置Timeout参数的Object.wait()或Thread.join()，LockSupport.park()。
 退出方法：Object.notify() / Object.notifyAll()或Thread.join() 的线程执行完毕，LockSupport.unpark(Thread)
 
-限期等待（Timed Waiting）：在指定的时间自行返回
+计时等待（Timed Waiting）：在指定的时间自行返回
 进入方法：Thread.sleep()，设置了 Timeout 参数的 Object.wait()，设置了 Timeout 参数的 Thread.join()，LockSupport.parkNanos()，LockSupport.parkUntil()。
 退出方法：时间结束，时间结束 / Object.notify() / Object.notifyAll()，时间结束 / 被调用的线程执行完毕，LockSupport.unpark(Thread)。
 
-死亡（Terminated）：线程自己结束任务，或者产生了异常而结束
+中止（Terminated）：线程自己结束任务，或者产生了异常而结束
 
 Thread.sleep()线程睡眠，进入限期等待状态
 Object.wait()挂起线程，进入限期等待或者无限期等待
@@ -23,7 +23,7 @@ sleep() 方法和 wait() 方法区别点：
 阻塞和等待的区别在于，阻塞是被动的，它是在等待获取一个排它锁。而等待是主动的，通过调用 Thread.sleep() 和 Object.wait() 等方法进入。
 
 问：为什么我们调用 start() 方法时会执行 run() 方法，为什么我们不能直接调用 run() 方法？
-调用 start 方法方可启动线程并使线程进入就绪状态，再自动执行 run() 方法。而直接执行 run() 方法，会把 run 方法当成一个 main 线程下的普通方法去执行，并不会在某个线程中执行它。
+调用 start 方法方可启动线程并使线程进入Runnable状态，再自动执行 run() 方法。而直接执行 run() 方法，会把 run 方法当成一个 main 线程下的普通方法去执行，并不会在某个线程中执行它。
 
 上下文切换：多线程编程中一般线程的个数都大于 CPU 核心的个数，而一个 CPU 核心在任意时刻只能被一个线程使用，为了让这些线程都能得到有效执行，CPU 采取的策略是为每个线程分配时间片并轮转的形式。当一个线程的时间片用完的时候就会重新处于就绪状态让给其他线程使用。
 Linux 相比与其他操作系统（包括其他类 Unix 系统）有很多的优点，其中有一项就是，其上下文切换和模式切换的时间消耗非常少。
