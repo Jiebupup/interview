@@ -8,11 +8,11 @@
 
 私有构造函数保证了不能通过构造函数来创建对象实例，只能通过公有静态函数返回唯一的私有静态变量。
 
-懒汉式-线程不安全：延迟实例化在多线程下 uniqueInstance 会被实例化多次。
-饿汉式-线程安全：直接实例化 uniqueInstance。
-懒汉式：对 getUniqueInstance() 方法加锁。线程阻塞时间过长。
-双重校验锁：两次校验中加上 synchronized (Singleton.class)。uniqueInstance 采用 volatile 关键字修饰。
-静态内部类：在静态内部类中声明和初始化 uniqueInstance。
+懒汉式-线程不安全：延迟初始化在多线程下 uniqueInstance 会被初始化多次。
+懒汉式-线程安全：对 getUniqueInstance() 方法加锁。缺点是线程阻塞时间过长，影响效率。优点是第一次调用才初始化，避免内存浪费。
+饿汉式：直接实例化 uniqueInstance。优点是没有加锁效率高，缺点是类加载时就初始化浪费内存。
+双检锁：两次校验中加上 synchronized (Singleton.class)。uniqueInstance 采用 volatile 关键字修饰，禁止指令重排序（new Singleton（）不是原子性操作，造成获得对象不完整）和保证可见性（工作线程和主存，造成创建多个实例）。加锁性能差。
+静态内部类：在静态内部类中声明和初始化 uniqueInstance。实现简单，延迟初始化。
 枚举：可以防止反射攻击。能应对对序列化和反序列化。
 
 2.工厂方法模式
