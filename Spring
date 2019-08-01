@@ -1,22 +1,26 @@
 1.AOP
-面向切面编程
+面向切面编程。代理模式。
 横切关注点可以被描述为与业务无关，却为业务模块所共同调用的逻辑或责任。切面能帮助我们模块化横切关注点，便于减少系统的重复代码，降低模块间的耦合度，在系统运行时需要的地方进行动态插入运行。分离业务逻辑与系统服务，应用对象只完成业务逻辑。扩展功能。                                             
 基于代理模式：JDK和CGLIB动态代理。JDK只能代理接口，CGLIB代理类。
 ASPECTJ静态织入。
 
 2.IOC
-控制反转，或者叫DI依赖注入
+控制反转，或者叫DI依赖注入。工厂模式。
 将对象之间的相互依赖关系交给IOC容器来管理，并由IOC容器完成对象的注入。Spring通过XML文件来配置Bean，SpringBoot使用注解配置。创建对象由Spring来管理。
 
 底层原理：xml配置文件，dom4j解决xml，工厂设计模式，反射。
-<bean id=""class=""/>只需要变化这一部分来降低耦合,Class.forName(), .newInstance()。
-
+<bean id=""class=""></bean>只需要变化这一部分来降低耦合,Class.forName(), .newInstance()。
 IOC创建对象：1.导入jar包，2.创建类和方法，3.写配置文件，4.ApplicationContext context=new ClassPathXmlApplicationContext(".xml")和context.getBean("")。
+
+bean的实例化方法：用来创建对象，使用类的无参数构造方法。或者静态工厂和实例工厂。
+bean标签属性：id,class（创建对象所在类的全路径）,name（可以包含特殊符号）,scope（bean的作用范围）。
+
+属性注入：创建对象时向类里面属性设置值。
+注入方法：set()property标签放注入对象，ref属性代替value属性。有参数构造方法constructor-arg标签。
+p名称空间：xmlns:p=""，bean标签中加p:pname属性。用来注入复制属性array、list、map等，property内有多个value属性。
 
 IOC容器的初始化过程：读取XML资源，解析，最终注册到Bean Factory中。
 然后创建bean的实例，并利用反射注入property。
-
-IOC是工厂模式
 
 3.分层
 DAO层：jdbcTemplate
@@ -63,7 +67,7 @@ BeanDefinition：用来管理bean的属性和对象间的相互依赖关系
 6.bean的作用域
 @scope注解定义Bean的作用域。
 
-singleton：IOC容器仅创建一个Bean实例，IOC容器每次返回的是同一个Bean实例。
+singleton：IOC容器仅创建一个Bean实例，IOC容器每次返回的是同一个Bean实例。默认属性。
 线程安全问题：当多个线程操作同一个对象的时候，对这个对象的非静态成员变量的写操作会存在线程安全问题。
 解决方法：在类中定义一个ThreadLocal成员变量，将需要的可变成员变量保存在 ThreadLocal 中。
 
