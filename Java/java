@@ -261,24 +261,26 @@ Java 不支持条件编译，C++ 通过 #ifdef #ifndef 等预处理命令从而�
 容器主要包括 Collection 和 Map 两种，Collection 存储着对象的集合，而 Map 存储着键值对（两个对象）的映射表。
 容器不能持有基本类型，需要使用自动包装。
 
-Collection：
+Collection
 Set：不允许重复
 TreeSet：基于红黑树实现，有序，查找的时间复杂度为O(logN)。
 HashSet：基于HashMap实现，无序，查找的时间复杂度为 O(1)。
 LinkedHashSet：内部使用双向链表维护元素的插入顺序，具有 HashSet 的查找效率。
 
 List：有序
-ArrayList：基于动态数组实现，支持随机访问。实现了RandomAccess, Cloneable和Serializable接口。
+ArrayList：基于动态数组实现，支持随机访问。实现了RandomAccess, Cloneable和Serializable接口。默认大小为10。
 扩容：新容量的大小为旧容量的 1.5 倍，把原数组整个复制到新数组中。
-Fail-Fast
-序列化：没必要全部进行序列化。
+Fail-Fast：在进行序列化或者迭代等操作时，若ArrayList 结构发生变化，会抛出 ConcurrentModificationException。
+序列化：ArrayList保存元素的数组不一定都会被使用，没必要全部进行序列化。writeObject() 将对象转换为字节流并输出，在传入的对象存在 writeObject() 的时候会去反射调用该对象的 writeObject() 来实现序列化。
+可以使用 Collections.synchronizedList()，得到一个线程安全的 ArrayList。
 
 Vector：和 ArrayList 类似，但它是线程安全的，使用了 synchronized 进行同步。
 与 ArrayList 的比较：Vector 是同步的，因此开销就比 ArrayList 要大，访问速度更慢。最好使用 ArrayList 而不是 Vector，因为同步操作完全可以由程序员自己来控制；Vector 每次扩容请求其大小的 2 倍空间，而 ArrayList 是 1.5 倍。
 Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。Array大小是固定的，ArrayList的大小是动态变化的。
 
 CopyOnWriteArrayList：写操作在一个复制的数组上进行，读操作还是在原始数组中进行，读写分离，互不影响。写操作需要加锁，防止并发写入时导致写入数据丢失。写操作结束之后需要把原始数组指向新的复制数组。
-CopyOnWriteArrayList 在写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景。由于内存占用和数据不一致，不适合内存敏感以及对实时性要求很高的场景。
+CopyOnWriteArrayList 在写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景。
+缺陷：内存占用为原来的两倍左右，部分写操作的数据还未同步到读数组中导致数据不一致。不适合内存敏感以及对实时性要求很高的场景。
 
 LinkedList：基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。实现了Deque接口。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList为双向链表。JDK1.6之前为循环链表，JDK1.7取消了循环。
 与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。ArrayList 和 LinkedList 都是不同步的，不保证线程安全。
@@ -287,31 +289,39 @@ LinkedList：基于双向链表实现，只能顺序访问，但是可以快速�
 未实现 RandomAccess 接口的list，优先选择iterator遍历（foreach遍历底层也是通过iterator实现的,），大size的数据，千万不要使用普通for循环。
 
 Queue：
-双向队列：通过LinkedList实现。
+双向队列Deque：通过LinkedList实现。
 PriorityQueue：基于堆结构实现。调用remove方法，总会获得当前优先级队列中的最小元素。PriorityQueue不是线程安全的，入队和出队的时间复杂度是O(log(n))。
 
-Map：键值对
+Map
 TreeMap：基于红黑树实现。由Comparable或Comparator排序。
 
-HashMap：基于哈希表实现。hashmap数组只允许一个key为null，允许多个value为null。HashMap 使用第 0 个桶存放键为 null 的键值对。Entry 对象存储着键值对。数组中的每个位置被当成一个桶，一个桶存放一个链表。
+HashMap：Entry<K,V>[] table，基于哈希表实现。hashmap数组只允许一个key为null，允许多个value为null。因为无法调用 null 的 hashCode()，HashMap 使用第 0 个桶存放键为 null 的键值对。Entry 对象存储着键值对。数组中的每个位置被当成一个桶，一个桶存放一个链表。
 拉链法：put操作使用链表的头插法
-扩容：默认的容量capacity是16，默认的负载因子loadFactor是0.75。
+扩容：为了让查找的成本降低，table 要尽可能大。默认的容量capacity是16，默认的负载因子loadFactor是0.75。
 从 JDK 1.8 开始，一个桶存储的链表长度大于 8 时会将链表转换为红黑树。Entry改为了Node。
-HashMap 的长度是2的幂次方：能让存取高效，尽量较少碰撞，尽量把数据分配均匀。
+HashMap 的容量是2的幂次方：能让存取高效，尽量较少碰撞，尽量把数据分配均匀。使hash取模操作转换为位运算，更加高效。
 rehash：当添加对象的数量超过阈值threshold，数组大小*2，并将原有的Entry对象插入到新数组中。并发下的rehash 会造成元素之间会形成一个循环链表。
 
 HashTable：和 HashMap 类似，但它是线程安全的，因此也效率低。
 与 HashMap 的比较：HashTable 使用 synchronized 来进行同步。HashMap 可以一个 key 为 null ，多个 value 为 null，HashTable不可以。HashMap 的迭代器是 fail-fast 迭代器。HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。初始容量和扩容不同。HashMap链表长度大于8时，会转换为红黑树。
 
 ConcurrentHashMap 来支持线程安全，并且 ConcurrentHashMap 的效率会更高，因为 ConcurrentHashMap 引入了分段锁。
+不支持key或者value为null。
 JDK 1.7 分段锁：将数据分成一段一段的存储，然后给每一段数据配一把锁。当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效的提高并发访问效率。默认创建 16 个 Segment锁，并发度与 Segment 数量相等。volatile 修饰数据。
-ConcurrentHashMap 的 get 方法是非常高效的，因为整个过程都不需要加锁。put需要加锁。
-JDK 1.8 取消了分段锁，使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized。synchronized只锁定当前链表或红黑二叉树的首节点。
+ConcurrentHashMap 的 get 方法是非常高效的，因为整个过程都不需要加锁。put需要加锁。ConcurrentHashMap 在执行 size 操作时先尝试不加锁，如果连续两次不加锁操作得到的结果一致，那么可以认为这个结果是正确的。如果尝试的次数超过 3 次，就需要对每个 Segment 加锁。
+JDK 1.8 取消了分段锁，使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized。synchronized只锁定当前链表或红黑二叉树的首节点。也在链表过长时会转换为红黑树。
 
 LinkedHashMap：使用双向链表来维护元素的顺序，顺序为插入顺序或者最近最少使用（LRU）顺序。
 使用 LinkedHashMap 实现的一个 LRU 缓存。
 
-WeakHashMap：Entry 继承自 WeakReference，被 WeakReference 关联的对象在下一次垃圾回收时会被回收。主要用来实现缓存。
+WeakHashMap：Entry 继承自 WeakReference，被 WeakReference 关联的对象在下一次垃圾回收时会被回收。主要用来实现缓存，通过使用 WeakHashMap 来引用缓存对象，由 JVM 对这部分缓存进行回收。。
+Tomcat 中的 ConcurrentCache 使用了 WeakHashMap 来实现缓存功能。
+采取的是分代缓存：
+经常使用的对象放入 eden 中，eden 使用 ConcurrentHashMap 实现，不用担心会被回收。
+不常用的对象放入 longterm，longterm 使用 WeakHashMap 实现，这些老对象会被垃圾收集器回收。
+当调用 get() 方法时，会先从 eden 区获取，如果没有找到的话再到 longterm 获取，当从 longterm 获取到就把对象放入 eden 中，从而保证经常被访问的节点不容易被回收。
+当调用 put() 方法时，如果 eden 的大小超过了 size，那么就将 eden 中的所有对象都放入 longterm 中，利用虚拟机回收掉一部分不经常使用的对象。
+
 IdentityHashMap:使用==代替equals对键进行比较。
 
 容器中的设计模式：
