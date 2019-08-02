@@ -26,6 +26,11 @@ IOC容器的初始化过程：读取XML资源，解析，最终注册到Bean Fac
 注解方式
 使用在类、属性、方法之上。
 开启包注解扫描context:component-scan标签，context:annotation-config标签只扫描属性上的注解。
+四个注解来创建对象@Component,@Controller（WEB层）,@Service（业务层）,@Repository（持久层）
+@scope
+使用@Autowired注解完成对象（先@Component）注入，使用@Service。或者带属性的@Resource
+
+配置文件和注解混合使用：创建对象使用配置文件，注入属性用注解。
 
 3.分层
 DAO层：jdbcTemplate
