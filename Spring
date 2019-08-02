@@ -5,12 +5,13 @@
 ASPECTJ静态织入。
 
 2.IOC
-控制反转，或者叫DI依赖注入。工厂模式。
+控制反转，或者叫DI依赖注入。DI不能单独存在，需要在IOC基础之上完成。工厂模式。
 将对象之间的相互依赖关系交给IOC容器来管理，并由IOC容器完成对象的注入。Spring通过XML文件来配置Bean，SpringBoot使用注解配置。创建对象由Spring来管理。
 
+xml方式
 底层原理：xml配置文件，dom4j解决xml，工厂设计模式，反射。
 <bean id=""class=""></bean>只需要变化这一部分来降低耦合,Class.forName(), .newInstance()。
-IOC创建对象：1.导入jar包，2.创建类和方法，3.写配置文件，4.ApplicationContext context=new ClassPathXmlApplicationContext(".xml")和context.getBean("")。
+IOC创建对象：1.导入jar包和引入约束，2.创建类和方法，3.写配置文件，4.ApplicationContext context=new ClassPathXmlApplicationContext(".xml")和context.getBean("")。
 
 bean的实例化方法：用来创建对象，使用类的无参数构造方法。或者静态工厂和实例工厂。
 bean标签属性：id,class（创建对象所在类的全路径）,name（可以包含特殊符号）,scope（bean的作用范围）。
@@ -21,6 +22,10 @@ p名称空间：xmlns:p=""，bean标签中加p:pname属性。用来注入复制�
 
 IOC容器的初始化过程：读取XML资源，解析，最终注册到Bean Factory中。
 然后创建bean的实例，并利用反射注入property。
+
+注解方式
+使用在类、属性、方法之上。
+开启包注解扫描context:component-scan标签，context:annotation-config标签只扫描属性上的注解。
 
 3.分层
 DAO层：jdbcTemplate
