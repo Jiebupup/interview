@@ -306,10 +306,13 @@ HashTable：和 HashMap 类似，但它是线程安全的，因此也效率低�
 与 HashMap 的比较：HashTable 使用 synchronized 来进行同步。HashMap 可以一个 key 为 null ，多个 value 为 null，HashTable不可以。HashMap 的迭代器是 fail-fast 迭代器。HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。初始容量和扩容不同。HashMap链表长度大于8时，会转换为红黑树。
 
 ConcurrentHashMap 来支持线程安全，并且 ConcurrentHashMap 的效率会更高，因为 ConcurrentHashMap 引入了分段锁。
-不支持key或者value为null。
 JDK 1.7 分段锁：将数据分成一段一段的存储，然后给每一段数据配一把锁。当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效的提高并发访问效率。默认创建 16 个 Segment锁，并发度与 Segment 数量相等。volatile 修饰数据。
 ConcurrentHashMap 的 get 方法是非常高效的，因为整个过程都不需要加锁。put需要加锁。ConcurrentHashMap 在执行 size 操作时先尝试不加锁，如果连续两次不加锁操作得到的结果一致，那么可以认为这个结果是正确的。如果尝试的次数超过 3 次，就需要对每个 Segment 加锁。
 JDK 1.8 取消了分段锁，使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized。synchronized只锁定当前链表或红黑二叉树的首节点。也在链表过长时会转换为红黑树。
+
+为什么HashMap支持key或者value为null，而HashTable和ConcurrentHashmap不支持？
+Hashtable和ConcurrentHashmap都是支持并发的，这样会有一个问题，当你通过get(k)获取对应的value时，如果获取到的是null时，你无法判断，它是put（k,v）的时候value为null，还是这个key从来没有做过映射。
+HashMap是非并发的，可以通过contains(key)来做这个判断。而支持并发的Map在调用m.contains（key）和m.get(key),m可能已经不同了。
 
 LinkedHashMap：使用双向链表来维护元素的顺序，顺序为插入顺序或者最近最少使用（LRU）顺序。
 使用 LinkedHashMap 实现的一个 LRU 缓存。
