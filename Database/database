@@ -7,7 +7,12 @@ ORDER BY排序：ASC ：升序（默认），DESC ：降序，可以按多个列
 GROUP BY分组：HAVING 过滤分组。
 函数与表达式。
 
-嵌套查询，条件连接查询，子查询，集合运算UNION，连接查询，递归查询
+嵌套查询，条件连接查询，子查询，集合运算UNION，递归查询
+
+连接查询
+内连接inner join：返回两个表的交集 select * from inner join on;
+左连接left join：左表的记录将会全部表示出来，而右表只会显示符合搜索条件的记录。右表记录不足的地方均为NULL。
+右连接
 
 2.其他
 表table：CRUD创建，读取，更新，删除。
