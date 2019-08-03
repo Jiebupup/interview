@@ -44,6 +44,9 @@ String 是线程安全的，StringBuilder 不是线程安全的，StringBuffer �
 在 Java 7 之前，String Pool 被放在运行时常量池中，它属于永久代。而在 Java 7，String Pool 被移到堆中。这是因为永久代的空间有限，在大量使用字符串的场景下会导致 OutOfMemoryError 错误。
 new String("abc")会创建两个字符串对象（前提是 String Pool 中还没有 "abc" 字符串对象）。"abc" 属于字符串字面量，因此编译时期会在 String Pool 中创建一个字符串对象，指向这个 "abc" 字符串字面量；而使用 new 的方式会在堆中创建一个字符串对象。
 
+String的方法：
+length()长度，charAt()字符,substring()子串,compareTo()比较,equals()相等,indexOf()匹配,split()分割
+
 数组：
 初始化默认值：大括号初始化数组必须出现在创建数组的地方。
 范围检查：不能在数组范围之外被访问。
@@ -272,7 +275,7 @@ LinkedHashSet：内部使用双向链表维护元素的插入顺序，具有 Has
 List：有序
 ArrayList：基于动态数组实现，支持随机访问。实现了RandomAccess, Cloneable和Serializable接口。默认大小为10。
 扩容：新容量的大小为旧容量的 1.5 倍，把原数组整个复制到新数组中。
-Fail-Fast：在进行序列化或者迭代等操作时，若ArrayList 结构发生变化，会抛出 ConcurrentModificationException。
+Fail-Fast：在进行序列化或者迭代等操作时，若ArrayList 结构发生变化，会抛出 ConcurrentModificationException。java.util包下面的所有的集合类都是快速失败的。java.util.concurrent包下面的所有的类都是安全失败fail-safe的。
 序列化：ArrayList保存元素的数组不一定都会被使用，没必要全部进行序列化。writeObject() 将对象转换为字节流并输出，在传入的对象存在 writeObject() 的时候会去反射调用该对象的 writeObject() 来实现序列化。
 可以使用 Collections.synchronizedList()，得到一个线程安全的 ArrayList。
 
@@ -281,7 +284,7 @@ Vector：和 ArrayList 类似，但它是线程安全的，使用了 synchronize
 Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。Array大小是固定的，ArrayList的大小是动态变化的。
 
 CopyOnWriteArrayList：写操作在一个复制的数组上进行，读操作还是在原始数组中进行，读写分离，互不影响。写操作需要加锁，防止并发写入时导致写入数据丢失。写操作结束之后需要把原始数组指向新的复制数组。
-CopyOnWriteArrayList 在写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景。
+CopyOnWriteArrayList 在写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景。实现的fail-safe。
 缺陷：内存占用为原来的两倍左右，部分写操作的数据还未同步到读数组中导致数据不一致。不适合内存敏感以及对实时性要求很高的场景。
 
 LinkedList：基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。实现了Deque接口。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList为双向链表。JDK1.6之前为循环链表，JDK1.7取消了循环。
@@ -422,3 +425,12 @@ JDK是java开发工具包，是程序员使用java语言编写java程序所需�
 如果你需要运行java程序，只需安装JRE就可以了。如果你需要编写java程序，需要安装JDK。
 
 javax 是扩展的 API 包。
+
+SimpleDateFormat 是一个以与语言环境有关的方式来格式化和解析日期的具体类，它允许进行格式化（日期→文本）、解析（文本→日期）和规范化。
+
+SimpleDateFormat为什么不是线程安全的？
+在SimpleDateFormat转换日期是通过Calendar对象来操作的，SimpleDateFormat继承DateFormat类，DateFormat类中维护一个Calendar对象，Calendar实例被用来进行日期-时间计算，既被用于format方法也被用于parse方法。
+在parse方法的最后，会调用CalendarBuilder的establish方法，入参就是SimpleDateFormat维护的Calendar实例，在establish方法中会调用calendar的clear方法。
+SimpleDateFormat维护的用于format和parse方法计算日期-时间的calendar被清空了，如果此时线程A将calendar清空且没有设置新值，线程B也进入parse方法用到了SimpleDateFormat对象中的calendar对象，此时就会产生线程安全问题。
+
+解决方法：每一个使用SimpleDateFormat对象进行日期-时间进行format和parse方法的时候就创建一个新的SimpleDateFormat对象，用完就销毁。此时就可以使用ThreadLocal将SimpleDateFormat绑定到线程上。
