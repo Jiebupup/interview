@@ -10,6 +10,11 @@ ASPECTJ实现aop：基于xml配置和注解方式。
 通知/增强：实现的功能
 切面：把增强应用到方法的过程
 
+使用表达式配置切入点
+<aop:config>配置切入点和切面</aop:config>
+切入点：<aop:pointcut expression="" id=""/>
+切面：<aop:aspect ref=""><aop:before method="" pointcut-ref=""/></aop:aspect>前置增强
+
 2.IOC
 控制反转，或者叫DI依赖注入。DI不能单独存在，需要在IOC基础之上完成。工厂模式。
 将对象之间的相互依赖关系交给IOC容器来管理，并由IOC容器完成对象的注入。Spring通过XML文件来配置Bean，SpringBoot使用注解配置。创建对象由Spring来管理。
@@ -147,3 +152,9 @@ collection 这个标签最特殊，有两个类型属性，分别为 javaType（
 starter会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater机制帮我们完成了项目起步所需要的的相关jar包。
 ConfigurationProperties和AutoConfiguration，application.properties 文件满足自定义配置。
 利用starter实现自动化配置只需要两个条件——maven依赖、配置文件。
+
+12.SSM四层架构和运行流程
+View层：JSP/HTML页面发送请求
+Controller层：接受用户请求（参数），进行相应的流程处理
+Service层：完成具体的业务逻辑
+DAO层（Mapper）：对数据库进行操作
