@@ -158,3 +158,19 @@ View层：JSP/HTML页面发送请求
 Controller层：接受用户请求（参数），进行相应的流程处理
 Service层：完成具体的业务逻辑
 DAO层（Mapper）：对数据库进行操作
+
+javaee三层架构：表现层UI、业务逻辑层BLL、数据访问层DAL
+
+13.jdbcTemplate
+ORM持久化技术：JDBC、Hibernate、MyBatis、JPA，Spring都对其进行了封装Template模板类。
+步骤：
+导入jar包（数据库驱动的jar包）
+创建对象，设置数据库信息
+创建jdbcTemplate对象，设置数据源
+调用jdbcTemplate对象里面的方法实现操作CRUD
+
+jdbc查询操作：Connection conn,PreparedStatement psmt,ResultSet rs。
+
+查询操作：
+查询某一个值queryForObject
+返回对象：自己写个类实现RowMapper接口完成数据封装
