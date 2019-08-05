@@ -1,8 +1,8 @@
 1.AOP
 面向切面编程。代理模式。
-横切关注点可以被描述为与业务无关，却为业务模块所共同调用的逻辑或责任。切面能帮助我们模块化横切关注点，便于减少系统的重复代码，降低模块间的耦合度，在系统运行时需要的地方进行动态插入运行。分离业务逻辑与系统服务，应用对象只完成业务逻辑。扩展功能不修改源代码。                                             
-基于动态代理：JDK和CGLIB动态代理。JDK只能代理接口，CGLIB代理类。
-ASPECTJ实现aop：基于xml配置和注解方式。
+横切关注点可以被描述为那些与业务无关，但却对多个对象产生影响的公共行为和逻辑。切面能帮助我们模块化横切关注点，便于减少系统的重复代码，降低模块间的耦合度，在系统运行时需要的地方进行动态插入运行。分离业务逻辑与系统服务，应用对象只完成业务逻辑。可用于权限认证、日志、事务处理。扩展功能不修改源代码。                                             
+JDK和CGLIB动态代理。JDK只能代理接口，CGLIB代理类。
+ASPECTJ静态代理实现aop：基于xml配置和注解方式。
 
 纵向机制：继承
 连接点：可以被增强的方法
@@ -19,12 +19,14 @@ ASPECTJ实现aop：基于xml配置和注解方式。
 控制反转，或者叫DI依赖注入。DI不能单独存在，需要在IOC基础之上完成。工厂模式。
 将对象之间的相互依赖关系交给IOC容器来管理，并由IOC容器完成对象的注入。Spring通过XML文件来配置Bean，SpringBoot使用注解配置。创建对象由Spring来管理。
 
+依赖注入方式：（1）工厂方法注入（2）构造器注入（3）Setter注入 （4）注解注入
+
 xml方式
 底层原理：xml配置文件，dom4j解决xml，工厂设计模式，反射。
 <bean id=""class=""></bean>只需要变化这一部分来降低耦合,Class.forName(), .newInstance()。
 IOC创建对象：1.导入jar包和引入约束，2.创建类和方法，3.写配置文件，4.ApplicationContext context=new ClassPathXmlApplicationContext(".xml")和context.getBean("")。
 
-bean的实例化方法：用来创建对象，使用类的无参数构造方法。或者静态工厂和实例工厂。
+bean的实例化方法（用来创建对象）：构造器（无参数构造函数）、静态工厂和实例工厂。
 bean标签属性：id,class（创建对象所在类的全路径）,name（可以包含特殊符号）,scope（bean的作用范围）。
 
 属性注入：创建对象时向类里面属性设置值。
@@ -84,6 +86,9 @@ Spring MVC 下我们一般把后端项目分为 Service层（处理业务）、D
 spring中bean生存的容器BeanFactory 、 ApplicationContext 、webApplicationContext 。应用上下文更好。
 
 BeanDefinition：用来管理bean的属性和对象间的相互依赖关系
+
+Bean创建的方法：xml、@Bean、@Component,@Controller（WEB层）,@Service（业务层）,@Repository（持久层）
+@Bean：用在方法之上，产生一个Bean交给Spring容器管理
 
 6.bean的作用域
 @scope注解定义Bean的作用域。
