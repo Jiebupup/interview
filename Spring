@@ -137,6 +137,7 @@ session&request：web应用中，为每次会话或请求创建一个Bean实例�
 
 9.事务
 事务管理:按照给定的事务规则来执行提交或者回滚操作。aop思想。
+发生unchecked异常会发生rollback。只有非只读事务才能回滚。
 
 Spring事务管理接口
 PlatformTransactionManager：（平台）事务管理器，不同dao框架提供不同的实现类。
@@ -151,7 +152,7 @@ TransactionStatus：事务运行状态
 基于 @Transactional 的全注解方式
 
 xml方法：配置事务管理器<bean id="" class=""><property name="" ref=""></>、配置事务增强<tx:advice id="" transaction-manager=""><tx:attributes><tx:method name="" propagation=""/></>、配置切面<aop:config><aop:pointcut expression="" id=""><aop:advisor advice-ref="" pointcut-ref=""/></> 
-注解方法：配置事务管理器、配置事务注解<tx:annotation-driven transaction-manager=""></>、类上@Transactional
+注解方法：配置事务管理器、配置事务注解<tx:annotation-driven transaction-manager=""></>、方法上@Transactional
 
 Spring 事务中的隔离级别多了ISOLATION_DEFAULT使用后端数据库默认的隔离级别。
 
