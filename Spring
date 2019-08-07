@@ -41,9 +41,11 @@ IOC容器的初始化过程：读取XML资源，解析，最终注册到Bean Fac
 开启包注解扫描context:component-scan标签，context:annotation-config标签只扫描属性上的注解。
 四个注解来创建对象@Component,@Controller（WEB层）,@Service（业务层）,@Repository（持久层）
 @scope
-使用@Autowired注解完成对象（先@Component）注入，使用@Service。或者带属性的@Resource
+使用@Autowired注解完成对象（先@Component）注入，或者带属性的@Resource
 
 配置文件和注解混合使用：创建对象使用配置文件，注入属性用注解。
+
+IOC用于创建对象和注入属性
 
 3.分层
 DAO层：jdbcTemplate
@@ -213,3 +215,14 @@ jdbc查询操作：Connection conn,PreparedStatement psmt,ResultSet rs。
 查询操作：
 查询某一个值queryForObject
 返回对象：自己写个类实现RowMapper接口完成数据封装
+
+14SSH
+Struts+Spring+Hibernate
+对象关系映射ORM
+
+Hibernate和Spring整合时，Hibernate核心配置文件和位置没有固定要求
+Spring提供HibernateTemplate进行封装
+
+Struts核心：Action、值栈、拦截器
+
+Spring中s使用ServletContext对象和监听器
