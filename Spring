@@ -188,13 +188,11 @@ starter会把所有用到的依赖都给包含进来，避免了开发者自己�
 ConfigurationProperties和AutoConfiguration，application.properties 文件满足自定义配置。
 利用starter实现自动化配置只需要两个条件——maven依赖、配置文件。
 
-12.SSM四层架构和运行流程
-View层：JSP/HTML页面发送请求
-Controller层：接受用户请求（参数），进行相应的流程处理
-Service层：完成具体的业务逻辑
-DAO层（Mapper）：对数据库进行操作
-
-javaee三层架构：表现层UI、业务逻辑层BLL、数据访问层DAL
+12.SSM三层架构和运行流程
+View层：JSP/HTML页面发送请求，获取响应。
+Controller层SpringMVC，接受请求并进行相应的流程处理。
+Service层Spring：完成具体的业务逻辑
+DAO层MyBatis：对数据库进行操作
 
 13.jdbcTemplate
 ORM持久化技术：JDBC、Hibernate、MyBatis、JPA，Spring都对其进行了封装Template模板类。
