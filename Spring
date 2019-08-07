@@ -172,6 +172,12 @@ MyBatis 是一款持久层框架，它支持定制化 SQL、存储过程以及�
 
 在Mybatis中我们可以定义一个叫做TypeHandler类型处理器的东西，通过它可以实现Java类型跟数据库类型的相互转换。
 
+动态 sql 是 mybatis 的主要特性之一，在mybatis中我们可以把参数传到xml文件，由mybatis对sql及其语法进行解析，mybatis支持使用${}和#{}。
+ # 和 $ 的区别：
+使用${}方式传入的参数，mybatis不会对它进行特殊处理，而使用#{}传进来的参数，mybatis默认会将其当成字符串。所以对于传入分组(order)字段或者排序字段(order)，应使用${},避免出现order  by "id" 等情况。
+#和$在预编译处理中是不一样的。#类似jdbc中的PreparedStatement，对于传入的参数，在预处理阶段会使用?代替，待真正查询的时候即在数据库管理系统中（DBMS）才会代入参数。而${}则是简单的替换。
+由于PreparedStatement ，#{}可以有效防止sql注入，${}则可能导致sql注入成功。因此能使用#{}的地方应尽量使用#{}。
+
 MyBatis的SQL建议写在XML里，或者写在注解里。
 实现DAO接口：建议Mapper自动实现，只需给出DAO接口；或者API编程方式。
 
