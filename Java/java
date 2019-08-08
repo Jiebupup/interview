@@ -282,7 +282,7 @@ Java 不支持条件编译，C++ 通过 #ifdef #ifndef 等预处理命令从而�
 Collection
 Set：不允许重复
 TreeSet：基于红黑树实现，有序，查找的时间复杂度为O(logN)。
-HashSet：基于HashMap实现，无序，查找的时间复杂度为 O(1)。
+HashSet：基于HashMap实现，无序，查找的时间复杂度为 O(1)。封装了一个 HashMap 对象来存储所有的集合元素，所有放入 HashSet 中的集合元素实际上由 HashMap 的 key 来保存，而 HashMap 的 value 则存储了一个 PRESENT，它是一个静态的 Object 对象。如果向HashSet中添加一个已经存在的元素，新添加的集合元素不会覆盖已有的集合元素。
 LinkedHashSet：内部使用双向链表维护元素的插入顺序，具有 HashSet 的查找效率。
 
 List：有序
