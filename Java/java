@@ -35,6 +35,14 @@ String Pool 的需要：如果一个 String 对象已经被创建过了，那么
 安全性：String 经常作为参数，String 不可变性可以保证参数不可变。
 线程安全：String 不可变性天生具备线程安全，可以在多个线程中安全地使用。
 
+自己实现一个不可变的类：
+将类声明为final，所以它不能被继承
+将所有的成员声明为私有的，这样就不允许直接访问这些成员
+对变量不要提供setter方法
+将所有可变的成员声明为final，这样只能对它们赋值一次
+通过构造器初始化所有成员，进行深拷贝(deep copy)
+在getter方法中，不要直接返回对象本身，而是克隆对象，并返回对象的拷贝
+
 String, StringBuffer and StringBuilder：
 String 不可变，StringBuffer 和 StringBuilder 可变。
 String 是线程安全的，StringBuilder 不是线程安全的，StringBuffer 是线程安全的（内部使用 synchronized 进行同步）。
@@ -145,6 +153,9 @@ hashCode()：大大减少了 equals 的次数，提高了执行速度。
 默认的hashCode()是根据对象的内存地址经哈希算法得到哈希值。
 如果没有重写hashCode()，hashCode()得出来的值不同，两个对象无法equals()。
 因此为了能equals()，必须重写hashCode()，使相等的对象有相同的哈希值。
+
+主要是针对HashSet和HashMap
+如果不重写hashcode会出现什么问题？hashCode()确定对象在HashSet中存放的位置，如果不重写hashCode()，两个对象equals为true但是存放的位置不同就会破坏HashSet的特性。
 
 toString()，wait(), notify()，notifyAll()
 
