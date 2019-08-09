@@ -287,18 +287,20 @@ LinkedHashSet：内部使用双向链表维护元素的插入顺序，具有 Has
 
 List：有序
 ArrayList：基于动态数组实现，支持随机访问。实现了RandomAccess, Cloneable和Serializable接口。默认大小为10。
-扩容：新容量的大小为旧容量的 1.5 倍，把原数组整个复制到新数组中。
-Fail-Fast：在进行序列化或者迭代等操作时，若ArrayList 结构发生变化，会抛出 ConcurrentModificationException。java.util包下面的所有的集合类都是快速失败的。java.util.concurrent包下面的所有的类都是安全失败fail-safe的。
-序列化：ArrayList保存元素的数组不一定都会被使用，没必要全部进行序列化。writeObject() 将对象转换为字节流并输出，在传入的对象存在 writeObject() 的时候会去反射调用该对象的 writeObject() 来实现序列化。
+扩容：新容量的大小为旧容量的 1.5 倍，Arrays.copyOf()把原数组整个复制到新数组中。
+删除元素：System.arraycopy() 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为 O(N)。
+Fail-Fast：modCount 用来记录 ArrayList 结构发生变化的次数。在进行序列化或者迭代等操作时，若modCount发生变化，会抛出 ConcurrentModificationException。java.util包下面的所有的集合类都是快速失败的。java.util.concurrent包下面的所有的类都是安全失败fail-safe的。
+序列化：ArrayList保存元素的数组不一定都会被使用，没必要全部进行序列化。序列化时 writeObject() 将对象转换为字节流并输出，在传入的对象存在 writeObject() 的时候会去反射调用该对象的 writeObject() 来实现序列化。反序列化使用的是 ObjectInputStream 的 readObject() 方法。
 可以使用 Collections.synchronizedList()，得到一个线程安全的 ArrayList。
 
 Vector：和 ArrayList 类似，但它是线程安全的，使用了 synchronized 进行同步。
 与 ArrayList 的比较：Vector 是同步的，因此开销就比 ArrayList 要大，访问速度更慢。最好使用 ArrayList 而不是 Vector，因为同步操作完全可以由程序员自己来控制；Vector 每次扩容请求其大小的 2 倍空间，而 ArrayList 是 1.5 倍。
 Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。Array大小是固定的，ArrayList的大小是动态变化的。
 
-CopyOnWriteArrayList：写操作在一个复制的数组上进行，读操作还是在原始数组中进行，读写分离，互不影响。写操作需要加锁，防止并发写入时导致写入数据丢失。写操作结束之后需要把原始数组指向新的复制数组。
-CopyOnWriteArrayList 在写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景。实现的fail-safe。
-缺陷：内存占用为原来的两倍左右，部分写操作的数据还未同步到读数组中导致数据不一致。不适合内存敏感以及对实时性要求很高的场景。
+CopyOnWriteArrayList
+读写分离：写操作在一个复制的数组上进行，读操作还是在原始数组中进行，读写分离，互不影响。写操作需要加锁，防止并发写入时导致写入数据丢失。写操作结束之后需要把原始数组指向新的复制数组。
+使用场景：CopyOnWriteArrayList 在写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景。实现的fail-safe。
+缺陷：在写操作时需要复制一个新的数组，内存占用为原来的两倍左右；部分写操作的数据还未同步到读数组中导致数据不一致。因此不适合内存敏感以及对实时性要求很高的场景。
 
 LinkedList：基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。实现了Deque接口。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList为双向链表。JDK1.6之前为循环链表，JDK1.7取消了循环。
 与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。ArrayList 和 LinkedList 都是不同步的，不保证线程安全。
