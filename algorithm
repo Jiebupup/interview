@@ -1,3 +1,6 @@
+stack:
+queue:
+
 1.插入:
 public void insertSort(int[] a){
     for(int i=1;i<a.length;i++){
