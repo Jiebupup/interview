@@ -1,5 +1,7 @@
 stack:
-queue:
+
+queue:Queue<Integer> q=new LinkedList<>();
+add() isEmpty() size() poll() 
 
 1.插入:
 public void insertSort(int[] a){
