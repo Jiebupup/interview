@@ -98,7 +98,7 @@ SingleThreadExecutor：相当于大小为 1 的 FixedThreadPool。
 FIFO 队列 ：LinkedBlockingQueue（单向链表）、ArrayBlockingQueue（固定长度）
 优先级队列 ：PriorityBlockingQueue
 提供了阻塞的 take() 和 put() 方法：如果队列为空 take() 将阻塞，直到队列中有内容；如果队列为满 put() 将阻塞，直到队列有空闲位置。
-自己实现BlockingQueue：put()、take()用ReentrantLock实现可中断、公平、选择性通知，enqueue()、dequeue()。
+自己实现BlockingQueue：put()、take()用ReentrantLock实现可中断、公平、选择性通知，消费者wait()/生产者notify()，enqueue()、dequeue()。
 
 LinkedBlockingQueue满了的饱和（拒绝）策略：
 中止：抛出运行时异常
@@ -140,6 +140,7 @@ join()，在线程中调用另一个线程的 join() 方法，会将当前线程
 调用 wait() 使得线程等待某个条件满足，线程在等待时会被挂起，当其他线程的运行使得这个条件满足时，其它线程会调用 notify() 或者 notifyAll() 来唤醒挂起的线程。
 wait() notify() notifyAll()都属于 Object 的一部分，而不属于 Thread。只能用在同步方法或者同步控制块中使用，否则会在运行时抛出 IllegalMonitorStateException。
 使用 wait() 挂起期间，线程会释放锁。这是因为，如果没有释放锁，那么其它线程就无法进入对象的同步方法或者同步控制块中，那么就无法执行 notify() 或者 notifyAll() 来唤醒挂起的线程，造成死锁。
+放在同步代码块中保证同时只进行生产或消费避免并发进行引发生产上溢或消费下溢。判断条件用 while 循环保证消费者不断等待生产者的通知。
 
 await() signal() signalAll()。
 java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协调，可以在 Condition 上调用 await() 方法使线程等待，其它线程调用 signal() 或 signalAll() 方法唤醒等待的线程。
