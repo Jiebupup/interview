@@ -355,7 +355,6 @@ IdentityHashMap:使用==代替equals对键进行比较。
 使用 foreach 方法来遍历实现了 Iterable 接口的聚合对象。
 Java中的Iterator可用来遍历Set和List集合，并且只能单向移动。ListIterator实现了Iterator接口，既可以前向也可以后向遍历。
 Enumeration接口和Iterator接口的区别：Enumeration速度是Iterator的2倍，同时占用更少的内存。但是，Iterator远远比Enumeration安全，因为其他线程不能够修改正在被iterator遍历的集合里面的对象。同时，Iterator允许调用者删除底层集合里面的元素，这对Enumeration来说是不可能的。
-快速失败(fail-fast)：在用迭代器遍历一个集合对象时，如果遍历过程中对集合对象的结构进行了修改（增加、删除），则会抛出Concurrent Modification Exception。因此不能在多线程下发生并发修改（迭代过程中被修改）。
 
 适配器模式
 
