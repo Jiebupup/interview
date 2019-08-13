@@ -79,16 +79,16 @@ Session 可以存储在服务器上的文件、数据库或者内存中。也可
 
 可以通过Session来统计网站的用户在线数。
 
-分布式Session：必须保证一个应用服务器上保存Session后，其它应用服务器可以同步或共享这个Session。
-Session Stick：在负载均衡设备上修改，使每次请求都到同一台服务，那就和单机一样。问题：这台服务器宕机或重启，session数据就丢失了；负载均衡要处理具体的session到服务器的映射。
-Session复制：每台应用服务，都保存会话session数据。问题：同步session数据带来都网络开销，只要session数据变化，就需要同步到所有机器上，机器越多，网络开销越大；每台服务器都保存session数据，占用太多资源。
-Session集中管理：加一台专门管理session数据的服务器，每台应用服务都从专门的session管理服务中取会话session数据。可以使用数据库，NOSQL数据库等。问题：读写session引入了网络操作，相对于本机读写session，带来了延时和不稳定性；如Session集中服务有问题，会影响应用。                 
-基于Cookie管理：把session数据存放在cookie中，然后请求过来后，从cookie中获取session数据。这个方案并不依赖外部的存储系统，有没有读写session数据带来的网络操作延时和不稳定性。
-问题：
-Cookie有长度限制，这会影响session数据的长度。
-安全性。session数据本来存储在服务端的，而这个方案是让session数据转到外部网络或客户端中，所以会有安全性问题。不过可以对写入Cookie的session 数据做加密。
-带宽消耗。由于加了session数据，带宽当然也会增加一点。
-性能消耗。每次Http请求和响应都带有Session数据，对于Web服务器来说，在同样的处理情况下，响应的结果输出越少，支持的并发请求越多。
+分布式Session：用户的 Session 信息要分散在各个服务器中。可以用spring session + redis实现。
+Sticky Session：需要配置负载均衡器，使得一个用户的所有请求都路由到同一个服务器，这样就可以把用户的 Session 存放在该服务器中。
+缺点：当服务器宕机时，将丢失该服务器上的所有 Session。
+
+Session Replication：在服务器之间进行 Session 同步操作，每个服务器都有所有用户的 Session 信息，因此用户可以向任何一个服务器进行请求。
+缺点：占用过多内存；同步过程占用网络带宽以及服务器处理器时间。
+
+Session Server：使用一个单独的服务器存储 Session 数据，可以使用传统的 MySQL，也使用 Redis 或者 Memcached 这种内存型数据库。
+优点：为了使得大型网站具有伸缩性，集群中的应用服务器通常需要保持无状态，那么应用服务器不能存储用户的会话信息。Session Server 将用户的会话信息单独进行存储，从而保证了应用服务器的无状态。
+缺点:需要去实现存取 Session 的代码。如Session集中服务器有问题，会影响应用。 
 
 浏览器禁用 Cookie：使用Session和URL重写
 此时无法使用 Cookie 来保存用户信息，只能使用 Session。除此之外，不能再将 Session ID 存放到 Cookie 中，而是使用 URL 重写技术（把session id直接附加在URL路径的后面），将 Session ID 作为 URL 的参数进行传递。服务器能够解析重写后的URL获取Session ID。
