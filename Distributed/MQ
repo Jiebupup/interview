@@ -43,7 +43,7 @@ RabbitMQ：Erlang 语言开发
 吞吐量比RocketMQ、Kafka 低
 延迟us级，延迟最低，这是 RabbitMQ 的一大特点
 基于主从架构实现高可用
-基本不丢失数据
+有较低的概率丢失数据
 RabbitMQ有稳定的支持，活跃度也高
 基于AMQP协议来实现
 
