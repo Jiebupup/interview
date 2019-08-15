@@ -1,4 +1,5 @@
-stack:
+stack:Stack<Integer> stack = new Stack<Integer>();
+push() pop() isEmpty() 
 
 queue:Queue<Integer> q=new LinkedList<>();
 add() isEmpty() size() poll() 
