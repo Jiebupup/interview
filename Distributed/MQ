@@ -99,14 +99,14 @@ Kafka 的高可用性（分布式）：
 
 7.如何保证消息的可靠性传输（处理消息丢失的问题）
 RabbitMQ：
-生产者弄丢了数据：事务机制（同步）和confirm机制（异步）。一般在生产者这块避免数据丢失，都是用 confirm 机制的。               
-RabbitMQ 弄丢了数据：开启 RabbitMQ 的持久化。可以跟生产者那边的 confirm 机制配合起来。                            
-消费端弄丢了数据：ack 机制
+生产者弄丢了数据：事务机制（同步Rollback和Commit，导致吞吐量下降，性能降低）和confirm机制（异步消息回调）。一般在生产者避免数据丢失，都是用 confirm 机制的。               
+RabbitMQ 弄丢了数据：开启 RabbitMQ 的持久化，故障恢复。可以跟生产者那边的 confirm 机制配合起来。                            
+消费端弄丢了数据：ack 机制。
 
 Kafka：
 生产者设置了 acks=all，一定不会丢。
 Kafka 弄丢了数据:配置topic,Kafka 服务端,producer 端。在 Kafka broker 端就可以保证在 leader 所在 broker 发生故障，进行 leader 切换时，数据不会丢失。
-消费端弄丢了数据:关闭自动提交 offset，在处理完之后自己手动提交 offset，就可以保证数据不会丢。
+消费端弄丢了数据:关闭自动提交 offset，在处理完之后自己手动提交 offset，就可以保证数据不会丢。此时可能会有重复消费，需要自己保证幂等性。
 
 8.如何保证消息的顺序性？
 RabbitMQ：拆分多个 queue，每个 queue 一个 consumer，就是多一些 queue 而已，确实是麻烦点；或者就一个 queue 但是对应一个 consumer，然后这个 consumer 内部用内存队列做排队，然后分发给底层不同的 worker 来处理。 
