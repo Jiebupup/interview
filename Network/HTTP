@@ -178,3 +178,5 @@ HTTP/1.1 新特性：
 新增缓存处理指令 max-age
 
 首先考虑HTTP2使用Multiplexing多路传输，不行则在一个HOST上建立多个TCP连接。
+
+7.多进程多线程浏览器Chrome
