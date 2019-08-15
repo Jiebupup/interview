@@ -266,7 +266,108 @@ public int calculate(String s){
 
 8.代理模式
 静态代理：
-动态代理：
+
+动态代理
+JDK动态代理：
+public interface Service {
+	public void add();
+	public void update();
+}
+
+
+public class AService implements Service {	
+	public void add() {
+		System.out.println("AService add>>>>>>>>>>>>>>>>>>");
+	}
+	public void update() {
+		System.out.println("AService update>>>>>>>>>>>>>>>");
+	}
+}
+
+public class MyInvocationHandler implements InvocationHandler {
+	private Object target; 
+	MyInvocationHandler() {
+		super();
+	} 
+	MyInvocationHandler(Object target) {
+		super();
+		this.target = target;
+	}
+	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		// 程序执行前加入逻辑，MethodBeforeAdviceInterceptor
+		System.out.println("before-----------------------------");
+		// 程序执行
+		Object result = method.invoke(target, args);
+		// 程序执行后加入逻辑，MethodAfterAdviceInterceptor
+		System.out.println("after------------------------------");
+		return result;
+	}
+}
+
+public class Test {
+	public static void main(String[] args) {
+		Service aService = new AService();
+		MyInvocationHandler handler = new MyInvocationHandler(aService);
+		// Proxy为InvocationHandler实现类动态创建一个符合某一接口的代理实例
+		Service aServiceProxy = (Service) Proxy.newProxyInstance(aService.getClass().getClassLoader(), aService.getClass().getInterfaces(), handler);
+		// 由动态生成的代理对象来aServiceProxy 代理执行程序，其中aServiceProxy 符合Service接口
+		aServiceProxy.add();
+		System.out.println();
+		aServiceProxy.update();
+	}
+}
+结果：
+before-----------------------------
+AService add>>>>>>>>>>>>>>>>>>
+after------------------------------
+before-----------------------------
+AService update>>>>>>>>>>>>>>>
+after------------------------------
+
+CGLIB动态代理：
+public class Base {
+	//不需要定义目标类的统一接口
+	public void add() {
+		System.out.println("add ------------");
+	}
+}
+
+public class CglibProxy implements MethodInterceptor {
+	public Object intercept(Object object, Method method, Object[] args,MethodProxy proxy) throws Throwable {
+		// 添加切面逻辑（advise），此处是在目标类代码执行之前，即为MethodBeforeAdviceInterceptor。
+		System.out.println("before-------------");
+		// 执行目标类add方法
+		proxy.invokeSuper(object, args);
+		// 添加切面逻辑（advise），此处是在目标类代码执行之后，即为MethodAfterAdviceInterceptor。
+		System.out.println("after--------------");
+		return null;
+	}
+}
+
+public class Factory {
+	public static Base getInstance(CglibProxy proxy) {
+		Enhancer enhancer = new Enhancer();
+		enhancer.setSuperclass(Base.class);
+		//回调方法的参数为代理类对象CglibProxy，最后增强目标类调用的是代理类对象CglibProxy中的intercept方法
+		enhancer.setCallback(proxy);
+		// 此刻，base不是单纯的目标类，而是增强过的目标类
+		Base base = (Base) enhancer.create();
+		return base;
+	}
+}
+
+public class Test {
+	public static void main(String[] args) {
+		CglibProxy proxy = new CglibProxy();
+		// base为生成的增强过的目标类
+		Base base = Factory.getInstance(proxy);
+		base.add();
+	}
+}
+结果：
+before-------------
+add ------------
+after--------------
 
 9.工厂模式
 简单工厂：
