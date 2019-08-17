@@ -1,11 +1,11 @@
 stack:Stack<Integer> stack = new Stack<Integer>();
-push() pop() isEmpty() 
+isEmpty() push() pop()  
 
 queue:Queue<Integer> q=new LinkedList<>();
-add() isEmpty() size() poll() 
+isEmpty() size() offer() poll() add() 
 
 PriorityQueue<Integer> pq=new PriorityQueue<>();
-offer() poll() size() peek() add() isEmpty()
+isEmpty() size() peek() offer() poll() add() 
 
 1.插入:
 public void insertSort(int[] a){
