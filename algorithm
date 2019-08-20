@@ -1,5 +1,5 @@
 stack:Stack<Integer> stack = new Stack<Integer>();
-isEmpty() push() pop()  
+isEmpty() push() pop() peek() 
 
 queue:Queue<Integer> q=new LinkedList<>();
 isEmpty() size() offer() poll() add() 
