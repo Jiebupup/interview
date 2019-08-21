@@ -57,27 +57,32 @@ ThreadLocalMap 中使用的 key 为 ThreadLocal 的弱引用,而 value 是强引
 
 3.基础线程机制
 Executor简化任务与线程的生命周期管理，将任务的提交和执行解耦，基于生产者-消费者模式，管理多个异步任务的执行。
+ExecutorService接口实现了Executor接口，有两个实现：抽象类AbstractExecutorService和接口ScheduledExecutorService。
+ThreadPoolExecutor继承了AbstractExecutorService，是线程池的真正实现。
 
 线程池：
 管理一组同构工作线程的资源池。线程池过大会使大量的线程CPU和内存资源上竞争，过小会空闲降低吞吐率。使得线程可以复用，就是执行完一个任务，并不被销毁，而是可以继续执行其他的任务。
-线程池状态：
+线程池状态
 RUNNING：当创建线程池后，初始时，线程池处于RUNNING状态；
 SHUTDOWN：如果调用了shutdown()方法，则线程池处于SHUTDOWN状态，此时线程池不能够接受新的任务，它会等待所有任务执行完毕；
 STOP：如果调用了shutdownNow()方法，则线程池处于STOP状态，此时线程池不能接受新的任务，并且会去尝试终止正在执行的任务；
 TERMINATED：当线程池处于SHUTDOWN或STOP状态，并且所有工作线程已经销毁，任务缓存队列已经清空或执行结束后，线程池被设置为TERMINATED状态。
 
-任务提交给线程池：
+任务提交给线程池
+poolSize：线程池中当前线程的数量。
 corePoolSize核心池大小：在没有任务需要执行的时候线程池的大小，并且只有在工作队列满了的情况下才会创建超出这个数量的线程。
-maximumPoolSize线程池中允许的最大线程数：线程池中的当前线程数目不会超过该值。
+maximumPoolSize最大池大小：线程池中允许的最大线程数，线程池中的当前线程数目不会超过该值。
 
-如果当前线程池中的线程数目小于corePoolSize，则每来一个任务，就会创建一个线程去执行这个任务；
-如果当前线程池中的线程数目>=corePoolSize，则每来一个任务，会尝试将其添加到任务缓存队列当中，若添加成功，则该任务会等待空闲线程将其取出去执行；若添加失败（一般来说是任务缓存队列已满），则会尝试创建新的线程去执行这个任务；
-如果当前线程池中的线程数目达到maximumPoolSize，则会采取任务拒绝策略进行处理；
-如果线程池中的线程数量大于 corePoolSize时，如果某线程空闲时间超过keepAliveTime，线程将被终止，直至线程池中的线程数目不大于corePoolSize；如果允许为核心池中的线程设置存活时间，那么核心池中的线程空闲时间超过keepAliveTime，线程也会被终止。
+如果poolSize<corePoolSize，新增加一个线程处理新的任务。
+如果poolSize=corePoolSize，新任务会被放入阻塞队列等待。
+如果阻塞队列的容量达到上限，且这时poolSize<maximumPoolSize，新增线程来处理任务。
+如果阻塞队列满了，且poolSize=maximumPoolSize，那么线程池已经达到极限，会根据饱和策略RejectedExecutionHandler拒绝新的任务。
 
-线程池的创建： ThreadPoolExecutor 和 ExecutorService。
+超时机制销毁线程
+allowCoreThreadTimeOut：该属性用来控制是否允许核心线程超时退出。
+keepAliveTime：如果一个线程处在空闲状态的时间超过了该属性值，就会因为超时而退出。poolSize>corePoolSize时生效。
 
-分类：
+分类（工厂模式）：
 CachedThreadPool：一个任务创建一个线程，使用SynchronousQueue
 ScheduledThreadPool
 可能会创建大量线程
@@ -99,7 +104,7 @@ SingleThreadExecutor：相当于大小为 1 的 FixedThreadPool。
 FIFO 队列 ：LinkedBlockingQueue（单向链表）、ArrayBlockingQueue（固定长度）
 优先级队列 ：PriorityBlockingQueue
 提供了阻塞的 take() 和 put() 方法：如果队列为空 take() 将阻塞，直到队列中有内容；如果队列为满 put() 将阻塞，直到队列有空闲位置。
-自己实现BlockingQueue：put()、take()用ReentrantLock实现可中断、公平、选择性通知，消费者wait()/生产者notify()，enqueue()、dequeue()。
+自己实现BlockingQueue：参考ArrayBlockingQueue，put()、take()用ReentrantLock和Condition实现可中断、公平、选择性通知，消费者wait()/生产者notify()，enqueue()、dequeue()。
 
 LinkedBlockingQueue满了的饱和（拒绝）策略：
 中止：抛出运行时异常
@@ -120,6 +125,21 @@ Java 提供了两种锁机制来控制多个线程对共享资源的互斥访问
 
 synchronized关键字解决的是多个线程之间访问资源的同步性，synchronized关键字可以保证被它修饰的方法或者代码块在任意时刻只能有一个线程执行。
 synchronized同步代码块，同步方法。
+synchronized是基于原子性的内部锁机制，是可重入的。在一个线程调用synchronized方法的同时在其方法体内部调用该对象另一个synchronized方法，也就是说一个线程得到一个对象锁后再次请求该对象锁，是允许的。
+
+synchronized底层实现：基于进入和退出管程Monitor对象实现，无论是显式同步(有明确的 monitorenter 和 monitorexit 指令,即同步代码块)还是隐式同步（由方法调用指令读取运行时常量池中方法的 ACC_SYNCHRONIZED 标志，即同步方法）都是如此。
+JVM中对象在内存中的布局分为三块区域：对象头、实例变量和填充数据。
+对象头：synchronized使用的锁对象是存储在Java对象头里的，jvm中采用2个字来存储对象头(如果对象是数组则会分配3个字，多出来的1个字记录的是数组长度)，其主要由 Mark Word 和 Class Metadata Address 组成。
+Mark Word：存储对象的hashCode、锁信息或分代年龄或GC标志等信息。考虑到JVM的空间效率，Mark Word 被设计成为一个非固定的数据结构，以便存储更多有效的数据，它会根据对象本身的状态复用自己的存储空间
+其中锁状态可能会有轻量级锁和偏向锁（锁优化）和重量级锁synchronized的对象锁。
+
+synchronized锁标识位为10，其中指针指向的是monitor对象（也称为管程或监视器锁）的起始地址。每个对象都存在着一个 monitor 与之关联，对象与其 monitor 之间的关系有存在多种实现方式。
+monitor对象存在于每个Java对象的对象头中(存储的指针的指向)，synchronized锁便是通过这种方式获取锁的，也是为什么Java中任意对象可以作为锁的原因，同时也是notify/notifyAll/wait等方法存在于顶级对象Object中的原因。
+
+同步语句块执行monitorenter指令，objectref 的 monitor 的进入计数器为 0，那线程可以成功取得 monitor，并将计数器值设置为 1，取锁成功。
+如果当前线程已经拥有 objectref 的 monitor 的持有权，那它可以重入这个 monitor，重入时计数器的值也会加 1。倘若其他线程已经拥有 objectref 的 monitor 的所有权，那当前线程将被阻塞。
+执行monitorexit指令，执行线程将释放 monitor(锁)并设置计数器值为0 ，其他线程将有机会持有 monitor。
+monitor是依赖于底层的操作系统的Mutex Lock来实现的，而操作系统实现线程之间的切换时需要从用户态转换到核心态，这个状态之间的转换需要相对比较长的时间，时间成本相对较高，这也是为什么早期的synchronized效率低的原因。
 
 synchronized和ReentrantLock 的区别：
 1.等待可中断：当持有锁的线程长期不释放锁的时候，正在等待的线程可以选择放弃等待，改为处理其他事情。因此ReentrantLock性能更好。
@@ -151,24 +171,34 @@ sleep()
 yield()声明了当前线程已经完成了生命周期中最重要的部分，可以切换给其它线程来执行。该方法只是对线程调度器的一个建议，而且也只是建议具有相同优先级的其它线程可以运行。
 
 7.J.U.C - AQS
-java.util.concurrent（J.U.C）大大提高了并发性能，AQS 被认为是 J.U.C 的核心。AQS是一个用来构建锁和同步器的框架，使用AQS能简单且高效地构造出应用广泛的大量的同步器。
+java.util.concurrent（J.U.C）大大提高了并发性能，AbstractQueuedSynchronizer被认为是 J.U.C 的核心。AQS是一个用来构建锁和同步器的框架，使用AQS能简单且高效地构造出应用广泛的大量的同步器。
+AQS通过一个int类型的状态变量state和一个FIFO队列来完成共享资源的获取，线程的排队等待等。
 AQS核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制AQS是用CLH队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
 AQS定义两种资源共享方式：Exclusive（独占）和Share（共享）
 AQS底层使用了模板方法模式
+
+ReentrantLock基于AQS实现。同步队列存放着竞争同步资源的线程的引用，Condition的等待队列存放着待唤醒的线程的引用。同步队列和等待队列互相协同。
+states 状态是用 CAS 算法更新的。
+自旋/挂起：通过挂起线程前的低频自旋保证了AQS阻塞线程上下文切换开销及CUP时间片占用的最优化选择。保证在等待时间短通过自旋去占有锁而不需要挂起，而在等待时间长时将线程挂起。实现锁性能的最大化。
 
 CountDownLatch闭锁：用来控制一个线程等待多个线程。维护了一个计数器 cnt，每次调用 countDown() 方法会让计数器的值减 1，减到 0 的时候，那些因为调用 await() 方法而在等待的线程就会被唤醒。
 CyclicBarrier：用来控制多个线程互相等待，只有当多个线程都到达时，这些线程才会继续执行。和 CountdownLatch 相似，都是通过维护计数器来实现的。
 CyclicBarrier 和 CountdownLatch 的一个区别是，CyclicBarrier 的计数器通过调用 reset() 方法可以循环使用，所以它才叫做循环屏障。
 
 Semaphore，类似于操作系统中的信号量，可以控制对互斥资源的访问线程数。
-
 ReentrantReadWriterLock读写锁：维护了一对相关的锁，一个用于只读操作，另一个用于写入操作。只要没有writer，读取锁可以由多个reader线程同时保持。写入锁是独占的。同时可以有一个线程写操作，多个线程读操作。 
 StampedLock读写锁：乐观锁，在读线程非常多而写线程非常少的场景下非常适用，同时还避免了写饥饿情况的发生。
 
 8.J.U.C - 其它组件
 FutureTask
 BlockingQueue
+
 ForkJoin，主要用于并行计算中，和 MapReduce 原理类似，都是把大的计算任务拆分成多个小任务并行计算。
+ForkJoin 使用 ForkJoinPool 来启动，它是一个特殊的线程池，线程数量取决于 CPU 核数。
+ForkJoinPool 实现了工作窃取算法来提高 CPU 的利用率。每个线程都维护了一个双端队列，用来存储需要执行的任务。
+工作窃取算法允许空闲的线程从其它线程的双端队列中窃取一个任务来执行。窃取的任务必须是最晚的任务，避免和队列所属线程发生竞争。队列中只有一个任务时还是会发生竞争。
+fork()：开启一个新线程（或是重用线程池内的空闲线程），将任务交给该线程处理。
+join()：等待该任务的处理线程处理完毕，获得返回值。
 
 9.Java 内存模型JMM
 Java 内存模型试图屏蔽各种硬件和操作系统的内存访问差异，以实现让 Java 程序在各种平台下都能达到一致的内存访问效果。
