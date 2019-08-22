@@ -3,7 +3,7 @@ byte（8）
 char（16），short（16）
 int（32），float（32）
 long（64），double（64）
-boolean（true或false）
+boolean（true或false）所占大小为1B或者4B，取决于虚拟机。
 基本数据类型储存在栈中，更加高效。所有数值类型都有正负号。
 
 包装类型：基本类型都有对应的包装类型，基本类型与其对应的包装类型之间的赋值使用自动装箱与拆箱完成。
