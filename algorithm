@@ -1,3 +1,8 @@
+int 
+int[]
+String
+char
+
 stack:Stack<Integer> stack = new Stack<Integer>();
 isEmpty() push() pop() peek() 
 
