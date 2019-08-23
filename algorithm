@@ -5,7 +5,7 @@ queue:Queue<Integer> q=new LinkedList<>();
 isEmpty() size() offer() poll() add() 
 
 PriorityQueue<Integer> pq=new PriorityQueue<>();
-isEmpty() size() peek() offer() poll() add() 
+isEmpty() size() offer() poll() add() peek()
 
 1.插入:
 public void insertSort(int[] a){
