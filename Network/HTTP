@@ -86,12 +86,12 @@ Cookie 曾一度用于客户端数据的存储，但渐渐被淘汰，新的浏�
 用途：会话状态管理，个性化设置，浏览器行为跟踪。
 
 创建过程：服务器发送的响应报文包含 Set-Cookie 首部字段，客户端得到响应报文后把 Cookie 内容保存到浏览器中。客户端之后对同一个服务器发送请求时，会从浏览器中取出 Cookie 信息并通过 Cookie 请求首部字段发送给服务器。
-Set-Cookie字段值：
-expires 属性：指定游览器可发送 Cookie 的有效期。
-path 属性：定了主机下的哪些路径可以接受 Cookie（该 URL 路径必须存在于请求 URL 中）。
-domain 属性：指定了哪些主机可以接受 Cookie。如果不指定，默认为当前文档的主机（不包含子域名）。如果指定了 Domain，则一般包含子域名。
-secure 属性：标记为 Secure 的 Cookie 只能通过被 HTTPS 协议加密过的请求发送给服务端。但即便设置了 Secure 标记，敏感信息也不应该通过 Cookie 传输，因为 Cookie 有其固有的不安全性，Secure 标记也无法提供确实的安全保障。
-HttpOnly 属性：标记为 HttpOnly 的 Cookie 不能被 JavaScript 脚本调用。在一定程度上避免跨站脚本攻击XSS攻击。
+Set-Cookie首部字段属性：
+Expires：指定游览器可发送 Cookie 的有效期。
+Path：定了主机下的哪些路径可以接受 Cookie（该 URL 路径必须存在于请求 URL 中）。
+Domain：指定了哪些主机可以接受 Cookie。如果不指定，默认为当前文档的主机（不包含子域名）。如果指定了 Domain，则一般包含子域名。
+Secure：标记为 Secure 的 Cookie 只能通过被 HTTPS 协议加密过的请求发送给服务端。但即便设置了 Secure 标记，敏感信息也不应该通过 Cookie 传输，因为 Cookie 有其固有的不安全性，Secure 标记也无法提供确实的安全保障。
+HttpOnly：标记为 HttpOnly 的 Cookie 不能被 JavaScript 脚本调用。在一定程度上避免跨站脚本攻击XSS攻击。
 
 分类：
 会话期 Cookie：浏览器关闭之后它会被自动删除，也就是说它仅在会话期内有效。
@@ -124,6 +124,17 @@ Cookie 存储在浏览器中，容易被恶意查看。如果非要将一些隐�
 对于大型网站，如果用户所有的信息都存储在 Session 中，那么开销是非常大的，因此不建议将所有的用户信息都存储到 Session 中。
 Cookie是需要浏览器支持的，可能被禁用。而Session不会。
 Cookie支持跨域名访问，Session仅在他所在的域名内有效。
+
+缓存过期机制：
+max-age 指令出现在请求报文，并且缓存资源的缓存时间小于该指令指定的时间，那么就能接受该缓存。max-age 指令出现在响应报文，表示缓存资源在缓存服务器中保存的时间。
+Expires 首部字段也可以用于告知缓存服务器该资源什么时候会过期。在 HTTP/1.1 中，会优先处理 max-age 指令。在 HTTP/1.0 中，max-age 指令会被忽略掉。
+
+Expires和max-age的区别：
+Expires在HTTP/1.0中已经定义。Cache-Control:max-age在HTTP/1.1中才有定义，为了向下兼容，仅使用max-age不够
+Expires指定一个绝对的过期时间(GMT格式),这么做会导致：1)客户端和服务器时间不同步导致Expires的配置出现问题 2）很容易在配置后忘记具体的过期时间，导致过期来临出现浪涌现象
+max-age 指定的是从文档被访问后的存活时间，这个时间是个相对值,相对的是文档第一次被请求时服务器记录的Request_time(请求时间)
+Expires指定的时间可以是相对文件的最后访问时间(Atime)或者修改时间(MTime)
+Apache中，max-age是根据Expires的时间来计算出来的
 
 缓存验证：
 状态码304 Not Modified：不满足请求报文首部包含的一些条件。
