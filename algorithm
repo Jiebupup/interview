@@ -1,6 +1,6 @@
 int 
 int[]
-String
+String:length()长度，charAt()字符,substring()子串,compareTo()比较,equals()相等,indexOf()匹配,split()分割
 char
 
 stack:Stack<Integer> stack = new Stack<Integer>();
