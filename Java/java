@@ -318,39 +318,51 @@ LinkedList：基于双向链表实现，只能顺序访问，但是可以快速�
 与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。ArrayList 和 LinkedList 都是不同步的，不保证线程安全。
 
 实现了 RandomAccess 接口的list，优先选择普通 for 循环 ，其次 foreach。
-未实现 RandomAccess 接口的list，优先选择iterator遍历（foreach遍历底层也是通过iterator实现的,），大size的数据，千万不要使用普通for循环。
+未实现 RandomAccess 接口的list，优先选择foreach。大size的数据，千万不要使用普通for循环。
 
-Queue：
+Queue
 双向队列Deque：通过LinkedList实现。
 PriorityQueue：基于堆结构实现。调用remove方法，总会获得当前优先级队列中的最小元素。PriorityQueue不是线程安全的，入队和出队的时间复杂度是O(log(n))。
 
 Map
 TreeMap：基于红黑树实现。由Comparable或Comparator排序。
 
-HashMap：Entry<K,V>[] table，基于哈希表实现。hashmap数组只允许一个key为null，允许多个value为null。因为无法调用 null 的 hashCode()，HashMap 使用第 0 个桶存放键为 null 的键值对。Entry 对象存储着键值对。数组中的每个位置被当成一个桶，一个桶存放一个链表。
-拉链法：put操作使用链表的头插法
-扩容resize：为了让查找的成本降低，table 要尽可能大。默认的table容量capacity是16，默认的装载因子loadFactor是0.75。默认的threshold = capacity * loadFactor=12。
-当Entry的数量超过阈值threshold（键值对数量size 的临界值）且新建的Entry刚好落在一个非空的table上，触发扩容capacity*2，并将原有的Entry对象插入到新数组中transfer()。并发下的resize会造成元素之间会形成一个循环链表。
+HashMap：基于哈希表实现。Entry<K,V>[] table，数组中的每个位置被当成一个桶，一个桶存放一个链表Entry（存储着键值对）。
+拉链法解决冲突：put操作头插法
+HashMap只允许一个key为null，允许多个value为null。因为无法调用 null 的 hashCode()，也就无法确定该键值对的桶下标，HashMap 使用第 0 个桶存放键为 null 的键值对。
+
+扩容resize：为了让查找的成本降低，table要尽可能大，HashMap采用动态扩容来根据当前的键值对数量来调整table大小。
+默认的table容量capacity是16，默认的装载因子loadFactor是0.75。默认的键值对数量size的临界值threshold = capacity * loadFactor=12。
+当Entry的数量超过threshold且新建的Entry刚好落在一个非空的table上，触发扩容capacity*2，并采用transfer()将原有的Entry对象插入到新数组中（会进行rehash()重新计算桶下标）。并发下的resize会造成元素之间会形成一个循环链表。
+
 从 JDK 1.8 开始，一个桶存储的链表长度大于等于 8 时会将链表转换为红黑树。Entry改为了Node。
 
-HashMap 的容量是2的幂次方：
-通过限制length是一个2的幂数，h & (length-1)和h % length结果是一致的。indexFor()中 h & (length-1)根据哈希值和桶数组的长度求出对应桶的位置，&与操作更加高效。
-通过右移可以使低位的数据尽量的不同，从而使hash值的分布尽量均匀。
+HashMap的容量是2的幂次方：
+通过限制length是一个2的幂数，indexFor()（求桶的位置）中 h & (length-1) 和 h % length 结果是一致的。取模转换成了&与操作更加高效。
+通过右移可以使低位的数据尽量的不同，从而使hash值的均匀分布减少碰撞。
 
 HashTable：和 HashMap 类似，但它是线程安全的，因此也效率低。
-与 HashMap 的比较：HashTable 使用 synchronized 来进行同步。HashMap 可以一个 key 为 null ，多个 value 为 null，HashTable不可以。HashMap 的迭代器是 fail-fast 迭代器。HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。初始容量和扩容不同。HashMap链表长度大于8时，会转换为红黑树。
+HashTable与HashMap比较：
+HashTable 使用 synchronized 来进行同步。
+HashMap 可以插入键为 null 的 Entry。
+HashMap 的迭代器是 fail-fast 迭代器。
+HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。
+初始容量和扩容不同。
+HashMap链表长度大于8时，会转换为红黑树。
 
 ConcurrentHashMap 来支持线程安全，并且 ConcurrentHashMap 的效率会更高，因为 ConcurrentHashMap 引入了分段锁。HashEntry代替Entry。
-JDK 1.7 分段锁：将数据分成一段一段的存储，然后给每一段数据配一把锁。当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效的提高并发访问效率。默认创建 16 个 Segment锁（继承自 ReentrantLock），并发度与 Segment 数量相等。volatile 修饰数据。每个Segment里有一个count 变量表示该Segment对象管理的 table 数组数量。
-ConcurrentHashMap 的 get 方法是非常高效的，因为整个过程都不需要加锁。put需要加锁。ConcurrentHashMap 在执行 size 操作时先尝试不加锁，如果连续两次不加锁操作得到的结果一致，那么可以认为这个结果是正确的。如果尝试的次数超过 3 次，就需要对每个 Segment 加锁。
-JDK 1.8 取消了分段锁，使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized。synchronized只锁定当前链表或红黑二叉树的首节点。也在链表过长时会转换为红黑树。size操作是通过对 baseCount 和 counterCell 进行 CAS 计算，并推荐使用 mappingCount 方法，因为这个方法的返回值是 long 类型。
+JDK 1.7 分段锁：将数据分成一段一段的存储，然后给每一段数据配一把锁。当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效的提高并发访问效率。默认创建 16 个 Segment锁（继承自 ReentrantLock），并发度与 Segment 数量相等。volatile 修饰数据。
+ConcurrentHashMap 的 get 方法是非常高效的，因为整个过程都不需要加锁。put需要加锁。 
+size操作：每个 Segment 维护了一个 count 变量来统计该 Segment 中的键值对个数。在执行 size 操作时，需要遍历所有 Segment 然后把 count 累计起来。
+ConcurrentHashMap在执行 size 操作时先尝试不加锁，如果连续两次不加锁操作得到的结果一致，那么可以认为这个结果是正确的。如果尝试的次数超过 3 次，就需要对每个 Segment 加锁。
+
+JDK 1.8 取消了分段锁，使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized。synchronized只锁定当前链表或红黑二叉树的首节点。也在链表过长时会转换为红黑树。
 
 为什么HashMap支持key或者value为null，而HashTable和ConcurrentHashmap不支持？
 Hashtable和ConcurrentHashmap都是支持并发的，这样会有一个问题，当你通过get(k)获取对应的value时，如果获取到的是null时，你无法判断，它是put（k,v）的时候value为null，还是这个key从来没有做过映射。
 HashMap是非并发的，可以通过contains(key)来做这个判断。而支持并发的Map在调用m.contains（key）和m.get(key),m可能已经不同了。
 
-LinkedHashMap：使用双向链表来维护元素的顺序，顺序为插入顺序或者最近最少使用（LRU）顺序。
-使用 LinkedHashMap 实现的一个 LRU 缓存。
+LinkedHashMap：使用双向链表来维护元素的顺序，顺序为插入顺序或者最近最少使用（LRU）顺序。可以使用 LinkedHashMap 实现的一个 LRU 缓存。
 
 WeakHashMap：Entry 继承自 WeakReference，被 WeakReference 关联的对象在下一次垃圾回收时会被回收。主要用来实现缓存，通过使用 WeakHashMap 来引用缓存对象，由 JVM 对这部分缓存进行回收。。
 Tomcat 中的 ConcurrentCache 使用了 WeakHashMap 来实现缓存功能。
@@ -364,7 +376,7 @@ IdentityHashMap:使用==代替equals对键进行比较。
 
 容器中的设计模式：
 迭代器模式：Collection 继承了 Iterable 接口，其中的 iterator() 方法能够产生一个 Iterator 对象，通过这个对象就可以迭代遍历 Collection 中的元素。
-使用 foreach 方法来遍历实现了 Iterable 接口的聚合对象。
+JDK 1.5 之后使用 foreach 方法来遍历实现了 Iterable 接口的聚合对象。
 Java中的Iterator可用来遍历Set和List集合，并且只能单向移动。ListIterator实现了Iterator接口，既可以前向也可以后向遍历。
 Enumeration接口和Iterator接口的区别：Enumeration速度是Iterator的2倍，同时占用更少的内存。但是，Iterator远远比Enumeration安全，因为其他线程不能够修改正在被iterator遍历的集合里面的对象。同时，Iterator允许调用者删除底层集合里面的元素，这对Enumeration来说是不可能的。
 
