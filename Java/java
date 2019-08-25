@@ -288,21 +288,26 @@ Java 不支持条件编译，C++ 通过 #ifdef #ifndef 等预处理命令从而�
 
 Collection
 Set：不允许重复
-TreeSet：基于红黑树实现，有序，查找的时间复杂度为O(logN)。
+TreeSet：基于红黑树实现，有序，支持范围查找，查找的时间复杂度为O(logN)。
 HashSet：基于HashMap实现，无序，查找的时间复杂度为 O(1)。封装了一个 HashMap 对象来存储所有的集合元素，所有放入 HashSet 中的集合元素实际上由 HashMap 的 key 来保存，而 HashMap 的 value 则存储了一个 PRESENT，它是一个静态的 Object 对象。如果向HashSet中添加一个已经存在的元素，新添加的集合元素不会覆盖已有的集合元素。
 LinkedHashSet：内部使用双向链表维护元素的插入顺序，具有 HashSet 的查找效率。
 
-List：有序
-ArrayList：基于动态数组实现，支持随机访问。实现了RandomAccess, Cloneable和Serializable接口。默认大小为10。
+List
+ArrayList：基于动态数组实现，支持快速随机访问。实现了RandomAccess, Cloneable和Serializable接口。默认大小为10。
 扩容：新容量的大小为旧容量的 1.5 倍，Arrays.copyOf()把原数组整个复制到新数组中。
 删除元素：System.arraycopy() 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为 O(N)。
-Fail-Fast：modCount 用来记录 ArrayList 结构发生变化的次数。在进行序列化或者迭代等操作时，若modCount发生变化，会抛出 ConcurrentModificationException。java.util包下面的所有的集合类都是快速失败的。java.util.concurrent包下面的所有的类都是安全失败fail-safe的。
-序列化：ArrayList 中存储数据的数组 elementData 是用 transient 修饰的，因为这个数组是动态扩展的，并不是所有的空间都被使用，因此就不需要所有的内容都被序列化。ArrayList 实现了 writeObject() 和 readObject() 来控制只序列化数组中有元素填充那部分内容。writeObject() 方法在传入的对象存在 writeObject() 的时候会去反射调用该对象的 writeObject() 来实现序列化。                  
+Fail-Fast：modCount 用来记录 ArrayList 结构发生变化的次数。在进行序列化或者迭代等操作时，若modCount发生变化，会抛出 ConcurrentModificationException。java.util包下面的所有的集合类都是fail-fast的。java.util.concurrent包下面的所有的类都是安全失败fail-safe的。
+序列化：ArrayList 中存储数据的数组 elementData 是用 transient 修饰的，因为这个数组是动态扩展的，并不是所有的空间都被使用，因此就不需要所有的内容都被序列化。ArrayList 实现了 writeObject() 序列化和 readObject() 反序列化来控制只序列化数组中有元素填充那部分内容。writeObject() 方法在传入的对象存在 writeObject() 的时候会去反射调用该对象的 writeObject() 来实现序列化。                  
 可以使用 Collections.synchronizedList()，得到一个线程安全的 ArrayList。
 
 Vector：和 ArrayList 类似，但它是线程安全的，使用了 synchronized 进行同步。
-与 ArrayList 的比较：Vector 是同步的，因此开销就比 ArrayList 要大，访问速度更慢。最好使用 ArrayList 而不是 Vector，因为同步操作完全可以由程序员自己来控制；Vector 每次扩容请求其大小的 2 倍空间，而 ArrayList 是 1.5 倍。
-Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。Array大小是固定的，ArrayList的大小是动态变化的。
+与 ArrayList 的比较：
+Vector 是同步的，因此开销就比 ArrayList 要大，访问速度更慢。最好使用 ArrayList 而不是 Vector，因为同步操作完全可以由程序员自己来控制。
+Vector 每次扩容请求其大小的 2 倍空间，而 ArrayList 是 1.5 倍。
+
+Array与ArrayList比较：
+Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。
+Array大小是固定的，ArrayList的大小是动态变化的。
 
 CopyOnWriteArrayList
 读写分离：写操作在一个复制的数组上进行，读操作还是在原始数组中进行，读写分离，互不影响。写操作需要加锁，防止并发写入时导致写入数据丢失。写操作结束之后需要把原始数组指向新的复制数组。
