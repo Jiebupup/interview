@@ -89,10 +89,10 @@ CMS 和 G1并行执行：并行指的是垃圾收集器和用户程序同时执�
 GC停顿：运行到安全点safepoint时会暂停所有当前运行的线程Stop The World。
 安全点：循环的末尾，方法临返回前 / 调用方法的call指令后，可能抛异常的位置。
 
-Serial：单线程，简单高效，是 Client 场景下的默认新生代收集器。
+Serial：串行，单线程，简单高效，是 Client 场景下的默认新生代收集器。
 ParNew：Serial 收集器的多线程版本，是 Server 场景下默认的新生代收集器。
-Parallel Scavenge：多线程，吞吐量优先，高吞吐量则可以高效率地利用 CPU 时间，尽快完成程序的运算任务，适合在后台运算而不需要太多交互的任务。
-Serial Old：Serial 收集器的老年代版本。
+Parallel Scavenge：多线程，吞吐量优先，高吞吐量则可以高效率地利用 CPU 时间，尽快完成程序的运算任务，适合在后台运算而不需要太多交互的任务。缩短停顿时间是以牺牲吞吐量和新生代空间来换取的。
+Serial Old：Serial 收集器的老年代版本，Client 场景。
 Parallel Old：Parallel Scavenge 收集器的老年代版本。
 
 CMS：Concurrent Mark Sweep，使用标记 - 清除算法，以获取最短回收停顿时间为目标的收集器
