@@ -3,11 +3,11 @@
 可运行（Runnable）：包含了操作系统线程状态中的 Running 和 Ready，可能正在运行或正在等待 CPU 时间片
 阻塞（Blocked）：等待获取一个排它锁，如果其线程释放了锁就会结束此状态
 
-等待（Waiting）：等待其它线程显式地唤醒。
+等待（Waiting）：等待其它线程显式地唤醒，否则不会被分配 CPU 时间片。
 进入方法：没有设置Timeout参数的Object.wait()或Thread.join()，LockSupport.park()。
-退出方法：Object.notify() / Object.notifyAll()或Thread.join() 的线程执行完毕，LockSupport.unpark(Thread)
+退出方法：Object.notify() / Object.notifyAll()或Thread.join() 被调用的线程执行完毕，LockSupport.unpark(Thread)。
 
-计时等待（Timed Waiting）：在指定的时间自行返回
+计时等待（Timed Waiting）：无需等待其它线程显式地唤醒，在一定时间之后会被系统自动唤醒。
 进入方法：Thread.sleep()，设置了 Timeout 参数的 Object.wait()，设置了 Timeout 参数的 Thread.join()，LockSupport.parkNanos()，LockSupport.parkUntil()。
 退出方法：时间结束，时间结束 / Object.notify() / Object.notifyAll()，时间结束 / 被调用的线程执行完毕，LockSupport.unpark(Thread)。
 
@@ -53,10 +53,10 @@ Invalid：这行数据无效。
 AtomicInteger 类主要利用 CAS (compare and swap) + volatile 和 native 方法来保证原子操作，从而避免 synchronized 的高开销，执行效率大为提升。
 
 2.使用线程
-实现 Runnable 接口；
-实现 Callable 接口；
-两者的区别在于 Runnable 接口不会返回结果但是 Callable 接口有通过 Future 进行封装的返回值。
-实现 Runnable 和 Callable 接口的类只能当做一个可以在线程中运行的任务，最后还需要通过 Thread 来调用。
+实现 Runnable 接口：需要实现 run() 方法。通过 Thread 调用 start() 方法来启动线程。
+实现 Callable 接口。
+两者的区别在于 Runnable 接口不会返回结果，但是 Callable 接口有通过 FutureTask 封装的返回值。
+实现 Runnable 和 Callable 接口的类只能当做一个可以在线程中运行的任务，最后还需要通过 Thread 来调用。任务是通过线程驱动从而执行的。
 
 Future接口：表示异步计算的结果，可以进行取消、查询是否完成、获取结果的操作。
 FutureTask是一个可执行的异步对象：FutureTask 实现了 RunnableFuture 接口，该接口继承自 Runnable 和 Future 接口，这使得 FutureTask 既可以当做一个任务执行，也可以有返回值。
@@ -65,7 +65,7 @@ FutureTask 可用于异步获取执行结果或取消执行任务的场景。当
 execute() 方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功与否；submit() 方法用于提交需要返回值的任务。线程池会返回一个Future类型的对象，通过这个Future对象可以判断任务是否执行成功。
 工具类Executors可以实现Runnable对象和Callable对象之间的相互转换。
 
-继承 Thread 类。
+继承 Thread 类：当调用 start() 方法启动一个线程时，虚拟机会将该线程放入就绪队列中等待被调度，当一个线程被调度时会执行该线程的 run() 方法。
 ThreadLocal类：访问这个本地线程变量的每个线程都会有这个变量的本地副本，从而避免了线程安全问题。
 ThreadLocalMap 中使用的 key 为 ThreadLocal 的弱引用,而 value 是强引用。所以，如果 ThreadLocal 没有被外部强引用的情况下，在垃圾回收的时候会 key 会被清理掉，而 value 不会被清理掉。
 
