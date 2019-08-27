@@ -13,13 +13,6 @@
 
 中止（Terminated）：线程自己结束任务，或者产生了异常而结束
 
-Thread.sleep()线程睡眠，进入限期等待状态
-Object.wait()挂起线程，进入限期等待或者无限期等待
-sleep() 方法和 wait() 方法区别点：
-1.两者最主要的区别在于：sleep 方法没有释放锁，而 wait 方法释放了锁 。
-2.Wait 通常被用于线程间交互/通信，sleep 通常被用于暂停执行。
-3.wait() 方法被调用后，线程不会自动苏醒，需要别的线程调用同一个对象上的 notify() 或者 notifyAll() 方法。sleep() 方法执行完成后，线程会自动苏醒。
-
 阻塞和等待的区别在于，阻塞是被动的，它是在等待获取一个排它锁。而等待是主动的，通过调用 Thread.sleep() 和 Object.wait() 等方法进入。
 
 start()和run()的区别？
@@ -126,22 +119,23 @@ LinkedBlockingQueue满了的饱和（拒绝）策略：
 抛弃最老的任务：丢弃队列最前面的任务，然后重新尝试执行任务（重复此过程）
 调用者运行：将任务退回到调用者，平缓的性能降低
 
-Daemon守护线程是程序运行时在后台提供服务的线程，不是不可或缺的，当所有非守护线程结束时，程序也就终止，同时会杀死所有守护线程。main() 属于非守护线程。
+Daemon守护线程是程序运行时在后台提供服务的线程，不是不可或缺的，当所有非守护线程结束时，程序也就终止，同时会杀死所有守护线程。main() 属于非守护线程。setDaemon()将一个线程设置为守护线程。
 
 4.中断
-interrupt() 来中断该线程，如果该线程处于阻塞、限期等待或者无限期等待状态，那么就会抛出 InterruptedException，从而提前结束该线程。但是不能中断 I/O 阻塞和 synchronized 锁阻塞。
-如果一个线程的 run() 方法执行一个无限循环，并且没有执行 sleep() 等会抛出 InterruptedException 的操作，那么调用线程的 interrupt() 方法就无法使线程提前结束。
-interrupt() 方法会设置线程的中断标记，此时调用 interrupted() 方法会返回 true。因此可以在循环体中使用 interrupted() 方法来判断线程是否处于中断状态，从而提前结束线程。
-调用 Executor 的 shutdown() 方法会等待线程都执行完毕之后再关闭，但是如果调用的是 shutdownNow() 方法，则相当于调用每个线程的 interrupt() 方法。
+调用一个线程的 interrupt() 来中断该线程，如果该线程处于阻塞、限期等待或者无限期等待状态，那么就会抛出 InterruptedException，从而提前结束该线程。但是不能中断 I/O 阻塞和 synchronized 锁阻塞。
+如果一个线程的 run() 执行一个无限循环，并且没有执行 sleep() 等会抛出 InterruptedException 的操作，那么调用线程的 interrupt() 就无法使线程提前结束。
+调用 interrupt() 会设置线程的中断标记，此时调用 interrupted() 会返回 true。因此可以在循环体中使用 interrupted() 来判断线程是否处于中断状态，从而提前结束线程。
+调用 Executor 的 shutdown() 会等待线程都执行完毕之后再关闭，但是如果调用的是 shutdownNow()，则相当于调用每个线程的 interrupt()。
+如果只想中断 Executor 中的一个线程，可以通过使用 submit() 方法来提交一个线程，它会返回一个 Future<?> 对象，通过调用该对象的 cancel(true) 方法就可以中断线程。
 
 5.互斥同步
-Java 提供了两种锁机制来控制多个线程对共享资源的互斥访问，第一个是 JVM 实现的 synchronized，而另一个是 JDK 实现的 ReentrantLock（需要 lock() 和 unlock() 方法配合 try/finally 语句块来完成）。都可重入。
+Java 提供了两种锁机制来控制多个线程对共享资源的互斥访问，第一个是 JVM 实现的 synchronized，而另一个是 JDK 实现的 ReentrantLock（需要 lock() 和 unlock() 方法配合 try/finally 语句块来完成）。
 
 synchronized关键字解决的是多个线程之间访问资源的同步性，synchronized关键字可以保证被它修饰的方法或者代码块在任意时刻只能有一个线程执行。
-synchronized同步代码块，同步方法。
+synchronized同步代码块，同步方法，同步类。
 synchronized是基于原子性的内部锁机制，是可重入的。在一个线程调用synchronized方法的同时在其方法体内部调用该对象另一个synchronized方法，也就是说一个线程得到一个对象锁后再次请求该对象锁，是允许的。
 
-synchronized底层实现：基于进入和退出管程Monitor对象实现，无论是显式同步(有明确的 monitorenter 和 monitorexit 指令,即同步代码块)还是隐式同步（由方法调用指令读取运行时常量池中方法的 ACC_SYNCHRONIZED 标志，即同步方法）都是如此。
+synchronized底层实现：基于进入和退出管程Monitor对象，无论是显式同步(有明确的 monitorenter 和 monitorexit 指令,即同步代码块)还是隐式同步（由方法调用指令读取运行时常量池中方法的 ACC_SYNCHRONIZED 标志，即同步方法）都是如此。
 JVM中对象在内存中的布局分为三块区域：对象头、实例变量和填充数据。
 对象头：synchronized使用的锁对象是存储在Java对象头里的，jvm中采用2个字来存储对象头(如果对象是数组则会分配3个字，多出来的1个字记录的是数组长度)，其主要由 Mark Word 和 Class Metadata Address 组成。
 Mark Word：存储对象的hashCode、锁信息或分代年龄或GC标志等信息。考虑到JVM的空间效率，Mark Word 被设计成为一个非固定的数据结构，以便存储更多有效的数据，它会根据对象本身的状态复用自己的存储空间
@@ -156,33 +150,35 @@ monitor对象存在于每个Java对象的对象头中(存储的指针的指向)�
 monitor是依赖于底层的操作系统的Mutex Lock来实现的，而操作系统实现线程之间的切换时需要从用户态转换到核心态，这个状态之间的转换需要相对比较长的时间，时间成本相对较高，这也是为什么早期的synchronized效率低的原因。
 
 synchronized和ReentrantLock 的区别：
-1.等待可中断：当持有锁的线程长期不释放锁的时候，正在等待的线程可以选择放弃等待，改为处理其他事情。因此ReentrantLock性能更好。
-ReentrantLock 可中断，而 synchronized 不行。
+1.锁的实现：synchronized 是 JVM 实现的，而 ReentrantLock 是 JDK 实现的。
+2.性能：新版本 Java 对 synchronized 进行了很多优化，synchronized 与 ReentrantLock 大致相同。
+3.等待可中断：当持有锁的线程长期不释放锁的时候，正在等待的线程可以选择放弃等待，改为处理其他事情。ReentrantLock 可中断，而 synchronized 不行。因此ReentrantLock性能更好。
+4.公平锁：公平锁是指多个线程在等待同一个锁时，必须按照申请锁的时间顺序来依次获得锁。synchronized 中的锁是非公平的，ReentrantLock 默认情况下也是非公平的，但是也可以是公平的。
+5.锁绑定多个条件：一个 ReentrantLock 可以同时绑定多个 Condition 对象实现带多个条件的等待和通知。
 
-2.实现公平锁：公平锁是指多个线程在等待同一个锁时，必须按照申请锁的时间顺序来依次获得锁。
-synchronized 中的锁是非公平的，ReentrantLock 默认情况下也是非公平的，但是也可以是公平的。
-
-3.实现选择性通知：wait()和notify()/notifyAll()实现等待-通知机制。
-一个 ReentrantLock 可以同时绑定多个 Condition 对象实现选择性通知。
-
-4.性能：synchronized 进行了很多优化，与 ReentrantLock 大致相同。
-
-除非需要使用 ReentrantLock 的高级功能，否则优先使用 synchronized。并且使用 synchronized 不用担心没有释放锁而导致死锁问题，因为 JVM 会确保锁的释放。
+除非需要使用 ReentrantLock 的高级功能，否则优先使用 synchronized。因为 synchronized 是 JVM 实现的一种锁机制，JVM 原生地支持它，而 ReentrantLock 不是所有的 JDK 版本都支持。并且使用 synchronized 不用担心没有释放锁而导致死锁问题，因为 JVM 会确保锁的释放。
 
 6.线程之间的协作
-join()，在线程中调用另一个线程的 join() 方法，会将当前线程挂起，而不是忙等待，直到目标线程结束。
+join()：在线程中调用另一个线程的 join() 方法，会将当前线程挂起，而不是忙等待，直到目标线程结束。
 
+wait() notify() notifyAll()
 调用 wait() 使得线程等待某个条件满足，线程在等待时会被挂起，当其他线程的运行使得这个条件满足时，其它线程会调用 notify() 或者 notifyAll() 来唤醒挂起的线程。
-wait() notify() notifyAll()都属于 Object 的一部分，而不属于 Thread。只能用在同步方法或者同步控制块中使用，否则会在运行时抛出 IllegalMonitorStateException。
+都属于 Object 的一部分，而不属于 Thread。只能用在同步方法或者同步控制块中使用，否则会在运行时抛出 IllegalMonitorStateException。
 使用 wait() 挂起期间，线程会释放锁。这是因为，如果没有释放锁，那么其它线程就无法进入对象的同步方法或者同步控制块中，那么就无法执行 notify() 或者 notifyAll() 来唤醒挂起的线程，造成死锁。
-放在同步代码块中保证同时只进行生产或消费避免并发进行引发生产上溢或消费下溢。判断条件用 while 循环保证消费者不断等待生产者的通知。
+保证同时只进行生产或消费避免并发进行引发生产上溢或消费下溢。判断条件用 while 循环保证消费者不断等待生产者的通知。
 
-await() signal() signalAll()。
+Thread.sleep()线程睡眠，进入限期等待状态
+Object.wait()挂起线程，进入限期等待或者无限期等待
+wait()和sleep()的区别：
+wait() 会释放锁，而 sleep() 不会释放锁。
+wait() 是 Object 的方法，而 sleep() 是 Thread 的静态方法。
+
+await() signal() signalAll()
 java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协调，可以在 Condition 上调用 await() 方法使线程等待，其它线程调用 signal() 或 signalAll() 方法唤醒等待的线程。
 相比于 wait() 这种等待方式，await() 可以指定等待的条件，因此更加灵活。
 
-sleep()
-yield()声明了当前线程已经完成了生命周期中最重要的部分，可以切换给其它线程来执行。该方法只是对线程调度器的一个建议，而且也只是建议具有相同优先级的其它线程可以运行。
+sleep()：休眠当前正在执行的线程。
+yield()：声明了当前线程已经完成了生命周期中最重要的部分，可以切换给其它线程来执行。该方法只是对线程调度器的一个建议，而且也只是建议具有相同优先级的其它线程可以运行。
 
 7.J.U.C - AQS
 java.util.concurrent（J.U.C）大大提高了并发性能，AbstractQueuedSynchronizer被认为是 J.U.C 的核心。AQS是一个用来构建锁和同步器的框架，使用AQS能简单且高效地构造出应用广泛的大量的同步器。
