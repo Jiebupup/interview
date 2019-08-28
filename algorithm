@@ -376,7 +376,30 @@ after--------------
 
 9.工厂模式
 简单工厂：
+
 工厂方法：
+public abstract class Factory {
+    abstract public Product createProduct();
+    public void doSomething() {
+        Product product = createProduct();
+        // do something with the product
+    }
+}
+
+public class FactoryMethod extends Factory {
+    public Product createProduct() {
+        return new factoryMethodProduct();
+    }
+}
+
+public class Client {
+    public static void main(String[] args) {
+        FactoryMethod factoryMethod = new FactoryMethod();
+        Product product = factoryMethod.createProduct();
+        // do something with the product
+    }
+}
+
 抽象工厂：
 
 10.生产者消费者问题
