@@ -16,7 +16,7 @@ jdk 1.8Integer 的缓冲池 IntegerCache 很特殊，这个缓冲池的下界是
 强制类型转换cast。
 +=、-=、*=、/=运算符可以执行隐式类型转换。
 从 Java 7 开始，可以在 switch 条件判断语句中使用 String 对象。switch 不支持 long。
-大数值BigInteger和BigDecimal实现任意精度。但是运算速度变慢。
+大数据类型BigInteger和BigDecimal实现任意精度。但是运算速度变慢。
 
 Java 的参数是按值传递，方法得到的是所有参数值的一个拷贝。不能修改一个基本数据类型的参数（数值型或布尔型），可以改变引用类型的参数所指向对象的值，但不能让该参数引用一个新的对象。
 
