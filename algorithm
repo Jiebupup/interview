@@ -1,7 +1,4 @@
-int 
-int[]
 String:length()长度，charAt()字符,substring()子串,compareTo()比较,equals()相等,indexOf()匹配,split()分割
-char
 
 stack:Stack<Integer> stack = new Stack<Integer>();
 isEmpty() push() pop() peek() 
@@ -228,7 +225,7 @@ public class Singleton {
         private static final Singleton INSTANCE = new Singleton();  
     }  
     private Singleton (){}  
-    public static final Singleton getInstance() {  
+    public static Singleton getInstance() {  
         return SingletonHolder.INSTANCE;  
     }  
 }
