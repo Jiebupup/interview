@@ -48,7 +48,9 @@ BeanDefinition：用来管理bean的属性和对象间的相互依赖关系
 
 控制器 Controller 是应用程序中处理用户交互的部分。
 通常控制器负责从视图读取数据，控制用户输入，并向模型发送数据。
-@ResponseBody：返回给前端所要的数据类型json
+ResponseEntity：HTTP响应
+@ResponseBody：返回给前端json格式的结果
+@ResponseStatus：返回状态
 
 流程：
 客户端（浏览器）发送请求到前端控制器DispatcherServlet。
