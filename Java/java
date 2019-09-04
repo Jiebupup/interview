@@ -497,9 +497,12 @@ AIO：NIO 2，在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻�
 
 14.servlet
 在Java Web程序中，Servlet主要负责接收用户请求 HttpServletRequest,在doGet(),doPost()中做相应的处理，并将回应HttpServletResponse反馈给用户。
-Servlet需要在web.xml中配置。
+Servlet 可以设置初始化参数，供Servlet内部使用。Servlet需要在web.xml中配置（MyEclipse中创建Servlet会自动配置）。
+一个Servlet可以设置多个URL访问。Servlet不是线程安全，多线程并发的读写会导致数据不同步的问题。 
+解决的办法是尽量不要定义name属性，而是要把name变量分别定义在doGet()和doPost()方法内。虽然使用synchronized(name){}语句块可以解决问题，但是会造成线程的等待。
+如果只是并发地读取属性而不写入，则不存在数据不同步的问题。因此Servlet里的只读属性最好定义为final类型的。
+可以让自定义的Servlet实现SingleThreadModel标识接口，实现单线程模式。
 Servlet不能够自行创建并执行，它是在Servlet容器中运行的。
-一个Servlet可以设置多个URL访问。Servlet不是线程安全。
 
 优点：
 只需要启动一个操作系统进程以及加载一个JVM，大大降低了系统的开销。
@@ -507,9 +510,18 @@ Servlet不能够自行创建并执行，它是在Servlet容器中运行的。
 所有动态加载的类可以实现对网络协议以及请求解码的共享，大大降低了工作量。
 Servlet能直接和Web服务器交互，还能在各个程序之间共享数据，使数据库连接池之类的功能很容易实现。
 
-生命周期： Web容器加载Servlet并将其实例化后，Servlet生命周期开始，容器运行其init()方法进行Servlet的初始化；请求到达时调用Servlet的service()方法，service()方法会根据需要调用与请求对应的doGet或doPost等方法；当服务器关闭或项目被卸载时服务器会将Servlet实例销毁，此时会调用Servlet的destroy()方法。
+生命周期： 
+Web容器加载Servlet并将其实例化后，Servlet生命周期开始，容器运行其init()方法进行Servlet的初始化。
+请求到达时调用Servlet的service()方法，service()方法会根据需要调用与请求对应的doGet或doPost等方法。
+当服务器关闭或项目被卸载时服务器会将Servlet实例销毁，此时会调用Servlet的destroy()方法。
 
-转发是服务器行为，重定向是客户端行为。重定向是利用服务器返回的状态码来实现的。客户端浏览器请求服务器的时候，服务器会返回一个状态码。
+转发Forward是服务器行为，重定向Redirect是客户端行为。重定向是利用服务器返回的状态码来实现的。客户端浏览器请求服务器的时候，服务器会返回一个状态码。服务器通过 HttpServletResponse 的 setStatus(int status) 方法设置状态码。如果服务器返回301或者302，则浏览器会到新的网址重新请求该资源。
+地址栏显示：forward是服务器请求资源,服务器直接访问目标地址的URL,把那个URL的响应内容读取过来,然后把这些内容再发给浏览器.浏览器根本不知道服务器发送的内容从哪里来的,所以它的地址栏还是原来的地址. redirect是服务端根据逻辑,发送一个状态码,告诉浏览器重新去请求那个地址.所以地址栏显示的是新的URL.
+数据共享：forward:转发页面和转发到的页面可以共享request里面的数据. redirect:不能共享数据.
+运用地方：forward:一般用于用户登陆的时候,根据角色转发到相应的模块. redirect:一般用于用户注销登陆时返回主页面和跳转到其它的网站等.
+效率：forward:高. redirect:低.
+
+自动刷新Refresh：自动刷新不仅可以实现一段时间之后自动跳转到另一个页面，还可以实现一段时间之后自动刷新本页面。Servlet中通过HttpServletResponse对象设置Header属性实现自动刷新。
 
 15.补充
 JRE和JDK：
