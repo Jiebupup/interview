@@ -317,11 +317,15 @@ Java 不支持条件编译，C++ 通过 #ifdef #ifndef 等预处理命令从而�
 Collection
 Set：不允许重复
 TreeSet：基于红黑树实现，有序，支持范围查找，查找的时间复杂度为O(logN)。
-HashSet：基于HashMap实现，无序，查找的时间复杂度为 O(1)。封装了一个 HashMap 对象来存储所有的集合元素，所有放入 HashSet 中的集合元素实际上由 HashMap 的 key 来保存，而 HashMap 的 value 则存储了一个 PRESENT，它是一个静态的 Object 对象。如果向HashSet中添加一个已经存在的元素，新添加的集合元素不会覆盖已有的集合元素。
+
+HashSet：基于HashMap实现，无序，查找的时间复杂度为 O(1)。
+封装了一个 HashMap 对象来存储所有的集合元素，所有放入 HashSet 中的集合元素实际上由 HashMap 的 key 来保存，而 HashMap 的 value 则存储了一个 PRESENT，它是一个静态的 Object 对象。如果向HashSet中添加一个已经存在的元素，新添加的集合元素不会覆盖已有的集合元素。
+除了 clone() 、writeObject()、readObject()是 HashSet 自己不得不实现之外，其他方法都是直接调用 HashMap 中的方法。
+
 LinkedHashSet：内部使用双向链表维护元素的插入顺序，具有 HashSet 的查找效率。
 
 List
-ArrayList：基于动态数组实现，支持快速随机访问。实现了RandomAccess, Cloneable和Serializable接口。默认大小为10。
+ArrayList：基于动态数组实现，支持快速随机访问。实现了RandomAccess（只是标识）, Cloneable和Serializable接口。默认大小为10。
 扩容：新容量的大小为旧容量的 1.5 倍，Arrays.copyOf()把原数组整个复制到新数组中。
 删除元素：System.arraycopy() 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为 O(N)。
 Fail-Fast：modCount 用来记录 ArrayList 结构发生变化的次数。在进行序列化或者迭代等操作时，若modCount发生变化，会抛出 ConcurrentModificationException。java.util包下面的所有的集合类都是fail-fast的。java.util.concurrent包下面的所有的类都是安全失败fail-safe的。
@@ -343,10 +347,10 @@ CopyOnWriteArrayList
 缺陷：在写操作时需要复制一个新的数组，内存占用为原来的两倍左右；部分写操作的数据还未同步到读数组中导致数据不一致。因此不适合内存敏感以及对实时性要求很高的场景。
 
 LinkedList：基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。实现了Deque接口。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList为双向链表。JDK1.6之前为循环链表，JDK1.7取消了循环。
-与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。ArrayList 和 LinkedList 都是不同步的，不保证线程安全。
+与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。ArrayList 结尾会预留一定的容量空间花费空间，LinkedList 每一个元素都需要存放直接后继和直接前驱以及数据花费空间。
 
 实现了 RandomAccess 接口的list，优先选择普通 for 循环 ，其次 foreach。
-未实现 RandomAccess 接口的list，优先选择foreach。大size的数据，千万不要使用普通for循环。
+未实现 RandomAccess 接口的list，优先选择 foreach（底层通过iterator实现）。大size的数据，千万不要使用普通for循环。
 
 Queue
 双向队列Deque：通过LinkedList实现。
@@ -365,7 +369,7 @@ HashMap只允许一个key为null，允许多个value为null。因为无法调用
 
 从 JDK 1.8 开始，一个桶存储的链表长度大于等于 8 时会将链表转换为红黑树。Entry改为了Node。
 
-HashMap的容量是2的幂次方：
+HashMap的容量是2的幂次方：tableSizeFor()。好处：
 通过限制length是一个2的幂数，indexFor()（求桶的位置）中 h & (length-1) 和 h % length 结果是一致的。取模转换成了&与操作更加高效。
 通过右移可以使低位的数据尽量的不同，从而使hash值的均匀分布减少碰撞。
 
