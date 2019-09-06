@@ -137,8 +137,8 @@ interface接口没有任何的方法实现（java8开始也可以拥有默认的
 选择接口：需要让不相关的类都实现一个方法。需要使用多重继承。
 选择抽象类：需要在几个相关的类中共享代码。需要能控制继承来的成员的访问权限，而不是都为 public。需要继承非静态和非常量字段。
 
-Comparator接口：外部排序，专用的比较器。
-Comparable接口是在集合内部定义的方法实现的排序，提供compareTo()方法。
+Comparator接口：外部排序，定制比较器。出自 java.util 包。compare(Object obj1, Object obj2)。
+Comparable接口：在集合内部定义的方法实现的排序。出自 java.lang 包。compareTo(Object obj)。
 
 枚举类enum
 lambda表达式，函数式接口
@@ -389,7 +389,7 @@ ConcurrentHashMap 的 get 方法是非常高效的，因为整个过程都不需
 size操作：每个 Segment 维护了一个 count 变量来统计该 Segment 中的键值对个数。在执行 size 操作时，需要遍历所有 Segment 然后把 count 累计起来。
 ConcurrentHashMap在执行 size 操作时先尝试不加锁，如果连续两次不加锁操作得到的结果一致，那么可以认为这个结果是正确的。如果尝试的次数超过 3 次，就需要对每个 Segment 加锁。
 
-JDK 1.8 取消了分段锁，使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized。synchronized只锁定当前链表或红黑二叉树的首节点。也在链表过长时会转换为红黑树。
+JDK 1.8 取消了分段锁，使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized（JDK1.6以后 对 synchronized锁做了很多优化）。synchronized只锁定当前链表或红黑二叉树的首节点（只要hash不冲突，就不会产生并发）。也在链表过长时会转换为红黑树。
 
 为什么HashMap支持key或者value为null，而HashTable和ConcurrentHashmap不支持？
 Hashtable和ConcurrentHashmap都是支持并发的，这样会有一个问题，当你通过get(k)获取对应的value时，如果获取到的是null时，你无法判断，它是put（k,v）的时候value为null，还是这个key从来没有做过映射。
@@ -411,7 +411,7 @@ IdentityHashMap:使用==代替equals对键进行比较。
 迭代器模式：Collection 继承了 Iterable 接口，其中的 iterator() 方法能够产生一个 Iterator 对象，通过这个对象就可以迭代遍历 Collection 中的元素。
 JDK 1.5 之后使用 foreach 方法来遍历实现了 Iterable 接口的聚合对象。
 不要在 foreach 循环里进行集合类的 remove/add 操作，可以调用迭代器的 remove/add 方法。并发操作需要对 Iterator 对象加锁。
-Java中的Iterator可用来遍历Set和List集合，并且只能单向移动。ListIterator实现了Iterator接口，既可以前向也可以后向遍历。
+Java中的Iterator可用来遍历Set和List集合，并且只能单向移动。ListIterator实现了Iterator接口，既可以前向也可以后向遍历，还可以添加对象和修改对象。
 Enumeration接口和Iterator接口的区别：Enumeration速度是Iterator的2倍，同时占用更少的内存。但是，Iterator远远比Enumeration安全，因为其他线程不能够修改正在被iterator遍历的集合里面的对象。同时，Iterator允许调用者删除底层集合里面的元素，这对Enumeration来说是不可能的。
 
 适配器模式
