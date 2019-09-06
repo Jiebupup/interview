@@ -361,12 +361,12 @@ Map
 TreeMap：基于红黑树实现。由Comparable或Comparator排序。
 
 HashMap：基于哈希表实现。Entry<K,V>[] table，数组中的每个位置被当成一个桶，一个桶存放一个链表Entry（存储着键值对）。
-拉链法解决冲突：put操作头插法。要存入的元素与要存放位置上已有元素的 hash 值以及 key 相同的话直接覆盖。
+拉链法解决冲突：put操作头插法。要存入的元素与要存放位置上已有元素的 hash 值以及 key 相同的话直接覆盖。如果是红黑树节点则红黑树插入。
 HashMap只允许一个key为null，允许多个value为null。因为无法调用 null 的 hashCode()，也就无法确定该键值对的桶下标，HashMap 使用第 0 个桶存放键为 null 的键值对。
 使用扰动函数（hash()）之后可以减少碰撞。
 
 扩容resize：为了让查找的成本降低，table要尽可能大，HashMap采用动态扩容来根据当前的键值对数量来调整table大小。
-默认的table容量capacity是16，默认的装载因子loadFactor是0.75。默认的键值对数量size的临界值threshold = capacity * loadFactor=12。
+默认的table容量capacity是16，默认的装载因子loadFactor是0.75（loadFactor太大导致查找元素效率低，太小导致数组的利用率低）。默认的键值对数量size的临界值threshold = capacity * loadFactor=12。
 当Entry的数量超过threshold且新建的Entry刚好落在一个非空的table上，触发扩容capacity*2，并采用transfer()将原有的Entry对象插入到新数组中（会进行rehash()重新计算桶下标）。并发下的Rehash会造成元素之间会形成一个循环链表，jdk 1.8 后解决了这个问题。
 
 从 JDK 1.8 开始，一个桶存储的链表长度大于等于 8 时会将链表转换为红黑树。Entry改为了Node。
