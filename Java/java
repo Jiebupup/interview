@@ -347,6 +347,7 @@ CopyOnWriteArrayList
 缺陷：在写操作时需要复制一个新的数组，内存占用为原来的两倍左右；部分写操作的数据还未同步到读数组中导致数据不一致。因此不适合内存敏感以及对实时性要求很高的场景。
 
 LinkedList：基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。实现了Deque接口。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList为双向链表。JDK1.6之前为循环链表，JDK1.7取消了循环。
+使LinkedList变成线程安全的：List list=Collections.synchronizedList(new LinkedList(...));
 与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。ArrayList 结尾会预留一定的容量空间花费空间，LinkedList 每一个元素都需要存放直接后继和直接前驱以及数据花费空间。
 
 实现了 RandomAccess 接口的list，优先选择普通 for 循环 ，其次 foreach。
