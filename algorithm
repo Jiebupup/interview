@@ -379,6 +379,67 @@ after--------------
 
 9.工厂模式
 简单工厂：
+public interface Shape {
+    void draw();
+}
+
+public class Circle implements Shape {
+    public Circle() {
+        System.out.println("Circle");
+    }
+    @Override
+    public void draw() {
+        System.out.println("Draw Circle");
+    }
+}
+
+public class ShapeFactory {
+    // 使用 getShape 方法获取形状类型的对象
+    public static Shape getShape(String shapeType) {
+        if (shapeType == null) {
+            return null;
+        }
+        if (shapeType.equalsIgnoreCase("CIRCLE")) {
+            return new Circle();
+        }
+        return null;
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        // 获取 Circle 的对象，并调用它的 draw 方法
+        Shape circle = ShapeFactory.getShape("CIRCLE");
+        circle.draw();
+    }
+}
+结果：
+Circle
+Draw Circle
+
+反射改善满足开放-封闭原则：
+public class ShapeFactory2 {
+    public static Object getClass(Class<? extends Shape> clazz) {
+        Object obj = null;
+        try {
+            obj = Class.forName(clazz.getName()).newInstance();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
+}
+
+public class Test2 {
+    public static void main(String[] args) {
+        Circle circle = (Circle) ShapeFactory2.getClass(factory_pattern.Circle.class);
+        circle.draw();
+    }
+}
 
 工厂方法：
 public abstract class Factory {
