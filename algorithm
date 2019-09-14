@@ -274,8 +274,68 @@ public int calculate(String s){
 
 8.代理模式
 静态代理：
+public interface Movie {
+	void play();
+}
 
-动态代理
+public class RealMovie implements Movie {
+
+	@Override
+	public void play() {
+		// TODO Auto-generated method stub
+		System.out.println("您正在观看电影 《肖申克的救赎》");
+	}
+
+}
+
+public class Cinema implements Movie {
+	
+	RealMovie movie;
+	
+	public Cinema(RealMovie movie) {
+		super();
+		this.movie = movie;
+	}
+
+
+	@Override
+	public void play() {
+		
+		guanggao(true);
+		
+		movie.play();
+		
+		guanggao(false);
+	}
+	
+	public void guanggao(boolean isStart){
+		if ( isStart ) {
+			System.out.println("电影马上开始了，爆米花、可乐、口香糖9.8折，快来买啊！");
+		} else {
+			System.out.println("电影马上结束了，爆米花、可乐、口香糖9.8折，买回家吃吧！");
+		}
+	}
+
+}
+
+public class ProxyTest {
+
+	public static void main(String[] args) {
+		
+		RealMovie realmovie = new RealMovie();
+		
+		Movie movie = new Cinema(realmovie);
+		
+		movie.play();
+
+	}
+
+}
+结果：
+电影马上开始了，爆米花、可乐、口香糖9.8折，快来买啊！
+您正在观看电影 《肖申克的救赎》
+电影马上结束了，爆米花、可乐、口香糖9.8折，买回家吃吧！
+
 JDK动态代理：
 public interface Service {
 	public void add();
