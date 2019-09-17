@@ -1,5 +1,5 @@
 1.简介
-消息队列MQ是一种应用间的通信方式，消息发送后可以立即返回，由消息系统来确保消息的可靠传递。消息发布者只管把消息发布到 MQ 中而不用管谁来取，消息使用者只管从 MQ 中取消息而不管是谁发布的。这样发布者和使用者都不用知道对方的存在。
+消息队列MQ是一种应用间的通信方式，消息发送后可以立即返回，由消息系统来确保消息的可靠传递。消息发布者只管把消息发布到 MQ 中而不用管谁来取，消息使用者只管从 MQ 中取消息而不管是谁发布的。这样发布者和使用者都不用知道对方的存在。可理解为异步rpc。
 
 JMS消息模型
 点对点：消息生产者向消息队列中发送了一个消息之后，只能被一个消费者消费一次。满足生产者与消费者模式。
@@ -47,9 +47,10 @@ ActiveMQ：Apache出品
 基于主从架构实现高可用	
 有较低的概率丢失数据
 MQ 领域的功能极其完备
-基于JMS规范实现的。
+基于JMS规范实现的
+社区比较成熟，版本迭代很慢，性能最差
 
-RabbitMQ：Erlang 语言开发
+RabbitMQ：Erlang 语言开发，并发能力很强，性能极其好
 吞吐量比RocketMQ、Kafka 低
 延迟us级，延迟最低，这是 RabbitMQ 的一大特点
 基于主从架构实现高可用
@@ -57,13 +58,13 @@ RabbitMQ：Erlang 语言开发
 RabbitMQ有稳定的支持，活跃度也高
 基于AMQP协议来实现
 
-生产者与消费者模型，Producer->Exchange->Queue->Consumer。
-Exchange(交换器) 用来接收生产者发送的消息并将这些消息路由给服务器中的队列中，如果路由不到，或许会返回给 Producer(生产者) ，或许会被直接丢弃掉 。
-RabbitMQ 的 Exchange(交换器) 有4种类型，不同的类型对应着不同的路由策略：direct(默认)，fanout, topic, 和 headers（不推荐）。
-RabbitMQ 中通过 Binding(绑定) 将 Exchange(交换器) 与 Queue(消息队列) 关联起来。
+生产者与消费者模型，Producer->Exchange->Queue->Consumer。更像是一种交换机模型。
+Exchange(交换器) 用来接收生产者发送的消息并将这些消息路由给服务器中的队列中，如果路由不到，或许会返回给 Producer(生产者) ，或许会被直接丢弃掉 。RabbitMQ 的 Exchange(交换器) 有4种类型，不同的类型对应着不同的路由策略：direct(默认)，fanout, topic, 和 headers（不推荐）。
+生产者将消息发给交换器的时候，一般会指定一个 RoutingKey(路由键)，用来指定这个消息的路由规则，而这个 RoutingKey 需要与交换器类型和绑定键(BindingKey)联合使用才能最终生效。
+RabbitMQ 中通过 Binding(绑定) 将 Exchange(交换器) 与 Queue(消息队列) 关联起来，在绑定的时候一般会指定一个 BindingKey(绑定建) ,这样 RabbitMQ 就知道如何正确将消息路由到队列了。当 BindingKey 和 RoutingKey 相匹配时，消息会被路由到对应的队列中。
 一个消息可投入一个或多个队列。多个消费者可以订阅同一个队列，这时队列中的消息会被平均分摊（Round-Robin，即轮询）给多个消费者进行处理，而不是每个消费者都收到所有的消息并处理，这样避免的消息被重复消费。RabbitMQ 不支持队列层面的广播消费。
 RabbitMQ 中消息只能存储在 队列 中，Kafka 将消息存储在 topic（主题） 这个逻辑层面，而相对应的队列逻辑只是topic实际存储文件中的位移标识。
-Broker（消息中间件的服务节点），服务器
+Broker（消息中间件的服务节点），大多数情况下也可以将一个 RabbitMQ Broker 看作一台 RabbitMQ 服务器。
 
 RocketMQ：阿里开发
 高吞吐，topic 可以达到几百/几千的级别，吞吐量会有较小幅度的下降，这是 RocketMQ 的一大优势，在同等机器下，可以支撑大量的 topic
@@ -72,12 +73,24 @@ RocketMQ：阿里开发
 消息可靠性高，经过参数优化配置可以做到 0 丢失
 MQ 功能较为完善，扩展性好
 活跃度不算高，有风险
-RocketMQ思路起源于Kafka，具有高吞吐量、高可用性、适合大规模分布式系统应用的特点。
+接口这块不是按照标准 JMS 规范走的，有些系统要迁移需要修改大量代码
+RocketMQ思路起源于Kafka，具有高吞吐量、高可用性、适合大规模分布式系统应用的特点
 
 RocketMQ用2PC实现分布式消息。
-RocketMQ 不使用 ZooKeeper 作为注册中心，而使用自制的 NameServer。
+RocketMQ 不使用 ZooKeeper 作为注册中心，而使用自制的 NameServer。ZooKeeper支持顺序一致性，在某些情况下，它为了满足一致性，会丢失一定时间内的可用性。RocketMQ 需要注册中心只是为了发现组件地址，在某些情况下，NameServer可以出现数据不一致性，因为 NameServer 集群间互不通信。 当有新的服务器加入时，NameServer 并不会立马通知到 Produer，而是由 Produer 定时去请求 NameServer 获取最新的 Broker/Consumer 信息（这种情况是通过 Producer 发送消息时，负载均衡解决）。
 组件通信间使用 Netty 的自定义协议。
 Dubbo 负载均衡策略。
+消息过滤器：Producer 发送消息到 Broker，Broker 存储消息信息，Consumer 消费时请求 Broker 端从磁盘文件查询消息文件时,在 Broker 端就使用过滤服务器进行过滤。
+Broker 同步双写和异步双写中 Master 和 Slave 的交互。
+Broker 在 4.5.0 版本更新中引入了基于 Raft 协议的多副本选举。
+消息丢失：当你系统需要保证百分百消息不丢失，你可以使用生产者每发送一个消息，Broker 同步返回一个消息发送成功的反馈消息。即每发送一个消息，同步落盘后才返回生产者消息发送成功，这样只要生产者得到了消息发送生成的返回，事后除了硬盘损坏，都可以保证不会消息丢失。
+加快同步落盘：使用 FileChannel + DirectBuffer 池，使用堆外内存，加快内存拷贝。使用数据和索引分离，当消息需要写入时，使用 commitlog 文件顺序写，当需要定位某个消息时，查询index 文件来定位，从而减少文件IO随机读写的性能损耗。
+消息堆积：后台定时任务每隔72小时，删除旧的没有使用过的消息信息。根据不同的业务实现不同的丢弃任务。消息定时转移，或者对某些重要的 TAG 型（支付型）消息真正落库。
+定时消息：newSingleThreadScheduledExecutor定时执行任务。
+顺序消息：MessageQueue，锁。
+消息的 push 延迟问题：因为这并不是真正的将消息主动的推送到消费者，而是 Broker 定时任务每5s将消息推送到消费者。
+消息重复发送的避免：由于网络延迟不可避免，默认允许消息重复发送。RocketMQ 让使用者在消费者端去解决该问题。最简单的解决方案是每条消费记录有个消费状态字段，根据这个消费状态字段来是否消费或者使用一个集中式的表，来存储所有消息的消费状态，从而避免重复消费。
+广播消费与集群消费：广播消费，订阅该 Topic 的消息者们都会消费每个消息，每个消费者都独立的去消费每个消息，因此每个消费者各自保存自己的消息消费进度。集群消费，订阅该 Topic 的消息者们只会有一个去消费某个消息，总体的消费进度保存在 Broker 上集中的管理。
 
 Kafka：
 和RocketMQ相似，功能较为简单，主要支持简单的 MQ 功能。
@@ -87,7 +100,30 @@ Kafka主要特点是基于Pull的模式来处理消息消费，追求高吞吐�
 kafka 唯一的一点劣势是有可能消息重复消费，那么对数据准确性会造成极其轻微的影响。
 基于发布/订阅。
 
-Sender线程。
+Topic：消息的主题、队列，每一个消息都有它的topic，Kafka通过topic对消息进行归类。Kafka中可以将Topic从物理上划分成一个或多个分区（Partition），每个分区在物理上对应一个文件夹，以”topicName_partitionIndex”的命名方式命名，该dir包含了这个分区的所有消息(.log)和索引文件(.index)，这使得Kafka的吞吐率可以水平扩展。
+Partition：每个分区都是一个 顺序的、不可变的消息队列， 并且可以持续的添加;分区中的消息都被分了一个序列号，称之为偏移量(offset)，在每个分区中此偏移量都是唯一的。 producer在发布消息的时候，可以为每条消息指定Key，这样消息被发送到broker时，会根据分区算法把消息存储到对应的分区中（一个分区存储多个消息），如果分区规则设置的合理，那么所有的消息将会被均匀的分布到不同的分区中，这样就实现了负载均衡。 
+Broker：Kafka server，用来存储消息，Kafka集群中的每一个服务器都是一个Broker，消费者将从broker拉取订阅的消息 Producer 向Kafka发送消息，生产者会根据topic分发消息。生产者也负责把消息关联到Topic上的哪一个分区。最简单的方式从分区列表中轮流选择。也可以根据某种算法依照权重选择分区。算法可由开发者定义。
+Cousumer：Consermer实例可以是独立的进程，负责订阅和消费消息。消费者用consumerGroup来标识自己。同一个消费组可以并发地消费多个分区的消息，同一个partition也可以由多个consumerGroup并发消费，但是在consumerGroup中一个partition只能由一个consumer消费。同一个Consumer Group中的Consumers，Kafka将相应Topic中的每个消息只发送给其中一个Consumer。
+
+Kafka producer发送消息的流程：序列化消息和计算partition，发送到batch和唤醒Sender线程，确定tp relica leader所在的broker和Sender有序&幂等性发送消息，Sender处理broker发来的produce response。
+Sender线程和长连接：每初始化一个producer实例，都会初始化一个Sender实例，新增到broker的长连接。
+
+Consumer：
+poll消息
+位移管理
+Kafka Group 状态
+重平衡reblance，过程&存在的问题&改进
+
+Broker：
+broker zk注册
+broker消息存储
+broker状态数据
+broker负载均衡
+
+Kafka高可用：Isr动态更新，Controller负责broker故障检查&&故障转移（fail/recover），Controller挂掉。
+幂等性：consumer拉取到消息先保存，commit成功后删除缓存数据。
+可靠性：首先kafka保证了对已提交消息的at least保证 Sender有重试机制 producer业务方在使用producer发送消息时，注册回调函数。在onError方法中重发消息 consumer 拉取到消息后，处理完毕再commit，保证commit的消息一定被处理完毕。
+高性能：partition提升了并发，zero-copy顺序写入，消息聚集batch，页缓存，业务方对 Kafka producer的优化。增大producer数量，ack配置，batch。
 
 5.如何保证高可用
 RabbitMQ 的高可用性（主从式）：
