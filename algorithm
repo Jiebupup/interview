@@ -12,6 +12,8 @@ isEmpty() size() offer() poll() add() peek()
 Collections：reverse()反转,shuffle()随机排序,sort()排序,swap()交换,rotate()旋转,binarySearch()二分查找,max()最大,fill()填充,frequency()统计次数,indexOfSubList()子集合出现的位置,replaceAll()用新元素代替旧元素。                    
 Arrays：sort()排序，binarySearch()二分查找，equals()相等，fill()填充，asList()转成列表，toString()转成字符串，copyOf()复制数组。
 
+TreeSet:floor(val)返回小于val的值,ceiling()大于。
+
 1.插入:
 public void insertSort(int[] a){
     for(int i=1;i<a.length;i++){
