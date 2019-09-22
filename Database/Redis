@@ -136,7 +136,26 @@ Redis 将所有时间事件都放在一个无序链表中，通过遍历整个�
 随着负载不断上升，形成主从链。
 
 主从(master-slave)架构：一主多从，实现读写分离，主节点负责写，并且将数据复制到其它的 slave 节点，从节点负责读。可以很轻松实现水平扩容，支撑读高并发。redis 实现高并发主要依靠主从架构。
-如果采用了主从架构，那么必须开启 master node 的持久化。
+slave node 在做复制的时候，也不会 block 对自己的查询操作，它会用旧的数据集来提供服务；但是复制完成的时候，需要删除旧数据集，加载新数据集，这个时候就会暂停对外服务了
+如果采用了主从架构，那么必须开启 master node 的持久化，不建议用 slave node 作为 master node 的数据热备，因为那样的话，如果你关掉 master 的持久化，可能在 master 宕机重启的时候数据是空的，然后可能一经过复制， slave node 的数据也丢了。
+需要备份，万一本地的所有文件丢失了，从备份中挑选一份 rdb 去恢复 master，这样才能确保启动的时候，是有数据的，即使采用了后续讲解的高可用机制，slave node 可以自动接管 master node，但也可能 sentinel 还没检测到 master failure，master node 就自动重启了，还是可能导致上面所有的 slave node 数据被清空。
+
+slave node 初次连接到 master node，那么会触发一次 full resynchronization 全量复制。
+slave 会先将 RDB 写入本地磁盘，然后再从本地磁盘加载到内存中。
+slave node 如果跟 master node 有网络故障，断开了连接，会自动重连，连接之后 master node 仅会复制给 slave 部分缺少的数据。
+
+主从复制的断点续传：
+从 redis2.8 开始支持，如果主从复制过程中，网络连接断掉了，那么可以接着上次复制的地方，继续复制下去，而不是从头开始复制一份。
+master node 会在内存中维护一个 backlog，master 和 slave 都会保存一个 replica offset 还有一个 master run id，offset 就是保存在 backlog 中的。如果 master 和 slave 网络连接断掉了，slave 会让 master 从上次 replica offset 开始继续复制，如果没有找到对应的 offset，那么就会执行一次 resynchronization。
+如果根据 host+ip 定位 master node，是不靠谱的，如果 master node 重启或者数据出现了变化，那么 slave node 应该根据不同的 run id 区分。
+
+无磁盘化复制：master 在内存中直接创建 RDB，然后发送给 slave，不会在自己本地落地磁盘了。只需要在配置文件中开启 repl-diskless-sync yes 即可。
+过期 key 处理：slave 不会过期 key，只会等待 master 过期 key。如果 master 过期了一个 key，或者通过 LRU 淘汰了一个 key，那么会模拟一条 del 命令发送给 slave。
+复制的前期过程：slave node 启动时，会在自己本地保存 master node 的信息，包括 master node 的host和ip。slave node 内部有个定时任务，每秒检查是否有新的 master node 要连接和复制，如果发现，就跟 master node 建立 socket 网络连接。然后 slave node 发送 ping 命令给 master node。如果 master 设置了 requirepass，那么 slave node 必须发送 masterauth 的口令过去进行认证。
+heartbeat：保持通信。
+
+全量复制
+增量复制
 
 复制会带来数据一致性问题。
 通过主从架构的切换和哨兵实现高可用。
