@@ -153,8 +153,8 @@ private void delete(int[] a){
 }
 
 private void insert(int[] a,int n){                 //向上调整
-    a[a.length-1]=n;
-    int k=a.length-1,parent=(k-1)/2;
+    a[a.length]=n;
+    int k=a.length,parent=(k-1)/2;
     while(parent>=0&&n>a[parent]){
         a[k]=a[parent];
         k=parent;
