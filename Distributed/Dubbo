@@ -117,8 +117,11 @@ broadcacst cluster 模式：逐个调用所有的 provider。任何一个 provid
 
 6.spi 思想
 service provider interface，需要根据指定的配置或者是默认的配置，去找到对应的实现类加载进来，然后用这个实现类的实例对象。spi 机制一般用在插件扩展的场景。
-使用 Protocol 接口，@SPI("dubbo") 说的是，通过 SPI 机制来提供实现类，实现类是通过 dubbo 作为默认 key 去配置文件里找到的。动态替换掉默认的实现类，需要使用 @Adaptive 接口。
-扩展一个东西，只要自己写个 jar，让你的 consumer 或者是 provider 工程，依赖你的那个 jar，在你的 jar 里指定目录下配置好接口名称对应的文件，里面通过 key=实现类。然后对于对应的组件，类似 <dubbo:protocol> 用你的那个 key 对应的实现类来实现某个接口，你可以自己去扩展 dubbo 的各种功能，提供你自己的实现。
+Java spi 经典的思想体现，大家平时都在用，比如说 jdbc。Java 定义了一套 jdbc 的接口，但是 Java 并没有提供 jdbc 的实现类。在系统跑的时候，会在底层使用你引入的那个 jar 中提供的实现类。
+
+dubbo Protocol 接口，在系统运行的时候，dubbo 会判断一下应该选用这个 Protocol 接口的哪个实现类来实例化对象来使用。如果你没配置，那就走默认的实现。
+@SPI("dubbo") 说的是，通过 SPI 机制来提供实现类，实现类是通过 dubbo 作为默认 key 去配置文件里找到的。如果想要动态替换掉默认的实现类，需要使用 @Adaptive 接口。
+如果要扩展一个东西，只要自己写个 jar，让你的 consumer 或者是 provider 工程，依赖你的那个 jar，在你的 jar 里指定目录下配置好接口名称对应的文件，里面通过 key=实现类。然后对于对应的组件，类似 <dubbo:protocol> 用你的那个 key 对应的实现类来实现某个接口，你可以自己去扩展 dubbo 的各种功能，提供你自己的实现。
 
 7.服务治理、服务降级、失败重试以及超时重试
 服务治理：对复杂微服务
