@@ -212,29 +212,31 @@ public int binarySearch2(int[] a, int n) {
 
 6.单例模式
 双检锁
-public class Singleton{
-    private volatile static Singleton instance;
-    private Singleton(){}
-    public static Singleton getInstance(){
-        if(instance==null){
-            synchronized(Singleton.class){
-                if(instance==null){
-                    instance=new Singleton();
+public class Singleton {
+    private volatile static Singleton uniqueInstance;
+    private Singleton() {
+    }
+    public static Singleton getUniqueInstance() {
+        if (uniqueInstance == null) {
+            synchronized (Singleton.class) {
+                if (uniqueInstance == null) {
+                    uniqueInstance = new Singleton();
                 }
             }
         }
-        return instance;
+        return uniqueInstance;
     }
 }
 静态内部类
-public class Singleton {  
-    private static class SingletonHolder {  
-        private static final Singleton INSTANCE = new Singleton();  
-    }  
-    private Singleton (){}  
-    public static Singleton getInstance() {  
-        return SingletonHolder.INSTANCE;  
-    }  
+public class Singleton {
+    private static class SingletonHolder {
+        private static final Singleton INSTANCE = new Singleton();
+    }
+    private Singleton() {
+    }
+    public static Singleton getUniqueInstance() {
+        return SingletonHolder.INSTANCE;
+    }
 }
 枚举
 public enum Singleton {  
