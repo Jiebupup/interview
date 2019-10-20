@@ -128,36 +128,37 @@ Daemon守护线程是程序运行时在后台提供服务的线程，不是不�
 5.互斥同步
 Java 提供了两种锁机制来控制多个线程对共享资源的互斥访问，第一个是 JVM 实现的 synchronized，而另一个是 JDK 实现的 ReentrantLock（需要 lock() 和 unlock() 方法配合 try/finally 语句块来完成）。
 
-synchronized关键字解决的是多个线程之间访问资源的同步性，synchronized关键字可以保证被它修饰的方法或者代码块在任意时刻只能有一个线程执行。
-synchronized同步代码块，同步方法，同步类。
-synchronized 关键字加到 static 静态方法和 synchronized(class)代码块上都是是给 Class 类上锁。synchronized 关键字加到实例方法上是给对象实例上锁。尽量不要使用 synchronized(String a) 因为JVM中，字符串常量池具有缓存功能！
-如果一个线程A调用一个实例对象的非静态 synchronized 方法，而线程B需要调用这个实例对象所属类的静态 synchronized 方法，是允许的，不会发生互斥现象，因为访问静态 synchronized 方法占用的锁是当前类的锁，而访问非静态 synchronized 方法占用的锁是当前实例对象锁。
+synchronized 关键字解决的是多个线程之间访问资源的同步性，synchronized 关键字可以保证被它修饰的方法或者代码块在任意时刻只能有一个线程执行。
+synchronized 同步代码块，同步方法，同步类。
+synchronized 关键字加到 static 静态方法和 synchronized(class) 代码块上都是是给 Class 类上锁。synchronized 关键字加到实例方法上是给对象实例上锁。尽量不要使用 synchronized(String a) 因为 JVM 中，字符串常量池具有缓存功能！
+如果一个线程 A 调用一个实例对象的非静态 synchronized 方法，而线程 B 需要调用这个实例对象所属类的静态 synchronized 方法，是允许的，不会发生互斥现象，因为访问静态 synchronized 方法占用的锁是当前类的锁，而访问非静态 synchronized 方法占用的锁是当前实例对象锁。
 
-synchronized是基于原子性的内部锁机制，是可重入的。在一个线程调用synchronized方法的同时在其方法体内部调用该对象另一个synchronized方法，也就是说一个线程得到一个对象锁后再次请求该对象锁，是允许的。
+synchronized 是基于原子性的内部锁机制，是可重入的。在一个线程调用 synchronized 方法的同时在其方法体内部调用该对象另一个 synchronized 方法，也就是说一个线程得到一个对象锁后再次请求该对象锁，是允许的。
 
-synchronized底层实现：基于进入和退出管程Monitor对象，无论是显式同步(有明确的 monitorenter 和 monitorexit 指令,即同步代码块)还是隐式同步（由方法调用指令读取运行时常量池中方法的 ACC_SYNCHRONIZED 标志，即同步方法）都是如此。
-JVM中对象在内存中的布局分为三块区域：对象头、实例变量和填充数据。
-对象头：synchronized使用的锁对象是存储在Java对象头里的，jvm中采用2个字来存储对象头(如果对象是数组则会分配3个字，多出来的1个字记录的是数组长度)，其主要由 Mark Word 和 Class Metadata Address 组成。
-Mark Word：存储对象的hashCode、锁信息或分代年龄或GC标志等信息。考虑到JVM的空间效率，Mark Word 被设计成为一个非固定的数据结构，以便存储更多有效的数据，它会根据对象本身的状态复用自己的存储空间
-锁对象标记tag bits对应锁状态有无锁状态（unlocked）、偏向锁状态（biasble）、轻量级锁状态（lightweight locked）和重量级锁状态（inflated）。注意锁可以升级不可降级，这种策略是为了提高获得锁和释放锁的效率。
+synchronized 底层实现：基于进入和退出管程 Monitor 对象，无论是显式同步(有明确的 monitorenter 和 monitorexit 指令，即同步代码块)还是隐式同步（由方法调用指令读取运行时常量池中方法的 ACC_SYNCHRONIZED 标志，即同步方法）都是如此。
+JVM 中对象在内存中的布局分为三块区域：对象头、实例变量和填充数据。
+对象头：synchronized 使用的锁对象是存储在 Java 对象头里的，JVM 中采用 2 个字来存储对象头(如果对象是数组则会分配 3 个字，多出来的 1 个字记录的是数组长度)，其主要由 Mark Word 和 Class Metadata Address 组成。
+Mark Word：存储对象的 hashCode、锁信息或分代年龄或 GC 标志等信息。考虑到 JVM 的空间效率，Mark Word 被设计成为一个非固定的数据结构，以便存储更多有效的数据，它会根据对象本身的状态复用自己的存储空间
+锁对象标记 tag bits 对应锁状态有无锁状态 unlocked、偏向锁状态 biasble、轻量级锁状态 lightweight locked 和重量级锁状态 inflated。注意锁可以升级不可降级，这种策略是为了提高获得锁和释放锁的效率。
 
-synchronized锁标识位为10，其中指针指向的是monitor对象（也称为管程或监视器锁）的起始地址。每个对象都存在着一个 monitor 与之关联，对象与其 monitor 之间的关系有存在多种实现方式。
-monitor对象存在于每个Java对象的对象头中(存储的指针的指向)，synchronized锁便是通过这种方式获取锁的，也是为什么Java中任意对象可以作为锁的原因，同时也是notify/notifyAll/wait等方法存在于顶级对象Object中的原因。
+synchronized 锁标识位为 10，其中指针指向的是 monitor 对象（也称为管程或监视器锁）的起始地址。每个对象都存在着一个 monitor 与之关联，对象与其 monitor 之间的关系有存在多种实现方式。
+monitor 对象存在于每个 Java 对象的对象头中(存储的指针的指向)，synchronized 锁便是通过这种方式获取锁的，也是为什么 Java 中任意对象可以作为锁的原因，同时也是 notify/notifyAll/wait 等方法存在于顶级对象 Object 中的原因。
 
-同步语句块执行monitorenter指令，objectref 的 monitor 的进入计数器为 0，那线程可以成功取得 monitor，并将计数器值设置为 1，获取锁成功。
+同步语句块执行 monitorenter 指令，objectref 的 monitor 的进入计数器为 0，那线程可以成功取得 monitor，并将计数器值设置为 1，获取锁成功。
 如果当前线程已经拥有 objectref 的 monitor 的持有权，那它可以重入这个 monitor，重入时计数器的值也会加 1。倘若其他线程已经拥有 objectref 的 monitor 的所有权，那当前线程将被阻塞。
-执行monitorexit指令，执行线程将释放 monitor(锁)并设置计数器值为0 ，其他线程将有机会持有 monitor，释放锁成功。
-monitor是依赖于底层的操作系统的Mutex Lock来实现的，而操作系统实现线程之间的切换时需要从用户态转换到核心态，这个状态之间的转换需要相对比较长的时间，时间成本相对较高，这也是为什么早期的synchronized效率低的原因。
+执行 monitorexit 指令，执行线程将释放 monitor 并设置计数器值为 0，其他线程将有机会持有 monitor，释放锁成功。
+monitor 是依赖于底层的操作系统的 Mutex Lock 来实现的，而操作系统实现线程之间的切换时需要从用户态转换到核心态，这个状态之间的转换需要相对比较长的时间，时间成本相对较高，这也是为什么早期的 synchronized 效率低的原因。
 
-synchronized和ReentrantLock的区别：
+synchronized 和 ReentrantLock 的区别：
 锁的实现：synchronized 是 JVM 实现的，而 ReentrantLock 是 JDK 实现的。
 性能：新版本 Java 对 synchronized 进行了很多优化，synchronized 与 ReentrantLock 大致相同。
-等待可中断：当持有锁的线程长期不释放锁的时候，正在等待的线程可以选择放弃等待，改为处理其他事情。ReentrantLock 可中断，而 synchronized 不行。因此ReentrantLock性能更好。
+等待可中断：当持有锁的线程长期不释放锁的时候，正在等待的线程可以选择放弃等待，改为处理其他事情。ReentrantLock 可中断，而 synchronized 不行。因此 ReentrantLock 性能更好。
 公平锁：公平锁是指多个线程在等待同一个锁时，必须按照申请锁的时间顺序来依次获得锁。synchronized 中的锁是非公平的，ReentrantLock 默认情况下也是非公平的，但是也可以是公平的。
-锁绑定多个条件（可实现选择性通知）：一个 ReentrantLock 可以同时绑定多个 Condition 对象（对象监视器）实现带多个条件的等待和通知（Condition是JDK1.5之后才有的）。线程对象可以注册在指定的Condition中，从而可以有选择性的进行线程通知。
+锁绑定多个条件（实现选择性通知）：一个 ReentrantLock 可以同时绑定多个 Condition 对象（对象监视器）。ReentrantLock 实现带多个条件的等待和通知（Condition 是 JDK1.5 之后才有的）。线程对象可以注册在指定的 Condition 中，从而可以有选择性的进行线程通知。
 
-除非需要使用 ReentrantLock 的高级功能，否则优先使用 synchronized。因为 synchronized 是 JVM 实现的一种锁机制，JVM 原生地支持它，而 ReentrantLock 不是所有的 JDK 版本都支持。并且使用 synchronized 不用担心没有释放锁而导致死锁问题，因为 JVM 会确保锁的释放。JDK1.6 之后 JVM 团队对 synchronized 关键字做了很多优化。JDK1.6 之后，synchronized 和 ReenTrantLock 的性能基本是持平了。                  
-在JDK1.6之前，synchronized 的性能是比 ReenTrantLock 差很多。具体表示为：synchronized 关键字吞吐量随线程数的增加，下降得非常严重。而ReenTrantLock 基本保持一个比较稳定的水平。
+除非需要使用 ReentrantLock 的高级功能，否则优先使用 synchronized。因为 synchronized 是 JVM 实现的一种锁机制，JVM 原生地支持它，而 ReentrantLock 不是所有的 JDK 版本都支持。并且使用 synchronized 不用担心没有释放锁而导致死锁问题，因为 JVM 会确保锁的释放。
+JDK1.6 之后 JVM 团队对 synchronized 关键字做了很多优化。JDK1.6 之后，synchronized 和 ReenTrantLock 的性能基本是持平了。                  
+在 JDK1.6 之前，synchronized 的性能是比 ReenTrantLock 差很多。具体表示为：synchronized 关键字吞吐量随线程数的增加，下降得非常严重。而 ReenTrantLock 基本保持一个比较稳定的水平。
 
 6.线程之间的协作
 join()：在线程中调用另一个线程的 join() 方法，会将当前线程挂起，而不是忙等待，直到目标线程结束。
@@ -269,11 +270,11 @@ String；
 Number 部分子类，如 Long 和 Double 等数值包装类型，BigInteger 和 BigDecimal 等大数据类型。但同为 Number 的原子类 AtomicInteger 和 AtomicLong 则是可变的。
 对于集合类型，可以使用 Collections.unmodifiableXXX() 方法来获取一个不可变的集合。Collections.unmodifiableXXX() 先对原始的集合进行拷贝，需要对集合进行修改的方法都直接抛出异常。
 
-互斥同步：synchronized 和 ReentrantLock。互斥同步最主要的问题就是线程阻塞和唤醒所带来的性能问题，因此这种同步也称为阻塞同步。互斥同步属于一种悲观的并发策略
+互斥同步：synchronized 和 ReentrantLock。互斥同步最主要的问题就是线程阻塞和唤醒所带来的性能问题，因此这种同步也称为阻塞同步。互斥同步属于一种悲观的并发策略。
 无论共享数据是否真的会出现竞争，它都要进行加锁（这里讨论的是概念模型，实际上虚拟机会优化掉很大一部分不必要的加锁）、用户态核心态转换、维护锁计数器和检查是否有被阻塞的线程需要唤醒等操作。                    
 
-非阻塞同步（乐观锁）：CAS和版本号机制
-基于冲突检测的乐观并发策略：先进行操作，如果没有其它线程争用共享数据，那操作就成功了，否则采取补偿措施（不断地重试，直到成功为止，重试的过程被称为自旋）。自旋锁等待期间线程一直是用户态并且是活动的。自旋锁本身无法保证公平性，同时也无法保证可重入性，但可以实现具备公平性和可重入性质的锁。
+非阻塞同步（乐观锁） CAS：
+基于冲突检测的乐观并发策略：先进行操作，如果没有其它线程争用共享数据，那操作就成功了，否则采取补偿措施（不断地重试，直到成功为止，重试的过程被称为自旋）。实现一个自旋锁需要用到 CAS。
 乐观锁需要操作和冲突检测这两个步骤具备原子性，这里就不能再使用互斥同步来保证了，只能靠硬件来完成。硬件支持的原子性操作最典型的是：比较并交换（Compare-and-Swap，CAS）。是CPU的一个指令。
 CAS：更新一个变量的时候，只有进行比较的值A和需要读写的内存值V相同时，才会将V的值更新为拟写入的新值B。
 CAS适用于读多写少的场景，冲突一般较少。
@@ -303,6 +304,7 @@ ThreadLocalMap 中使用的 key 为 ThreadLocal 的弱引用,而 value 是强引
 自旋锁：互斥同步进入阻塞状态的开销都很大（挂起线程/恢复线程的操作都需要转入内核态中完成），应该尽量避免。让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。
 自旋锁虽然能避免进入阻塞状态从而减少开销，但是它需要进行忙循环操作占用 CPU 时间，它只适用于共享数据的锁定状态很短的场景。
 JDK 1.6 中引入了自适应的自旋锁。自适应意味着自旋的次数不再固定了，而是由前一次在同一个锁上的自旋次数及锁的拥有者的状态来决定。
+自旋锁等待期间线程一直是用户态并且是活动的。自旋锁本身无法保证公平性，同时也无法保证可重入性，但可以实现具备公平性和可重入性质的锁。
 
 锁消除：指对于被检测出不可能存在竞争的共享数据的锁进行消除。锁消除主要是通过逃逸分析来支持，如果堆上的共享数据不可能逃逸出去被其它线程访问到，那么就可以把它们当成私有数据对待，也就可以将它们的锁进行消除。
 String 是一个不可变的类，编译器会对 String 的拼接自动优化。在 JDK 1.5 之前，会转化为 StringBuffer 对象的连续 append() 操作。可以进行消除字符串拼接的隐式加锁。
