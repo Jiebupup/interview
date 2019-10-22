@@ -244,9 +244,7 @@ redis cluster 的高可用：
 主备切换，和哨兵类似。直接集成了 replication 和 sentinel 的功能。
 判断节点宕机：主观宕机pfail，客观宕机fail，在 cluster-node-timeout 内，某个节点一直没有返回 pong，那么就被认为 pfail。如果一个节点认为某个节点 pfail 了，那么会在 gossip ping 消息中，ping 给其他节点，如果超过半数的节点都认为 pfail 了，那么就会变成 fail。
 从节点过滤：检查每个 slave node 与 master node 断开连接的时间，如果超过了 cluster-node-timeout * cluster-slave-validity-factor，那么就没有资格切换成 master。对宕机的 master node，从其所有的 slave node 中，选择有资格的一个切换成 master node。
-
-
-：每个从节点，都根据自己对 master 复制数据的 offset，来设置一个选举时间，offset 越大（复制数据越多）的从节点，选举时间越靠前，优先进行选举。所有的 master node 开始 slave 选举投票，给要进行选举的 slave 进行投票，如果大部分 master node（N/2 + 1）都投票给了某个从节点，那么选举通过，那个从节点可以切换成 master。
+从节点选举：每个从节点，都根据自己对 master 复制数据的 offset，来设置一个选举时间，offset 越大（复制数据越多）的从节点，选举时间越靠前，优先进行选举。所有的 master node 开始 slave 选举投票，给要进行选举的 slave 进行投票，如果大部分 master node（N/2 + 1）都投票给了某个从节点，那么选举通过，那个从节点可以切换成 master。
 
 12.缓存问题
 缓存穿透：指的是对某个一定不存在的数据进行请求，该请求将会穿透缓存到达数据库。
