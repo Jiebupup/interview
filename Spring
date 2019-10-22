@@ -75,17 +75,17 @@ Controller 返回一个页面：单独使用 @Controller 不加 @ResponseBody的
 @RestController 返回JSON 或 XML 形式数据：只返回对象，对象数据直接以 JSON 或 XML 形式写入 HTTP 响应(Response)中，这种情况属于 RESTful Web服务。前后端分离。Spring 4 之后新加的注解。         
 @Controller +@ResponseBody 返回JSON 或 XML 形式数据：等于@RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的对象通过适当的转换器转换为指定的格式之后，写入到HTTP 响应(Response)对象的 body 中。                    
 
-4.bean的生命周期
-实例化bean对象(通过构造方法或者工厂方法)
-设置对象属性(setter等)（依赖注入）
-如果bean实现了BeanNameAware接口，调用setBeanName()传入bean的ID（检查Aware接口）
-如果bean实现了BeanFactoryAware接口，调用setBeanFactory()传入ClassLoader对象的实例
-将bean传递给BeanPostProcessor，调用postProcessBeforeInitialization()
-调用InitializingBean的afterPropertiesSet()
+4.bean 生命周期（bean 实例化过程）
+实例化 bean 对象(通过构造方法或者工厂方法)。Bean 容器找到配置文件中 Spring Bean 的定义。Bean 容器利用 Java Reflection API 创建一个Bean的实例。
+设置对象属性(setter 等)（依赖注入）
+如果 bean 实现了 BeanNameAware 接口，调用 setBeanName() 传入 bean 的 ID（检查 Aware 接口）
+如果 bean 实现了 BeanFactoryAware 接口，调用 setBeanFactory() 传入 ClassLoader 对象的实例
+将 bean 传递给 BeanPostProcessor，调用 postProcessBeforeInitialization()
+调用 InitializingBean 的 afterPropertiesSet()
 调用自定义的初始化方法
-将bean传递给BeanPostProcessor，调用postProcessAfterInitialization()
-使用Bean，将一直存在于应用上下文中，直到该应用上下文被销毁。
-调用DisposableBean的destroy()
+将 bean 传递给 BeanPostProcessor，调用 postProcessAfterInitialization()
+使用 Bean，将一直存在于应用上下文中，直到该应用上下文被销毁。
+调用 DisposableBean 的 destroy()
 调用自定义的销毁方法
 
 5.bean的作用域
