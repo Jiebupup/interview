@@ -1,5 +1,5 @@
 1.AOP
-面向切面编程。代理模式。
+Aspect-Oriented Programming 面向切面编程。代理模式。
 横切关注点可以被描述为那些与业务无关，却为业务模块所共同调用的逻辑或责任。
 切面能帮助我们模块化横切关注点，在系统运行时需要的地方进行动态插入运行。扩展功能不修改源代码。
 分离业务逻辑与系统服务，应用对象只完成业务逻辑。可用于事务处理、日志管理、权限控制等。 
@@ -27,9 +27,9 @@ Spring AOP 相对来说简单，而 AspectJ 功能更加强大。
 环绕@Around
 
 2.IOC
-控制反转，或者叫依赖注入DI。DI不能单独存在，需要在IOC基础之上完成。工厂模式。
+Inverse of Control 控制反转，或者叫依赖注入 DI。DI 不能单独存在，需要在 IOC 基础之上完成。工厂模式。
 将对象之间的相互依赖关系交给 IoC 容器来管理，并由 IoC 容器完成对象的注入。
-Spring通过XML文件来配置Bean，SpringBoot使用注解配置。
+Spring 通过 XML 文件来配置 Bean，SpringBoot 使用注解配置。
 
 依赖注入的方式：构造函数、Setter、接口。
 Spring IOC的初始化过程：读取XML资源，解析为BeanDefinition，最终注册到Bean Factory中。
