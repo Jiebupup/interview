@@ -4,27 +4,27 @@ Aspect-Oriented Programming 面向切面编程。代理模式。
 切面能帮助我们模块化横切关注点，在系统运行时需要的地方进行动态插入运行。扩展功能不修改源代码。
 分离业务逻辑与系统服务，应用对象只完成业务逻辑。可用于事务处理、日志管理、权限控制等。 
 
-JDK和CGLIB动态代理。JDK代理接口，CGLIB代理类。
-ASPECTJ静态织入
+JDK 和 CGLIB 动态代理。JDK 代理接口，CGLIB 代理类。CGlib 是一个字节码增强库，为 AOP 等提供了底层支持。
+ASPECTJ 静态织入
 Spring AOP 和 AspectJ AOP 的区别：
 Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。
 Spring AOP 基于代理，而 AspectJ 基于字节码操作。
 Spring AOP 相对来说简单，而 AspectJ 功能更加强大。
-当切面太多的话，最好选择 AspectJ ，它比Spring AOP 快很多。
+当切面太多的话，最好选择 AspectJ，它比 Spring AOP 快很多。
 
-连接点joinpoint：准备增强的方法
-切点pointcut：实际增强的方法
-通知/增强advice：实现的功能
-切面aspect：把增强应用到方法的过程
-引入introduction：向现有的类添加新的方法或者属性
-织入weaving：把切面应用到目标
+连接点 joinpoint：准备增强的方法
+切点 pointcut：实际增强的方法
+通知/增强 advice：实现的功能
+切面 aspect：把增强应用到方法的过程
+引入 introduction：向现有的类添加新的方法或者属性
+织入 weaving：把切面应用到目标
 
 五种通知：
-前置@Before
-后置@After
-成功@AfterReturning
-异常@AfterThrowing
-环绕@Around
+前置 @Before
+后置 @After
+成功 @AfterReturning
+异常 @AfterThrowing
+环绕 @Around
 
 2.IOC
 Inverse of Control 控制反转，或者叫依赖注入 DI。DI 不能单独存在，需要在 IOC 基础之上完成。工厂模式。
