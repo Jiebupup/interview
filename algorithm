@@ -279,77 +279,59 @@ public int calculate(String s){
 }
 
 8.代理模式
-静态代理：
-public interface Movie {
-	void play();
+静态代理： 
+public interface Subject {  //接口
+    void request();
 }
 
-public class RealMovie implements Movie {
-
-	@Override
-	public void play() {
-		// TODO Auto-generated method stub
-		System.out.println("您正在观看电影 《肖申克的救赎》");
-	}
-
+public class RealSubject implements Subject {  //实体
+    @Override
+    public void request() {
+        System.out.println("real subject execute request");
+    }
 }
 
-public class Cinema implements Movie {
-	
-	RealMovie movie;
-	
-	public Cinema(RealMovie movie) {
-		super();
-		this.movie = movie;
-	}
+public class Proxy implements Subject {  //代理，实体和代理实现同一接口
+    private RealSubject realSubject;
 
+    public Proxy(RealSubject realSubject) {  //重要
+        this.realSubject = realSubject;
+    }
 
-	@Override
-	public void play() {
-		
-		guanggao(true);
-		
-		movie.play();
-		
-		guanggao(false);
-	}
-	
-	public void guanggao(boolean isStart){
-		if ( isStart ) {
-			System.out.println("电影马上开始了，爆米花、可乐、口香糖9.8折，快来买啊！");
-		} else {
-			System.out.println("电影马上结束了，爆米花、可乐、口香糖9.8折，买回家吃吧！");
-		}
-	}
-
+    @Override
+    public void request() {
+        System.out.println("before");
+        try {
+            realSubject.request();
+        } catch (Exception e) {
+            System.out.println("ex:" + e.getMessage());
+            throw e;
+        } finally {
+            System.out.println("after");
+        }
+    }
 }
 
-public class ProxyTest {
-
-	public static void main(String[] args) {
-		
-		RealMovie realmovie = new RealMovie();
-		
-		Movie movie = new Cinema(realmovie);
-		
-		movie.play();
-
-	}
-
+public class Client {
+    public static void main(String[] args) {
+        Subject subject = new Proxy(new RealSubject());
+        subject.request();
+    }
 }
+
 结果：
-电影马上开始了，爆米花、可乐、口香糖9.8折，快来买啊！
-您正在观看电影 《肖申克的救赎》
-电影马上结束了，爆米花、可乐、口香糖9.8折，买回家吃吧！
+before
+real subject execute request
+after
 
-JDK动态代理：
-public interface Service {
+JDK 动态代理：
+public interface Service {  //接口
 	public void add();
 	public void update();
 }
 
 
-public class AService implements Service {	
+public class AService implements Service {  //实体
 	public void add() {
 		System.out.println("AService add>>>>>>>>>>>>>>>>>>");
 	}
@@ -358,15 +340,18 @@ public class AService implements Service {
 	}
 }
 
-public class MyInvocationHandler implements InvocationHandler {
+public class MyInvocationHandler implements InvocationHandler {  //代理
 	private Object target; 
+	
 	MyInvocationHandler() {
 		super();
 	} 
+	
 	MyInvocationHandler(Object target) {
 		super();
 		this.target = target;
 	}
+	
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		// 程序执行前加入逻辑，MethodBeforeAdviceInterceptor
 		System.out.println("before-----------------------------");
@@ -390,6 +375,7 @@ public class Test {
 		aServiceProxy.update();
 	}
 }
+
 结果：
 before-----------------------------
 AService add>>>>>>>>>>>>>>>>>>
@@ -398,15 +384,15 @@ before-----------------------------
 AService update>>>>>>>>>>>>>>>
 after------------------------------
 
-CGLIB动态代理：
-public class Base {
+CGLIB 动态代理：
+public class Base {  //类
 	//不需要定义目标类的统一接口
 	public void add() {
 		System.out.println("add ------------");
 	}
 }
 
-public class CglibProxy implements MethodInterceptor {
+public class CglibProxy implements MethodInterceptor {  //代理
 	public Object intercept(Object object, Method method, Object[] args,MethodProxy proxy) throws Throwable {
 		// 添加切面逻辑（advise），此处是在目标类代码执行之前，即为MethodBeforeAdviceInterceptor。
 		System.out.println("before-------------");
@@ -438,6 +424,7 @@ public class Test {
 		base.add();
 	}
 }
+
 结果：
 before-------------
 add ------------
