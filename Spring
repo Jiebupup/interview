@@ -4,9 +4,8 @@ Aspect-Oriented Programming 面向切面编程。代理模式。
 切面能帮助我们模块化横切关注点，在系统运行时需要的地方进行动态插入运行。扩展功能不修改源代码。
 分离业务逻辑与系统服务，应用对象只完成业务逻辑。可用于事务处理、日志管理、权限控制等。 
 
-JDK 和 CGLIB 动态代理。JDK 代理接口，CGLIB 代理类。CGlib 是一个字节码增强库，为 AOP 等提供了底层支持。
-ASPECTJ 静态织入
-Spring AOP 和 AspectJ AOP 的区别：
+JDK 和 CGLIB 动态代理。
+ASPECTJ 静态织入。Spring AOP 和 AspectJ AOP 的区别：
 Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。
 Spring AOP 基于代理，而 AspectJ 基于字节码操作。
 Spring AOP 相对来说简单，而 AspectJ 功能更加强大。
