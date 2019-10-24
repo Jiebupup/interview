@@ -325,64 +325,58 @@ real subject execute request
 after
 
 JDK 动态代理：
-public interface Service {  //接口
-	public void add();
-	public void update();
+public interface Subject {  //接口
+    void request();
 }
 
-
-public class AService implements Service {  //实体
-	public void add() {
-		System.out.println("AService add>>>>>>>>>>>>>>>>>>");
-	}
-	public void update() {
-		System.out.println("AService update>>>>>>>>>>>>>>>");
-	}
+public class RealSubject implements Subject {  //实体
+    @Override
+    public void request() {
+        System.out.println("real subject execute request");
+    }
 }
 
-public class MyInvocationHandler implements InvocationHandler {  //代理
-	private Object target; 
-	
-	MyInvocationHandler() {
-		super();
-	} 
-	
-	MyInvocationHandler(Object target) {
-		super();
-		this.target = target;
-	}
-	
-	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		// 程序执行前加入逻辑，MethodBeforeAdviceInterceptor
-		System.out.println("before-----------------------------");
-		// 程序执行
-		Object result = method.invoke(target, args);
-		// 程序执行后加入逻辑，MethodAfterAdviceInterceptor
-		System.out.println("after------------------------------");
-		return result;
-	}
+//import java.lang.reflect.InvocationHandler;
+//import java.lang.reflect.Method;
+
+public class JDKProxySubject implements InvocationHandler {
+
+    private RealSubject realSubject;
+
+    public JDKProxySubject(RealSubject realSubject) {
+        this.realSubject = realSubject;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println("before");
+        Object result = null;
+        try {
+            result = method.invoke(realSubject, args);
+        } catch (Exception e) {
+            System.out.println("ex:" + e.getMessage());
+            throw e;
+        } finally {
+            System.out.println("after");
+        }
+        return result;
+    }
 }
 
-public class Test {
-	public static void main(String[] args) {
-		Service aService = new AService();
-		MyInvocationHandler handler = new MyInvocationHandler(aService);
-		// Proxy为InvocationHandler实现类动态创建一个符合某一接口的代理实例
-		Service aServiceProxy = (Service) Proxy.newProxyInstance(aService.getClass().getClassLoader(), aService.getClass().getInterfaces(), handler);
-		// 由动态生成的代理对象来aServiceProxy 代理执行程序，其中aServiceProxy 符合Service接口
-		aServiceProxy.add();
-		System.out.println();
-		aServiceProxy.update();
-	}
+//import java.lang.reflect.Proxy;
+
+public class Client {
+
+    public static void main(String[] args){
+        Subject subject = (Subject) Proxy.newProxyInstance(Client.class.getClassLoader(),new Class[]{Subject.class},new JDKProxySubject(new RealSubject()));
+        subject.request();
+    }
 }
 
 结果：
-before-----------------------------
-AService add>>>>>>>>>>>>>>>>>>
-after------------------------------
-before-----------------------------
-AService update>>>>>>>>>>>>>>>
-after------------------------------
+before
+real subject execute request
+after
 
 CGLIB 动态代理：
 public class Base {  //类
