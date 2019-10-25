@@ -292,6 +292,7 @@ public class RealSubject implements Subject {  //实体
 }
 
 public class Proxy implements Subject {  //代理，实体和代理实现同一接口
+
     private RealSubject realSubject;
 
     public Proxy(RealSubject realSubject) {  
