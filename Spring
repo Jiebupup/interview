@@ -20,19 +20,20 @@ Spring AOP 基于代理，而 AspectJ 基于字节码操作。
 Spring AOP 相对来说简单，而 AspectJ 功能更加强大。
 当切面太多的话，最好选择 AspectJ，它比 Spring AOP 快很多。
 
+AspectJ 注解 @Aspect：
 连接点 joinpoint：准备增强的方法
-切点 pointcut：实际增强的方法
+切点 pointcut：实际增强的方法。@Pointcut 切面表达式包含 designators、wildcards 和 operators。
 通知/增强 advice：实现的功能
 切面 aspect：把增强应用到方法的过程
 引入 introduction：向现有的类添加新的方法或者属性
 织入 weaving：把切面应用到目标
 
-五种通知：
+五种通知 Advice：
 前置 @Before
 后置 @After
 成功 @AfterReturning
 异常 @AfterThrowing
-环绕 @Around
+环绕 @Around，前面功能全有
 
 2.IOC
 Inverse of Control 控制反转，或者叫依赖注入 DI。DI 不能单独存在，需要在 IOC 基础之上完成。工厂模式。
