@@ -294,7 +294,7 @@ public class RealSubject implements Subject {  //实体
 public class Proxy implements Subject {  //代理，实体和代理实现同一接口
     private RealSubject realSubject;
 
-    public Proxy(RealSubject realSubject) {  //重要
+    public Proxy(RealSubject realSubject) {  
         this.realSubject = realSubject;
     }
 
@@ -313,16 +313,12 @@ public class Proxy implements Subject {  //代理，实体和代理实现同一�
 }
 
 public class Client {
+
     public static void main(String[] args) {
         Subject subject = new Proxy(new RealSubject());
         subject.request();
     }
 }
-
-结果：
-before
-real subject execute request
-after
 
 JDK 动态代理：
 public interface Subject {  //接口
@@ -373,56 +369,56 @@ public class Client {
     }
 }
 
+CGLIB 动态代理：
+public interface Subject {  //接口
+    void request();
+}
+
+public class RealSubject implements Subject {  //实体
+    @Override
+    public void request() {
+        System.out.println("real subject execute request");
+    }
+}
+
+//import net.sf.cglib.proxy.MethodInterceptor;
+//import net.sf.cglib.proxy.MethodProxy;
+//import java.lang.reflect.Method;
+
+public class DemoMethodInterceptor implements MethodInterceptor {
+    @Override
+    public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
+        System.out.println("before");
+        Object result = null;
+        try {
+            result = methodProxy.invokeSuper(o, objects);
+        } catch (Exception e) {
+            System.out.println("ex:" + e.getMessage());
+            throw e;
+        } finally {
+            System.out.println("after");
+        }
+        return result;
+    }
+}
+
+//import net.sf.cglib.proxy.Enhancer;
+
+public class Client {
+
+    public static void main(String[] args) {
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(RealSubject.class);
+        enhancer.setCallback(new DemoMethodInterceptor());
+        Subject subject = (Subject) enhancer.create();
+        subject.request();
+    }
+}
+
 结果：
 before
 real subject execute request
 after
-
-CGLIB 动态代理：
-public class Base {  //类
-	//不需要定义目标类的统一接口
-	public void add() {
-		System.out.println("add ------------");
-	}
-}
-
-public class CglibProxy implements MethodInterceptor {  //代理
-	public Object intercept(Object object, Method method, Object[] args,MethodProxy proxy) throws Throwable {
-		// 添加切面逻辑（advise），此处是在目标类代码执行之前，即为MethodBeforeAdviceInterceptor。
-		System.out.println("before-------------");
-		// 执行目标类add方法
-		proxy.invokeSuper(object, args);
-		// 添加切面逻辑（advise），此处是在目标类代码执行之后，即为MethodAfterAdviceInterceptor。
-		System.out.println("after--------------");
-		return null;
-	}
-}
-
-public class Factory {
-	public static Base getInstance(CglibProxy proxy) {
-		Enhancer enhancer = new Enhancer();
-		enhancer.setSuperclass(Base.class);
-		//回调方法的参数为代理类对象CglibProxy，最后增强目标类调用的是代理类对象CglibProxy中的intercept方法
-		enhancer.setCallback(proxy);
-		// 此刻，base不是单纯的目标类，而是增强过的目标类
-		Base base = (Base) enhancer.create();
-		return base;
-	}
-}
-
-public class Test {
-	public static void main(String[] args) {
-		CglibProxy proxy = new CglibProxy();
-		// base为生成的增强过的目标类
-		Base base = Factory.getInstance(proxy);
-		base.add();
-	}
-}
-
-结果：
-before-------------
-add ------------
-after--------------
 
 9.工厂模式
 简单工厂：
