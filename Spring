@@ -14,15 +14,17 @@ JDK 和 CGLIB 动态代理。Spring AOP 对于动态代理的选择：
 如果目标对象实现了接口，则默认使用 JDK 动态代理。
 如果目标对象实现了接口，且强制使用 CGLIB 动态代理，则使用 CGLIB 动态代理。
 
-ASPECTJ 静态织入。Spring AOP 和 AspectJ AOP 的区别：
-Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。
+ASPECTJ 编译期织入，ASPECTJ 5+ 类加载时织入。Spring AOP 和 AspectJ AOP 的区别：
+Spring AOP 属于运行时增强，而 AspectJ 是编译（类加载）时增强。
 Spring AOP 基于代理，而 AspectJ 基于字节码操作。
 Spring AOP 相对来说简单，而 AspectJ 功能更加强大。
 当切面太多的话，最好选择 AspectJ，它比 Spring AOP 快很多。
 
+多个 AOP 叠加
+
 AspectJ 注解 @Aspect：
 连接点 joinpoint：准备增强的方法
-切点 pointcut：实际增强的方法。@Pointcut 切面表达式包含 designators、wildcards 和 operators。
+切点 pointcut：实际增强的方法。@Pointcut 切面表达式包含指示器 designators、通配符 wildcards 和运算符 operators。
 通知/增强 advice：实现的功能
 切面 aspect：把增强应用到方法的过程
 引入 introduction：向现有的类添加新的方法或者属性
