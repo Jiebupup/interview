@@ -9,6 +9,10 @@ Aspect-Oriented Programming 面向切面编程。代理模式。
 可以很方便地添加/删除关注点。
 侵入性少，增强代码地可读性及可维护性。
 
+注意事项：
+无法拦截 static、final、private 方法。
+无法拦截内部方法调用。
+
 JDK 和 CGLIB 动态代理。Spring AOP 对于动态代理的选择：
 默认使用 CGLIB 动态代理。
 如果目标对象实现了接口，则默认使用 JDK 动态代理。
@@ -19,8 +23,6 @@ Spring AOP 属于运行时增强，而 AspectJ 是编译（类加载）时增强
 Spring AOP 基于代理，而 AspectJ 基于字节码操作。
 Spring AOP 相对来说简单，而 AspectJ 功能更加强大。
 当切面太多的话，最好选择 AspectJ，它比 Spring AOP 快很多。
-
-多个 AOP 叠加
 
 AspectJ 注解 @Aspect：
 连接点 joinpoint：准备增强的方法
@@ -36,6 +38,12 @@ AspectJ 注解 @Aspect：
 成功 @AfterReturning
 异常 @AfterThrowing
 环绕 @Around，前面功能全有
+
+多个 AOP 叠加：责任链模式 + 改进版本
+用 AOP 实现 transaction、security、cache
+security：MethodSecurityInterceptor、PreInvocationAuthrizationAdviceVote、ExpressionBasedPreInvocationAdvice
+@PreAuthorize 验证机制：decide -> vote -> before 只需要一个注解就可以实现，debug 进源码看实现流程。
+cache：AnnotationCacheSupport、CacheInterceptor、CacheAspectSupport，时序图 invoke -> execute -> doGet -> invokeJoinpoint -> cachePutRequest.apply
 
 2.IOC
 Inverse of Control 控制反转，或者叫依赖注入 DI。DI 不能单独存在，需要在 IOC 基础之上完成。工厂模式。
