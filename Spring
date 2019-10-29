@@ -47,7 +47,7 @@ Spring IOC的初始化过程：读取XML资源，解析为BeanDefinition，最�
 bean的创建方法
 实例化bean对象的方法
 
-spring中bean生存的容器BeanFactory 、 ApplicationContext 、webApplicationContext 。应用上下文更好。
+spring 中 bean 生存的容器:BeanFactory、ApplicationContext、webApplicationContext。应用上下文更好。
 BeanDefinition：用来管理bean的属性和对象间的相互依赖关系
 
 3.MVC
