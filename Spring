@@ -47,16 +47,27 @@ cache：AnnotationCacheSupport、CacheInterceptor、CacheAspectSupport，时序�
 
 2.IOC
 Inverse of Control 控制反转，或者叫依赖注入 DI。DI 不能单独存在，需要在 IOC 基础之上完成。工厂模式。
-将对象之间的相互依赖关系交给 IoC 容器来管理，并由 IoC 容器完成对象的注入。
-Spring 通过 XML 文件来配置 Bean，SpringBoot 使用注解配置。
+将对象之间的相互依赖关系交给 IOC 容器来管理，并由 IOC 容器将依赖关系注入到对象之中。实现具有依赖关系的对象之间的解耦。
+对象 A 依赖于对象 B，对象 A 获得依赖对象 B 的过程，由主动行为变为了被动行为，控制权颠倒了。控制反转是获得依赖对象的过程被反转。
+Spring 通过 XML 文件来配置 Bean，SpringBoot 使用注解配置。反射，根据配置文件中给出的类名生成相应的对象。
+
+使用 IOC 的好处：
+降低耦合。
+提高了模块的可复用性。
+把对象生成放在配置文件里进行定义，更换一个实现子类将会变得很简单，只要修改配置文件就可以，具有热插拨特性。
+
+注意事项：
+引入了第三方 IOC 容器，生成对象的步骤变得复杂。
+IOC 容器通过反射方式生成对象，在运行效率上有一定的损耗。
+需要进行大量的配制工作，比较繁琐。
 
 依赖注入的方式：构造函数、Setter、接口。
-Spring IOC的初始化过程：读取XML资源，解析为BeanDefinition，最终注册到Bean Factory中。
-bean的创建方法
-实例化bean对象的方法
+Spring IOC 的初始化过程：读取 XML 资源，解析为 BeanDefinition，最终注册到 Bean Factory 中。
+bean 的创建方法
+实例化 bean 对象的方法
 
-spring 中 bean 生存的容器:BeanFactory、ApplicationContext、webApplicationContext。应用上下文更好。
-BeanDefinition：用来管理bean的属性和对象间的相互依赖关系
+spring 中 bean 生存的容器：BeanFactory、ApplicationContext、webApplicationContext。应用上下文更好。
+BeanDefinition：用来管理 bean 的属性和对象间的相互依赖关系
 
 3.MVC
 模型 Model 是应用程序中用于处理应用程序数据逻辑的部分。
@@ -158,29 +169,31 @@ global-session：全局session作用域，仅仅在基于portlet的web应用中�
 
 8.事务
 事务管理：按照给定的事务规则来执行提交或者回滚操作。
-发生unchecked异常时会发生回滚。只有非只读事务才能回滚。
+发生 unchecked 异常时会发生回滚。只有非只读事务才能回滚。
 
-Spring事务管理接口
-PlatformTransactionManager：（平台）事务管理器，不同dao框架提供不同的实现类。
-TransactionDefinition：事务定义信息(事务隔离级别、传播行为、超时、只读、回滚规则)
-TransactionStatus：事务运行状态
+Spring 事务管理接口
+PlatformTransactionManager：（平台）事务管理器，根据不同持久层框架提供对应的接口实现类。
+TransactionDefinition：事务定义信息（事务隔离级别、传播行为、超时、只读、回滚规则）。
+TransactionStatus：事务运行状态。
 
-Spring并不直接管理事务，而是提供了多种事务管理器，将事务管理的职责委托给持久化机制所提供的相关平台框架的事务来实现。
+Spring 并不直接管理事务，而是提供了多种事务管理器，将事务管理的职责委托给持久化机制所提供的相关平台框架的事务来实现。
 
 PlatformTransactionManager 通过 getTransaction(TransactionDefinition definition) 方法来得到一个事务。
-TransactionDefinition接口中定义了5个方法以及一些表示事务属性的常量比如隔离级别、传播行为等等的常量。
-隔离级别：Spring 事务中的隔离级别多了DEFAULT，使用后端数据库默认的隔离级别。
+TransactionDefinition 接口中定义了 5 个方法以及一些表示事务属性的常量比如隔离级别、传播行为等等的常量。
+隔离级别：定义了一个事务可能受其他并发事务影响的程度。Spring 事务中的隔离级别多了 DEFAULT，使用后端数据库默认的隔离级别。
 传播行为：为了解决业务层方法之间互相调用的事务问题。
 超时属性：一个事务允许执行的最长时间。
 只读属性：对事物资源是否执行只读操作。
-回滚规则
+回滚规则：定义事务回滚规则。
 
-PlatformTransactionManager.getTransaction(…) 方法返回一个 TransactionStatus 对象。
+TransactionStatus 接口用来记录事务的状态，该接口定义了一组方法，用来获取或判断事务的相应状态信息。
+PlatformTransactionManager.getTransaction(…) 方法返回一个 TransactionStatus 对象。返回的 TransactionStatus 对象可能代表一个新的或已经存在的事务（如果在当前调用堆栈有一个符合条件的事务）。
 
 编程式事务与声明式事务
-编程式事务：通过Transaction Template手动管理事务。
-声明式事务：通过XML和注解实现。
-实现声明式事务的四种方式：TransactionInterceptor、TransactionProxyFactoryBean、< tx> 和< aop>命名空间、@Transactional。
+编程式事务：通过 Transaction Template 手动管理事务，实际应用中很少使用。
+声明式事务：基于 XML 和基于注解，实际是通过 AOP 实现，推荐使用（代码侵入性最小）。
+实现声明式事务的四种方式：TransactionInterceptor、TransactionProxyFactoryBean、<tx> 和 <aop> 命名空间、@Transactional。
+@Transactional(rollbackFor = Exception.class) 注解：如果类或者方法加了这个注解，那么这个类里面的方法抛出异常，就会回滚，数据库里面的数据也会回滚。在 @Transactional 注解中如果不配置 rollbackFor 属性，那么事物只会在遇到 RuntimeException 的时候才会回滚，加上 rollbackFor=Exception.class，可以让事物在遇到非运行时异常时也回滚。
 
 9.Mybatis
 MyBatis 是一款持久层框架，它支持定制化 SQL、存储过程以及高级映射。和 Hibernate 一样都是 ORM 对象关系映射，负责数据库和 Java 对象之间的映射。区别是 MyBatis 自己控制 SQL。
