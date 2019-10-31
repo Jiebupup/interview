@@ -47,13 +47,15 @@ cache：AnnotationCacheSupport、CacheInterceptor、CacheAspectSupport，时序�
 
 2.IOC
 Inverse of Control 控制反转，或者叫依赖注入 DI。DI 不能单独存在，需要在 IOC 基础之上完成。工厂模式。
-将对象之间的相互依赖关系交给 IOC 容器来管理，并由 IOC 容器将依赖关系注入到对象之中。实现具有依赖关系的对象之间的解耦。
-对象 A 依赖于对象 B，对象 A 获得依赖对象 B 的过程，由主动行为变为了被动行为，控制权颠倒了。控制反转是获得依赖对象的过程被反转。
-Spring 通过 XML 文件来配置 Bean，SpringBoot 使用注解配置。反射，根据配置文件中给出的类名生成相应的对象。
+将对象之间的相互依赖关系交给 IOC 容器来管理，并由 IOC 容器将依赖关系注入到对象之中。实现具有依赖关系的对象之间的解耦。IOC 容器实际上就是个 Map（key，value），Map 中存放的是各种对象。
+对象 A 依赖于对象 B，对象 A 获得依赖对象 B 的过程，由主动行为变为了被动行为，控制权颠倒了。控制反转是获得依赖对象的过程被反转。控制权交由 Spring 框架来管理。
+从上到下依赖变为从下到上注入。依赖注入在初始化的过程中就不可避免的会写大量的 new。Spring 通过 XML 文件来配置 Bean，SpringBoot 使用注解配置。不用每次初始化都要亲手去写那一大段初始化的代码。
+反射，根据配置文件中给出的类名生成相应的对象。
 
 使用 IOC 的好处：
 降低耦合。
 提高了模块的可复用性。
+在创建实例的时候不需要了解其中的细节。
 把对象生成放在配置文件里进行定义，更换一个实现子类将会变得很简单，只要修改配置文件就可以，具有热插拨特性。
 
 注意事项：
@@ -63,8 +65,7 @@ IOC 容器通过反射方式生成对象，在运行效率上有一定的损耗�
 
 依赖注入的方式：构造函数、Setter、接口。
 Spring IOC 的初始化过程：读取 XML 资源，解析为 BeanDefinition，最终注册到 Bean Factory 中。
-bean 的创建方法
-实例化 bean 对象的方法
+实例化 bean 对象的方法：构造函数（默认）、静态工厂、实例工厂。
 
 spring 中 bean 生存的容器：BeanFactory、ApplicationContext、webApplicationContext。应用上下文更好。
 BeanDefinition：用来管理 bean 的属性和对象间的相互依赖关系
