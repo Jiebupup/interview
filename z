@@ -90,3 +90,5 @@ Cookie 不能跨域的解决方案：
 服务端将 Cookie 写到客户端后，客户端对 Cookie 进行解析，将 Token 解析出来，此后请求都把这个 Token 带上就行了
 多个域名共享 Cookie，在写到客户端的时候设置 Cookie 的 domain。
 将 Token 保存在 SessionStroage 中（不依赖 Cookie 就没有跨域的问题了）
+
+CAS（Central Authentication Service）：SSO 认证中心类似一个中转站。
