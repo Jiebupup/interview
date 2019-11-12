@@ -102,9 +102,11 @@ Service层Spring：完成具体的业务逻辑
 DAO层MyBatis：对数据库进行操作
 
 @RestController vs @Controller
-Controller 返回一个页面：单独使用 @Controller 不加 @ResponseBody的话一般使用在要返回一个视图的情况。前后端不分离。
-@RestController 返回JSON 或 XML 形式数据：只返回对象，对象数据直接以 JSON 或 XML 形式写入 HTTP 响应(Response)中，这种情况属于 RESTful Web服务。前后端分离。Spring 4 之后新加的注解。         
-@Controller +@ResponseBody 返回JSON 或 XML 形式数据：等于@RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的对象通过适当的转换器转换为指定的格式之后，写入到HTTP 响应(Response)对象的 body 中。                    
+Controller 返回一个页面：单独使用 @Controller 不加 @ResponseBody 的话一般使用在要返回一个视图的情况。前后端不分离。
+@RestController 返回 JSON 格式数据。返回 domain 对象，再由 MappingJackson2HttpMessageConverter 自动转换为 JSON。对象数据直接以 JSON 或 XML 形式写入 HTTP 响应(Response)中，这种情况属于 RESTful Web 服务。前后端分离。Spring 4 之后新加的注解。         
+@Controller + @ResponseBody 等于 @RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的 view 对象通过适当的转换器转换为指定的格式之后，写入到 HTTP 响应(Response)对象的 body 中。                    
+
+@RequestMapping 将对页面的 HTTP 请求映射到方法，并且默认映射所有 HTTP 方法。
 
 4.bean 生命周期（bean 实例化过程）
 实例化 bean 对象(通过构造方法或者工厂方法)。Bean 容器找到配置文件中 Spring Bean 的定义。Bean 容器利用 Java Reflection API 创建一个Bean的实例。
