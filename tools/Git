@@ -21,6 +21,7 @@ Git 有三种状态：已修改（已修改表示修改了文件，但还没保�
 Git 的版本库有一个称为 Stage 的暂存区以及最后的 History 版本库，History 存储所有分支信息，使用一个 HEAD 指针指向当前分支。
 工作区<->Stage<->History
 
+操作：
 add files：把文件的修改添加到暂存区
 commit：把暂存区的修改提交到当前分支，提交之后暂存区就被清空了
 reset -- files：commit 的逆操作
