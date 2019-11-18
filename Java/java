@@ -285,7 +285,7 @@ Java 注解是附加在代码中的一些元信息，用于一些工具在编译
 单元测试JUnit
 
 10.Java SE 8 新特性
-Lambda 表达式和函数式接口
+lambda 表达式和函数式接口，lambda 表达式匿名函数。
 Optional 是一个简单的容器，其值可能是 null 或者不是 null。在 Java 8 之前一般某个函数应该返回非空对象但是有时却什么也没有返回，而在 Java 8 中，你应该返回 Optional 而不是 null。用于防止 NullPointerException。
 
 Stream：能应用在一组元素上一次执行的操作序列。Stream 操作分为中间操作或者最终操作两种，最终操作返回一特定类型的计算结果，而中间操作返回 Stream 本身，这样你就可以将多个操作依次串起来。Stream 的创建需要指定一个数据源。Stream 的操作可以串行执行或者并行执行（Parallel Streams）。
