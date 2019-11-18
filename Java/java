@@ -284,20 +284,20 @@ Java 注解是附加在代码中的一些元信息，用于一些工具在编译
 
 单元测试JUnit
 
-10.Java SE 8新特性
-Lambda表达式和函数式接口
-Optional 是一个简单的容器，其值可能是null或者不是null。在Java 8之前一般某个函数应该返回非空对象但是有时却什么也没有返回，而在Java 8中，你应该返回 Optional 而不是 null。用于防止 NullPointerException。
+10.Java SE 8 新特性
+Lambda 表达式和函数式接口
+Optional 是一个简单的容器，其值可能是 null 或者不是 null。在 Java 8 之前一般某个函数应该返回非空对象但是有时却什么也没有返回，而在 Java 8 中，你应该返回 Optional 而不是 null。用于防止 NullPointerException。
 
-Stream：能应用在一组元素上一次执行的操作序列。Stream 操作分为中间操作或者最终操作两种，最终操作返回一特定类型的计算结果，而中间操作返回Stream本身，这样你就可以将多个操作依次串起来。Stream 的创建需要指定一个数据源。Stream 的操作可以串行执行或者并行执行（Parallel Streams）。
-Stream操作
-Filter(过滤)：过滤通过一个predicate接口来过滤并只保留符合条件的元素，该操作属于中间操作。
-Sorted(排序)：如果你不指定一个自定义的 Comparator 则会使用默认排序，该操作属于中间操作。创建了一个排列好后的Stream，而不会影响原有的数据源。
+Stream：能应用在一组元素上一次执行的操作序列。Stream 操作分为中间操作或者最终操作两种，最终操作返回一特定类型的计算结果，而中间操作返回 Stream 本身，这样你就可以将多个操作依次串起来。Stream 的创建需要指定一个数据源。Stream 的操作可以串行执行或者并行执行（Parallel Streams）。
+Stream 操作
+Filter(过滤)：过滤通过一个 Predicate 接口来过滤并只保留符合条件的元素，该操作属于中间操作。
+Sorted(排序)：如果你不指定一个自定义的 Comparator 则会使用默认排序，该操作属于中间操作。创建了一个排列好后的 Stream，而不会影响原有的数据源。
 Map(映射)：中间操作 map 会将元素根据指定的 Function 接口来依次将元素转成另外的对象。
-Match(匹配)：Stream提供了多种匹配操作，允许检测指定的Predicate是否匹配整个Stream。所有的匹配操作都是 最终操作 ，并返回一个 boolean 类型的值。
-Count(计数)：计数是一个 最终操作，返回Stream中元素的个数，返回值类型是 long。
-Reduce(规约)：这是一个 最终操作 ，允许通过指定的函数来讲stream中的多个元素规约为一个元素，规约后的结果是通过Optional 接口表示的。
+Match(匹配)：Stream 提供了多种匹配操作，允许检测指定的 Predicate 是否匹配整个 Stream。所有的匹配操作都是最终操作 ，并返回一个 boolean 类型的值。
+Count(计数)：计数是一个最终操作，返回 Stream 中元素的个数，返回值类型是 long。
+Reduce(规约)：这是一个最终操作 ，允许通过指定的函数来讲 Stream 中的多个元素规约为一个元素，规约后的结果是通过 Optional 接口表示的。
 
-新的日期和时间API
+新的日期和时间 API
 接口的默认方法：使用 default 关键字向接口添加非抽象方法实现。接口也可以定义静态方法，可以直接用接口名调用。实现类是不可以调用接口的默认方法。如果同时实现两个接口，接口中定义了一样的默认方法，则必须重写，不然会报错。   
 多重注解
 
