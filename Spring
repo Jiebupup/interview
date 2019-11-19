@@ -227,18 +227,18 @@ ConfigurationProperties和AutoConfiguration，application.properties 文件满�
 利用starter实现自动化配置只需要两个条件——maven依赖、配置文件。
 
 11.jdbcTemplate
-ORM持久化技术：JDBC、Hibernate、MyBatis、JPA，Spring都对其进行了封装Template模板类。
+ORM 持久化技术：JDBC、Hibernate、MyBatis、JPA，Spring 都对其进行了封装 Template 模板类。
 步骤：
-导入jar包（数据库驱动的jar包）
+导入 jar 包（数据库驱动的 jar 包）
 创建对象，设置数据库信息
-创建jdbcTemplate对象，设置数据源
-调用jdbcTemplate对象里面的方法实现操作CRUD
+创建 jdbcTemplate 对象，设置数据源
+调用 jdbcTemplate 对象里面的方法实现操作 CRUD
 
-jdbc查询操作：Connection conn,PreparedStatement psmt,ResultSet rs。
+jdbc 查询操作：Connection conn,PreparedStatement psmt,ResultSet rs。
 
 查询操作：
-查询某一个值queryForObject
-返回对象：自己写个类实现RowMapper接口完成数据封装
+查询某一个值 queryForObject
+返回对象：自己写个类实现 RowMapper 接口完成数据封装
 
 12.SSH
 Struts+Spring+Hibernate
