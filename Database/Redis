@@ -77,7 +77,7 @@ MESI 的核心思想：当 CPU 写数据时，如果发现操作的变量是共�
 4.Redis 与 Memcached
 两者都是非关系型内存键值数据库，主要有以下不同：
 Redis 只使用单核，而 Memcached 可以使用多核。平均每一个核上 Redis 在存储小数据时比 Memcached 性能更高。存储大数据时 Memcached 高。
-Redis 单线程，Memcached 多线程。
+Redis 单线程，Memcached 多线程。Memcached 是多线程，非阻塞IO复用的网络模型。
 Redis 有五种数据类型，而 Memcached 仅支持字符串类型。
 Redis 支持两种持久化策略：RDB 快照和 AOF 日志，而 Memcached 不支持持久化。
 Redis Cluster 实现了分布式的支持。而 Memcached 不支持分布式，只能通过在客户端使用一致性哈希来实现分布式存储，这种方式在存储和查询时都需要先在客户端计算一次数据所在的节点。
