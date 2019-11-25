@@ -83,10 +83,10 @@ Redis Cluster 实现了分布式的支持。而 Memcached 不支持分布式，�
 Redis 中并不是所有数据都一直存储在内存中，可以将一些很久没用的 value 交换到磁盘，而 Memcached 的数据则会一直在内存中。Memcached 将内存分割成特定长度的块来存储数据，以完全解决内存碎片的问题。但是这种方式会使得内存的利用率不高。
 
 5.数据淘汰策略
-Redis 过期策略是：对于设置了过期时间的数据定期删除+惰性删除。还不行就走淘汰。
+Redis 的过期策略是：对于设置了过期时间的数据定期删除+惰性删除。还不行就走淘汰。
 定期删除：Redis 默认是每隔 100ms 就随机抽取一些设置了过期时间的 key，检查其是否过期，如果过期就删除。可能会导致很多过期 key 到了时间并没有被删除掉。
 惰性删除：获取 key 的时候，如果此时 key 已经过期，就删除，不会返回任何东西。
-定期删除漏掉了很多过期 key，然后你也没及时去查，也就没走惰性删除，使大量过期 key 堆积在内存里，导致 R  edis 内存块耗尽了，此时会施行数据淘汰策略。
+定期删除漏掉了很多过期 key，然后你也没及时去查，也就没走惰性删除，使大量过期 key 堆积在内存里，导致 Redis 内存块耗尽了，此时会施行内存淘汰机制。
 
 volatile-lru：从已设置过期时间的数据集中挑选最近最少使用的数据淘汰
 volatile-ttl：从已设置过期时间的数据集中挑选将要过期的数据淘汰
@@ -180,7 +180,6 @@ Redis 将所有时间事件都放在一个无序链表中，通过遍历整个�
 
 8.复制
 通过使用 slave of host port 命令来让一个服务器成为另一个服务器的从服务器。一个从服务器只能有一个主服务器，并且不支持主主复制。
-采用异步方式复制数据到 slave 节点。
 
 连接过程：
 主服务器创建快照文件，发送给从服务器，并在发送期间使用缓冲区记录执行的写命令。快照文件发送完毕之后，开始向从服务器发送存储在缓冲区中的写命令；
@@ -190,15 +189,17 @@ Redis 将所有时间事件都放在一个无序链表中，通过遍历整个�
 随着负载不断上升，形成主从链。
 
 主从(master-slave)架构：一主多从，实现读写分离，主节点负责写，并且将数据复制到其它的 slave 节点，从节点负责读。可以很轻松实现水平扩容，支撑读高并发。Redis 实现高并发主要依靠主从架构。
+Redis replication -> 主从架构 -> 读写分离 -> 水平扩容支撑读高并发。
 Redis 采用异步方式复制数据到 slave 节点，不过 Redis 2.8 开始，slave node 会周期性地确认自己每次复制的数据量。
-slave node 在做复制的时候，也不会 block 对自己的查询操作，它会用旧的数据集来提供服务；但是复制完成的时候，需要删除旧数据集，加载新数据集，这个时候就会暂停对外服务了。
+slave node 在做复制的时候，不会 block master node 的正常工作，也不会 block 对自己的查询操作，它会用旧的数据集来提供服务；但是复制完成的时候，需要删除旧数据集，加载新数据集，这个时候就会暂停对外服务了。
 如果采用了主从架构，那么必须开启 master node 的持久化，不建议用 slave node 作为 master node 的数据热备，因为那样的话，如果你关掉 master 的持久化，可能在 master 宕机重启的时候数据是空的，然后可能一经过复制，slave node 的数据也丢了。
 需要备份，万一本地的所有文件丢失了，从备份中挑选一份 RDB 去恢复 master，这样才能确保启动的时候，是有数据的，即使采用了后续讲解的高可用机制，slave node 可以自动接管 master node，但也可能 sentinel 还没检测到 master failure，master node 就自动重启了，还是可能导致上面所有的 slave node 数据被清空。
 
 核心原理：
+当启动一个 slave node 的时候，它会发送一个 PSYNC 命令给 master node。
 slave node 初次连接到 master node，那么会触发一次 full resynchronization 全量复制。
 此时 master 会启动一个后台线程，开始生成一份 RDB 快照文件，同时还会将从客户端 client 新收到的所有写命令缓存在内存中。
-RDB 文件生成完毕后， master 会将这个 RDB 发送给 slave，slave 会先写入本地磁盘，然后再从本地磁盘加载到内存中，接着 master 会将内存中缓存的写命令发送到 slave，slave 也会同步这些数据。
+RDB 文件生成完毕后，master 会将这个 RDB 发送给 slave，slave 会先写入本地磁盘，然后再从本地磁盘加载到内存中，接着 master 会将内存中缓存的写命令发送到 slave，slave 也会同步这些数据。
 slave node 如果跟 master node 有网络故障，断开了连接，会自动重连，连接之后 master node 仅会复制给 slave 部分缺少的数据。
 
 主从复制的断点续传：
@@ -206,10 +207,14 @@ slave node 如果跟 master node 有网络故障，断开了连接，会自动�
 master node 会在内存中维护一个 backlog，master 和 slave 都会保存一个 replica offset 还有一个 master run id，offset 就是保存在 backlog 中的。如果 master 和 slave 网络连接断掉了，slave 会让 master 从上次 replica offset 开始继续复制，如果没有找到对应的 offset，那么就会执行一次 resynchronization。
 如果根据 host+ip 定位 master node，是不靠谱的，如果 master node 重启或者数据出现了变化，那么 slave node 应该根据不同的 run id 区分。
 
+复制的前期过程：
+slave node 启动时，会在自己本地保存 master node 的信息，包括 master node 的 host 和 ip。
+slave node 内部有个定时任务，每秒检查是否有新的 master node 要连接和复制，如果发现，就跟 master node 建立 socket 网络连接。
+然后 slave node 发送 ping 命令给 master node。如果 master 设置了 requirepass，那么 slave node 必须发送 masterauth 的口令过去进行认证。
+
 无磁盘化复制：master 在内存中直接创建 RDB，然后发送给 slave，不会在自己本地落地磁盘了。只需要在配置文件中开启 repl-diskless-sync yes 即可。
 过期 key 处理：slave 不会过期 key，只会等待 master 过期 key。如果 master 过期了一个 key，或者通过 LRU 淘汰了一个 key，那么会模拟一条 del 命令发送给 slave。
-复制的前期过程：slave node 启动时，会在自己本地保存 master node 的信息，包括 master node 的 host 和 ip。slave node 内部有个定时任务，每秒检查是否有新的 master node 要连接和复制，如果发现，就跟 master node 建立 socket 网络连接。然后 slave node 发送 ping 命令给 master node。如果 master 设置了 requirepass，那么 slave node 必须发送 masterauth 的口令过去进行认证。
-heartbeat：保持通信。
+heartbeat：主从节点互相都会发送 heartbeat 信息。master 默认每隔 10 秒发送一次 heartbeat，slave node 每隔 1 秒发送一个 heartbeat。保持通信。
 
 正常复制为全量复制，断点续传为增量复制。
 
@@ -219,19 +224,19 @@ heartbeat：保持通信。
 9.哨兵
 哨兵 Sentinel 可以监听集群中的服务器，并在主服务器进入下线状态时，自动从从服务器中选举出新的主服务器。
 功能
-集群监控：负责监控 redis master 和 slave 进程是否正常工作。
-消息通知：如果某个 redis 实例有故障，那么哨兵负责发送消息作为报警通知给管理员。
+集群监控：负责监控 Redis master 和 slave 进程是否正常工作。
+消息通知：如果某个 Redis 实例有故障，那么哨兵负责发送消息作为报警通知给管理员。
 故障转移：如果 master node 挂掉了，会自动转移到 slave node 上。
 配置中心：如果故障转移发生了，通知 client 客户端新的 master 地址。
 
-哨兵用于实现 redis 集群的高可用，本身也是分布式的，作为一个哨兵集群去运行，互相协同工作。
+哨兵用于实现 Redis 集群的高可用，本身也是分布式的，作为一个哨兵集群去运行，互相协同工作。
 故障转移时，判断一个 master node 是否宕机了，需要大部分的哨兵都同意才行，涉及到了分布式选举的问题。
 即使部分哨兵节点挂掉了，哨兵集群还是能正常工作的。
 
 核心知识：
 哨兵至少需要 3 个实例，来保证自己的健壮性。
-哨兵 + redis 主从的部署架构，是不保证数据零丢失的，只能保证 redis 集群的高可用性。
-对于哨兵 + redis 主从这种复杂的部署架构，尽量在测试环境和生产环境，都进行充足的测试和演练。
+哨兵 + Redis 主从的部署架构，是不保证数据零丢失的，只能保证 Redis 集群的高可用性。
+对于哨兵 + Redis 主从这种复杂的部署架构，尽量在测试环境和生产环境，都进行充足的测试和演练。
 
 哨兵主备切换的数据丢失问题
 异步复制导致的数据丢失：master->slave 的复制是异步的，所以可能有部分数据还没复制到 slave，master 就宕机了，此时这部分数据就丢失了。
@@ -239,9 +244,11 @@ heartbeat：保持通信。
 
 脑裂导致的数据丢失：脑裂就是某个 master 所在机器突然脱离了正常的网络，跟其他 slave 机器不能连接，但是实际上 master 还运行着，此时哨兵可能就会认为 master 宕机了，然后开启选举，将其他 slave 切换成了 master。这个时候，集群里就会有两个 master 。
 此时虽然某个 slave 被切换成了 master，但是可能 client 还没来得及切换到新的 master，还继续向旧 master 写数据。因此旧 master 再次恢复的时候，会被作为一个 slave 挂到新的 master 上去，自己的数据会清空，重新从新的 master 复制数据。而新的 master 并没有后来 client 写入的数据，因此，这部分数据也就丢失了。
-解决办法：min-slaves-to-write 1和min-slaves-max-lag 10，如果一个 master 出现了脑裂，跟其他 slave 丢了连接，那么上面两个配置可以确保说，如果不能继续给指定数量的 slave 发送数据，而且 slave 超过 10 秒没有给自己 ack 消息，那么就直接拒绝客户端的写请求。因此在脑裂场景下，最多就丢失 10 秒的数据。
+解决办法：min-slaves-to-write 1 和 min-slaves-max-lag 10，如果一个 master 出现了脑裂，跟其他 slave 丢了连接，那么上面两个配置可以确保说，如果不能继续给指定数量的 slave 发送数据，而且 slave 超过 10 秒没有给自己 ack 消息，那么就直接拒绝客户端的写请求。因此在脑裂场景下，最多就丢失 10 秒的数据。
 
-sdown 主观宕机和 odown 客观宕机，有转换机制。
+sdown 是主观宕机，就一个哨兵如果自己觉得一个 master 宕机了，那么就是主观宕机。sdown 达成的条件很简单，如果一个哨兵 ping 一个 master，超过了 is-master-down-after-milliseconds 指定的毫秒数之后，就主观认为 master 宕机了。
+odown 是客观宕机，如果 quorum 数量的哨兵都觉得一个 master 宕机了，那么就是客观宕机。如果一个哨兵在指定时间内，收到了 quorum 数量的其它哨兵也认为那个 master 是 sdown 的，那么就认为是 odown 了。
+主观宕机和客观宕机有转换机制。
 哨兵集群的自动发现机制（哨兵互相之间的发现）：通过 redis 的 pub/sub 系统实现的，每个哨兵都会往 __sentinel__:hello 这个 channel 里发送一个消息，这时候所有其他哨兵都可以消费到这个消息，并感知到其他的哨兵的存在。
 slave 配置的自动纠正：哨兵会负责自动纠正 slave 的一些配置。
 slave->master 选举算法：如果一个 master 被认为 odown 了，而且 majority 数量的哨兵都允许主备切换，那么某个哨兵就会执行主备切换操作。需要选举一个 slave 。
