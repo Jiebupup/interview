@@ -101,6 +101,8 @@ Controller层SpringMVC，接受请求并进行相应的流程处理。
 Service层Spring：完成具体的业务逻辑
 DAO层MyBatis：对数据库进行操作
 
+分层模型：应用层、服务层、数据层。
+
 @RestController vs @Controller
 Controller 返回一个页面：单独使用 @Controller 不加 @ResponseBody 的话一般使用在要返回一个视图的情况。前后端不分离。
 @RestController 返回 JSON 格式数据。返回 domain 对象，再由 MappingJackson2HttpMessageConverter 自动转换为 JSON。对象数据直接以 JSON 或 XML 形式写入 HTTP 响应(Response)中，这种情况属于 RESTful Web 服务。前后端分离。Spring 4 之后新加的注解。         
