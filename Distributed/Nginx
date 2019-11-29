@@ -13,3 +13,5 @@ Nginx负载均衡是通过upstream模块来实现的，内置实现了三种负�
 IP Hash：绑定处理请求的服务器。第一次请求时，根据该客户端的IP算出一个HASH值，将请求分配到集群中的某一台服务器上。后面该客户端的所有请求，都将通过HASH算法，找到之前处理这台客户端请求的服务器，然后将请求交给它来处理。
 
 第三方负载策略：fair和url_hash
+
+Nginx 实现限流：连接数限流模块 ngx_http_limit_conn_module 和漏桶算法实现的请求限流模块 ngx_http_limit_req_module。
