@@ -92,3 +92,8 @@ Cookie 不能跨域的解决方案：
 将 token 保存在 SessionStroage 中（不依赖 Cookie 就没有跨域的问题了）
 
 CAS（Central Authentication Service）：SSO 认证中心类似一个中转站。
+
+8.new 一个对象的过程
+一、类加载
+二、创建对象
+
