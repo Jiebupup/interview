@@ -90,7 +90,7 @@ Cookie 曾一度用于客户端数据的存储，但渐渐被淘汰，新的浏�
 用途：会话状态管理，个性化设置，浏览器行为跟踪。
 
 创建过程：服务器发送的响应报文包含 Set-Cookie 首部字段，客户端得到响应报文后把 Cookie 内容保存到浏览器中。客户端之后对同一个服务器发送请求时，会从浏览器中取出 Cookie 信息并通过 Cookie 请求首部字段发送给服务器。
-Set-Cookie首部字段属性：
+Set-Cookie 首部字段属性：
 Expires：指定游览器可发送 Cookie 的有效期。
 Path：定了主机下的哪些路径可以接受 Cookie（该 URL 路径必须存在于请求 URL 中）。
 Domain：指定了哪些主机可以接受 Cookie。如果不指定，默认为当前文档的主机（不包含子域名）。如果指定了 Domain，则一般包含子域名。
@@ -104,11 +104,11 @@ HttpOnly：标记为 HttpOnly 的 Cookie 不能被 JavaScript 脚本调用。在
 Session 将用户信息存储在服务器端，存储在服务器端的信息更加安全。
 Session 可以存储在服务器上的文件、数据库或者内存中。也可以将 Session 存储在 Redis 这种内存型数据库中，效率会更高。
 服务器返回的响应报文的 Set-Cookie 首部字段包含了这个 Session ID，客户端收到响应报文之后将该 Cookie 值存入浏览器中。客户端之后对同一个服务器进行请求时会包含该 Cookie 值，服务器收到之后提取出 Session ID。
-典型的场景是购物车：要添加商品到购物车的时候，系统不知道是哪个用户操作的，服务端给特定的用户创建特定的 Session 之后就可以标识这个用户并且跟踪这个用户了（一般情况下，服务器会在一定时间内保存这个 Session，过了时间限制，就会销毁这个Session）。
+典型的场景是购物车：要添加商品到购物车的时候，系统不知道是哪个用户操作的，服务端给特定的用户创建特定的 Session 之后就可以标识这个用户并且跟踪这个用户了（一般情况下，服务器会在一定时间内保存这个 Session，过了时间限制，就会销毁这个 Session）。
 
 可以通过 Session 来统计网站的用户在线数。
 
-分布式 Session：用户的 Session 信息要分散在各个服务器中。可以用 spring session + redis 实现。
+分布式 Session：用户的 Session 信息要分散在各个服务器中。可以用 Spring Session + Redis 实现。
 Sticky Session：需要配置负载均衡器，使得一个用户的所有请求都路由到同一个服务器，这样就可以把用户的 Session 存放在该服务器中。
 缺点：当服务器宕机时，将丢失该服务器上的所有 Session。
 
@@ -123,7 +123,7 @@ Session Server：使用一个单独的服务器存储 Session 数据，可以使
 此时无法使用 Cookie 来保存用户信息，只能使用 Session。除此之外，不能再将 Session ID 存放到 Cookie 中，而是使用 URL 重写技术（把session id直接附加在URL路径的后面），将 Session ID 作为 URL 的参数进行传递。服务器能够解析重写后的 URL 获取 Session ID。
 隐藏的表单域：<input type="hidden" name ="session" value="..."/>，所有页面必须是表单提交之后的结果。
 
-共同之处：cookie 和 session 都是用来跟踪浏览器用户身份的会话方式。
+共同之处：Cookie 和 Session 都是用来跟踪浏览器用户身份的会话方式。
 Cookie 与 Session 比较：
 Cookie 只能存储 ASCII 码字符串，而 Session 则可以存储任何类型的数据，因此在考虑数据复杂性时首选 Session。 
 Cookie 存储在浏览器中，容易被恶意查看。如果非要将一些隐私数据存在 Cookie 中，可以将 Cookie 值进行加密，然后在服务器进行解密。Cookie 更容易被伪造。
