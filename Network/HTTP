@@ -163,7 +163,7 @@ HTTP 有以下安全性问题：
 不验证通信方的身份，通信方的身份有可能遭遇伪装；
 无法证明报文的完整性，报文有可能遭篡改。
 
-HTTPS让HTTP 先和 SSL（Secure Sockets Layer）通信，再由 SSL 和 TCP 通信，也就是说 HTTPS 使用了隧道进行通信。
+HTTPS 让 HTTP 先和 SSL 通信，再由 SSL 和 TCP 通信，也就是说 HTTPS 使用了隧道进行通信。
 通过使用 SSL，HTTPS 具有了加密（防窃听）、认证（防伪装）和完整性保护（防篡改）。
 
 加密
@@ -180,7 +180,7 @@ HTTPS让HTTP 先和 SSL（Secure Sockets Layer）通信，再由 SSL 和 TCP 通
 HTTPS 采用混合的加密机制，使用非对称密钥加密用于传输对称密钥来保证传输过程的安全性，之后使用对称密钥加密进行通信来保证通信过程的效率。
 
 认证
-通过使用证书来对通信方进行认证。数字证书认证机构CA是客户端与服务器双方都可信赖的第三方机构。
+通过使用证书来对通信方进行认证。数字证书认证机构 CA 是客户端与服务器双方都可信赖的第三方机构。
 服务器的运营人员向 CA 提出公开密钥的申请，CA 在判明提出申请者的身份之后，会对已申请的公开密钥做数字签名，然后分配这个已签名的公开密钥，并将该公开密钥放入公开密钥证书后绑定在一起。
 进行 HTTPS 通信时，服务器会把证书发送给客户端。客户端取得其中的公开密钥之后，先使用数字签名进行验证，如果验证通过，就可以开始通信了。
 
@@ -189,34 +189,34 @@ SSL 提供报文摘要功能来进行完整性保护。
 HTTP 也提供了 MD5 报文摘要功能，但不是安全的。例如报文内容被篡改之后，同时重新计算 MD5 的值，通信接收方是无法意识到发生了篡改。
 HTTPS 的报文摘要功能之所以安全，是因为它结合了加密和认证这两个操作。试想一下，加密之后的报文，遭到篡改之后，也很难重新计算报文摘要，因为无法轻易获取明文。
 
-SSL/TLS：安全协议，确保互联网连接安全。TLS（Transport Layer Security）是更为安全的升级版 SSL。SSL/TLS是有状态的。
+HTTPS 的缺点：
+因为需要进行加密解密等过程，因此速度会更慢；
+需要支付证书授权的高额费用。
+
+SSL/TLS：安全协议，确保互联网连接安全。TLS 是更为安全的升级版 SSL。SSL/TLS 是有状态的。
 SSL/TLS 握手过程：
-Client Hello：生成Random1
-Server Hello：生成Random2，这两个随机数会在后续生成对称秘钥时用到。
+Client Hello：生成 Random1
+Server Hello：生成 Random2，这两个随机数会在后续生成对称秘钥时用到。
 Certificate：这一步是服务端将自己的证书下发给客户端，让客户端验证自己的身份，客户端验证通过后取出证书中的公钥。
-Server Key Exchange：如果是DH算法，这里发送服务器使用的DH参数。RSA算法不需要这一步。
+Server Key Exchange：如果是 DH 算法，这里发送服务器使用的 DH 参数。RSA 算法不需要这一步。
 Certificate Request：Certificate Request 是服务端要求客户端上报证书，这一步是可选的，对于安全性要求高的场景会用到。
 Server Hello Done
-Certificate Verify：客户端收到服务端传来的证书后，先从 CA 验证该证书的合法性，验证通过后取出证书中的服务端公钥，再生成Random3，再用服务端公钥非对称加密 Random3 生成 PreMaster Key。
+Certificate Verify：客户端收到服务端传来的证书后，先从 CA 验证该证书的合法性，验证通过后取出证书中的服务端公钥，再生成 Random3，再用服务端公钥非对称加密 Random3 生成 PreMaster Key。
 Client Key Exchange：将 PreMaster Key 传给服务端，服务端再用自己的私钥解出这个 PreMaster Key 得到客户端生成的 Random3。至此，客户端和服务端都拥有 Random1 + Random2 + Random3，两边再根据同样的算法就可以生成一份秘钥，握手结束后的应用层数据都是使用这个秘钥进行对称加密。
 
-HTTPS的工作原理：
-客户端发起HTTPS请求
+HTTPS 的工作原理：
+客户端发起 HTTPS 请求
 服务端的配置，数字证书，公钥和私钥
 传送证书，公钥
-客户端解析证书，由TLS来完成
+客户端解析证书，由 TLS 来完成
 客户端传送加密信息，服务端解密信息
 服务端传输加密信息，客户端解密信息
 
-HTTP和HTTPS的区别
-HTTP传输是未加密的明文，而HTTPS经过SSL加密、认证和完整性保护更加安全。但是 HTTPS 比HTTP 耗费更多服务器资源。
-HTTPS协议需要到CA申请证书。
-HTTP使用简单的无状态的连接，HTTPS通过SSL连接。
-HTTP使用80端口，HTTPS使用443端口。
-
-HTTPS的缺点：
-因为需要进行加密解密等过程，因此速度会更慢；
-需要支付证书授权的高额费用。
+HTTP 和 HTTPS 的区别
+HTTP 传输是未加密的明文，而 HTTPS 经过 SSL 加密、认证和完整性保护更加安全。但是 HTTPS 比 HTTP 耗费更多服务器资源。
+HTTPS 协议需要到 CA 申请证书。
+HTTP 使用简单的无状态的连接，HTTPS 通过 SSL 连接。
+HTTP 使用 80 端口，HTTPS 使用 443 端口。
 
 7.HTTP/2.0
 HTTP/1.x 缺陷：实现简单是以牺牲性能为代价的：
