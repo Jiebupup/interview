@@ -227,6 +227,7 @@ public class Singleton {
         return uniqueInstance;
     }
 }
+
 静态内部类
 public class Singleton {
     private static class SingletonHolder {
@@ -238,6 +239,7 @@ public class Singleton {
         return SingletonHolder.INSTANCE;
     }
 }
+
 枚举
 public enum Singleton {  
     INSTANCE;  
