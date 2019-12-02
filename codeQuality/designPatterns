@@ -1,8 +1,8 @@
 1.单例模式
-保证一个类中有一个实例,并提供一个访问它的全局访问点。
+保证一个类中有一个实例，并提供一个访问它的全局访问点。
 
 好处：
-对于频繁使用的对象，可以省略创建对象所花费的时间，这对于那些重量级对象而言，是非常可观的一笔系统开销；
+对于频繁使用的对象，可以省略创建对象所花费的时间，这对于那些重量级对象而言，是非常可观的一笔系统开销。
 由于 new 操作的次数减少，因而对系统内存的使用频率也会降低，这将减轻 GC 压力，缩短 GC 停顿时间。
 
 组成：
@@ -11,13 +11,13 @@
 公有静态函数
 私有构造函数保证了不能通过构造函数来创建对象实例，只能通过公有静态函数返回唯一的私有静态变量。
 
-懒汉式-线程不安全：变量延迟初始化，这样做的好处是，如果没有用到该类，那么就不会实例化 uniqueInstance，从而节约资源。在多线程下 uniqueInstance 会被实例化多次。
-懒汉式-线程安全：对 getUniqueInstance() 方法加锁。线程阻塞时间过长，影响效率。
+懒汉式-线程不安全：变量延迟实例化，这样做的好处是，如果没有用到该类，那么就不会实例化 uniqueInstance，从而节约资源。在多线程下 uniqueInstance 会被实例化多次。
+懒汉式-线程安全：对 getUniqueInstance() 方法加锁。线程阻塞时间过长，性能差。
 饿汉式：直接实例化 uniqueInstance。
 
-双检锁：先判断 uniqueInstance 是否已经被实例化，如果没有被实例化，那么才对实例化语句进行加锁。两次校验中加上 synchronized (Singleton.class)。
-uniqueInstance 采用 volatile 关键字修饰：禁止指令重排序（uniqueInstance = new Singleton() 不是原子性操作，多线程环境下导致一个线程获得还没有初始化的实例）。
+双重校验锁：先判断 uniqueInstance 是否已经被实例化，如果没有被实例化，那么才对实例化语句进行加锁。两次校验中加上 synchronized (Singleton.class)。
 需要使用双重校验锁，也就是需要使用两个 if 语句的原因：第一个 if 语句用来避免 uniqueInstance 已经被实例化之后的加锁操作。而第二个 if 语句进行了加锁，所以只能有一个线程进入，就不会出现 uniqueInstance == null 时两个线程同时进行实例化操作。
+uniqueInstance 采用 volatile 关键字修饰：禁止 JVM 的指令重排（uniqueInstance = new Singleton() 不是原子性操作，多线程环境下导致一个线程获得还没有初始化的实例）。
 
 静态内部类：在静态内部类中声明和初始化 uniqueInstance。
 当 Singleton 类被加载时，静态内部类 SingletonHolder 没有被加载进内存。只有当调用 getUniqueInstance() 方法从而触发 SingletonHolder.INSTANCE 时 SingletonHolder 才会被加载，此时初始化 INSTANCE 实例，并且 JVM 能确保 INSTANCE 只被实例化一次。
