@@ -57,48 +57,59 @@ start() 不能被重复调用。run() 可以被重复调用。
 
 3.基础线程机制
 Executor 管理多个异步任务的执行，而无需程序员显式地管理线程的生命周期。
-  
-Executor简化任务与线程的生命周期管理，将任务的提交和执行解耦，基于生产者-消费者模式。
-ExecutorService接口实现了Executor接口，有两个实现：抽象类AbstractExecutorService和接口ScheduledExecutorService。
-ThreadPoolExecutor继承了AbstractExecutorService，是线程池的真正实现。
+Executor 简化任务与线程的生命周期管理，将任务的提交和执行解耦，基于生产者-消费者模式。
+ExecutorService 接口实现了 Executor 接口，有两个实现：抽象类 AbstractExecutorService 和接口 ScheduledExecutorService。
+ThreadPoolExecutor 继承了 AbstractExecutorService，是线程池的真正实现。
 
-《阿里巴巴Java开发手册》中强制线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式，这样的处理方式让写的同学更加明确线程池的运行规则，规避资源耗尽的风险。
+《阿里巴巴 Java 开发手册》中强制线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式，这样的处理方式让写的同学更加明确线程池的运行规则，规避资源耗尽的风险。
 Executors 返回线程池对象的弊端：
 FixedThreadPool 和 SingleThreadExecutor：允许请求的队列长度为 Integer.MAX_VALUE，可能堆积大量的请求，从而导致 OOM。
 CachedThreadPool 和 ScheduledThreadPool：允许创建的线程数量为 Integer.MAX_VALUE，可能会创建大量线程，从而导致 OOM。
 
+如何创建线程池：
+通过 ThreadPoolExecutor 的构造方法实现。
+通过 Executor 框架的工具类 Executors 来实现，创建三种类型的 ThreadPoolExecutor：FixedThreadPool、SingleThreadExecutor、CachedThreadPool。
+
 线程池：
 池化技术的思想主要是为了减少每次获取资源的消耗，提高对资源的利用率。
 线程池提供了一种限制和管理资源（包括执行一个任务）。每个线程池还维护一些基本统计信息，例如已完成任务的数量。
-管理一组同构工作线程的资源池。线程池过大会使大量的线程CPU和内存资源上竞争，过小会空闲降低吞吐率。使得线程可以复用，就是执行完一个任务，并不被销毁，而是可以继续执行其他的任务。
+管理一组同构工作线程的资源池。使得线程可以复用，就是执行完一个任务，并不被销毁，而是可以继续执行其他的任务。
 线程池状态
-RUNNING：当创建线程池后，初始时，线程池处于RUNNING状态；
-SHUTDOWN：如果调用了shutdown()方法，则线程池处于SHUTDOWN状态，此时线程池不能够接受新的任务，它会等待所有任务执行完毕；
-STOP：如果调用了shutdownNow()方法，则线程池处于STOP状态，此时线程池不能接受新的任务，并且会去尝试终止正在执行的任务；
-TERMINATED：当线程池处于SHUTDOWN或STOP状态，并且所有工作线程已经销毁，任务缓存队列已经清空或执行结束后，线程池被设置为TERMINATED状态。
+RUNNING：当创建线程池后，初始时，线程池处于 RUNNING 状态；
+SHUTDOWN：如果调用了shutdown()方法，则线程池处于 SHUTDOWN 状态，此时线程池不能够接受新的任务，它会等待所有任务执行完毕；
+STOP：如果调用了 shutdownNow() 方法，则线程池处于 STOP 状态，此时线程池不能接受新的任务，并且会去尝试终止正在执行的任务；
+TERMINATED：当线程池处于 SHUTDOWN 或 STOP 状态，并且所有工作线程已经销毁，任务缓存队列已经清空或执行结束后，线程池被设置为 TERMINATED 状态。
 
 任务提交给线程池
 poolSize：线程池中当前线程的数量。
-corePoolSize核心池大小：在没有任务需要执行的时候线程池的大小，并且只有在工作队列满了的情况下才会创建超出这个数量的线程。
-maximumPoolSize最大池大小：线程池中允许的最大线程数，线程池中的当前线程数目不会超过该值。
+corePoolSize 核心池大小：在没有任务需要执行的时候线程池的大小，并且只有在工作队列满了的情况下才会创建超出这个数量的线程。
+maximumPoolSize：线程池中允许的最大线程数，线程池中的当前线程数目不会超过该值。
+workQueue：当新任务来的时候会先判断当前运行的线程数量是否达到核心线程数，如果达到的话，任务就会被存放在队列中。
 
-如果poolSize<corePoolSize，新增加一个线程处理新的任务。
-如果poolSize=corePoolSize，新任务会被放入阻塞队列等待。
-如果阻塞队列的容量达到上限，且这时poolSize<maximumPoolSize，新增线程来处理任务。
-如果阻塞队列满了，且poolSize=maximumPoolSize，那么线程池已经达到极限，会根据饱和策略RejectedExecutionHandler拒绝新的任务。
+如果 poolSize<corePoolSize，新增加一个线程处理新的任务。
+如果 poolSize=corePoolSize，新任务会被放入阻塞队列等待。
+如果阻塞队列的容量达到上限，且这时 poolSize<maximumPoolSize，新增线程来处理任务。
+如果阻塞队列满了，且 poolSize=maximumPoolSize，那么线程池已经达到极限，会根据饱和策略 RejectedExecutionHandler 拒绝新的任务。
 
 超时机制销毁线程
 allowCoreThreadTimeOut：该属性用来控制是否允许核心线程超时退出。
-keepAliveTime：如果一个线程处在空闲状态的时间超过了该属性值，就会因为超时而退出。poolSize>corePoolSize时生效。
+keepAliveTime：当线程池中的线程数量大于 corePoolSize 的时候，如果这时没有新的任务提交，核心线程外的线程不会立即销毁，而是会等待，直到等待的时间超过了 keepAliveTime 才会被回收销毁。
+handler：饱和策略。
+
+ThreadPoolExecutor 饱和（拒绝）策略：
+中止：抛出运行时异常。默认 ThreadPoolExecutor.AbortPolicy。
+抛弃
+抛弃最老的任务：丢弃队列最前面的任务，然后重新尝试执行任务（重复此过程）
+调用者运行：将任务退回到调用者，平缓的性能降低。对于可伸缩的应用程序，建议使用 ThreadPoolExecutor.CallerRunsPolicy。当最大池被填满时，此策略为我们提供可伸缩队列。
 
 线程池分类（工厂模式）：
 CachedThreadPool：一个任务创建一个线程。线程池的线程数量可根据实际情况调整。若有空闲线程可以复用，则会优先使用可复用的线程。若所有线程均在工作，又有新的任务提交，则会创建新的线程处理任务。所有线程在当前任务执行完毕后，将返回线程池进行复用。
-ScheduledThreadPool：使用SynchronousQueue。
+ScheduledThreadPool：使用 SynchronousQueue。
 可能会创建大量线程
 
 FixedThreadPool：所有任务只能使用固定大小的线程。线程池中的线程数量始终不变。当有一个新的任务提交时，线程池中若有空闲线程，则立即执行。若没有，则新的任务会被暂存在一个任务队列中，待有线程空闲时，便处理在任务队列中的任务。
 SingleThreadExecutor：相当于大小为 1 的 FixedThreadPool。
-可能堆积大量的请求，默认使用无界的LinkedBlockingQueue
+可能堆积大量的请求，默认使用无界的 LinkedBlockingQueue
 
 安全性问题：
 饥饿：线程池中任务依赖于其他任务，无法访问它所需要的资源而不能继续执行。
@@ -110,20 +121,14 @@ SingleThreadExecutor：相当于大小为 1 的 FixedThreadPool。
 提高响应速度。当任务到达时，任务可以不需要的等到线程创建就能立即执行。
 提高线程的可管理性。线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。
 
-线程池过大：大量的线程将在相对很小的CPU和内存资源上发生竞争，不仅会导致更高的内存使用量，而且还可能会耗尽资源。
+线程池过大：大量的线程将在相对很小的 CPU 和内存资源上发生竞争，不仅会导致更高的内存使用量，而且还可能会耗尽资源。
 线程池过小：许多空闲的处理器无法执行工作，从而降低吞吐率。
 
-阻塞队列BlockingQueue：实现生产者消费者问题
+阻塞队列 BlockingQueue：实现生产者消费者问题
 FIFO 队列 ：LinkedBlockingQueue（单向链表）、ArrayBlockingQueue（固定长度）。其并发控制采用可重入锁来控制，分非公平性（默认）和公平性。
 优先级队列 ：PriorityBlockingQueue，无界，空间不够的话会自动扩容，排序，并发控制采用的是 ReentrantLock，不可以插入 null 值，插入队列的对象必须是可比较大小的（comparable），否则报 ClassCastException 异常。
 提供了阻塞的 take() 和 put() 方法：如果队列为空 take() 将阻塞，直到队列中有内容；如果队列为满 put() 将阻塞，直到队列有空闲位置。
-自己实现BlockingQueue：参考ArrayBlockingQueue，put()、take()用ReentrantLock和Condition实现可中断、公平、选择性通知，消费者wait()/生产者notify()，enqueue()、dequeue()。
-
-LinkedBlockingQueue满了的饱和（拒绝）策略：
-中止：抛出运行时异常
-抛弃
-抛弃最老的任务：丢弃队列最前面的任务，然后重新尝试执行任务（重复此过程）
-调用者运行：将任务退回到调用者，平缓的性能降低
+自己实现 BlockingQueue：参考ArrayBlockingQueue，put()、take()用 ReentrantLock 和 Condition 实现可中断、公平、选择性通知，消费者 wait()、生产者 notify()，enqueue()、dequeue()。
 
 Daemon 守护线程：程序运行时在后台提供服务的线程，不属于程序中不可或缺的部分。当所有非守护线程结束时，程序也就终止，同时会杀死所有守护线程。main() 属于非守护线程。在线程启动之前使用 setDaemon() 方法可以将一个线程设置为守护线程。
 
