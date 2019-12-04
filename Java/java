@@ -3,18 +3,21 @@ byte（8）
 char（16），short（16）
 int（32），float（32）
 long（64），double（64）
-boolean（true或false）所占大小为1B或者4B，取决于虚拟机。JVM 会在编译时期将 boolean 类型的数据转换为 int，JVM 支持 boolean 数组，但是是通过读写 byte 数组来实现的。
-基本数据类型储存在栈中，更加高效。所有数值类型都有正负号。
+boolean（true or false）所占大小为 1B 或者 4B，取决于虚拟机。JVM 会在编译时期将 boolean 类型的数据转换为 int，使用 1 来表示 true，0 表示 false。JVM 支持 boolean 数组，但是是通过读写 byte 数组来实现的。
+基本数据类型储存在栈中，更加高效。所有数值类型都有正负号。 
+
 包装类型：基本类型都有对应的包装类型，基本类型与其对应的包装类型之间的赋值使用自动装箱与拆箱完成。包装类不能被继承。
 
 《阿里巴巴Java开发手册》：所有的 POJO 类属性必须使用包装数据类型。RPC 方法的返回值和参数必须使用包装数据类型。推荐所有的局部变量使用基本数据类型。
 POJO 类属性没有初值是提醒使用者在需要使用时，必须自己显式地进行赋值，任何 NPE 问题，或者入库检查，都由使用者来保证。
 
-new Integer()与Integer.valueOf()的区别：new Integer() 每次都会新建一个对象，Integer.valueOf() 会使用缓存池中的对象，多次调用会取得同一个对象的引用。
-valueOf() 方法的实现比较简单，就是先判断值是否在缓存池中，如果在的话就直接返回缓存池的内容。在 Java 8 中，Integer 缓存池的大小默认为 -128~127。
+缓存池
+new Integer() 与 Integer.valueOf() 的区别：new Integer() 每次都会新建一个对象，Integer.valueOf() 会使用缓存池中的对象，多次调用会取得同一个对象的引用。
+valueOf() 方法的实现比较简单，就是先判断值是否在缓存池中，如果在的话就直接返回缓存池的内容。
+在 Java 8 中，Integer 缓存池的大小默认为 -128~127。
 编译器会在自动装箱过程调用 valueOf() 方法，因此多个值相同且值在缓存池范围内的 Integer 实例使用自动装箱来创建，那么就会引用相同的对象。
-基本类型对应的缓冲池：boolean values true and false，all byte values，short values between -128 and 127，int values between -128 and 127，char in the range \u0000 to \u007F
-jdk 1.8Integer 的缓冲池 IntegerCache 很特殊，这个缓冲池的下界是 - 128，上界默认是 127，但是这个上界是可调的。
+基本类型对应的缓冲池：boolean values true and false，all byte values，short values between -128 and 127，int values between -128 and 127，char in the range \u0000 to \u007F。
+JDK1.8 Integer 的缓冲池 IntegerCache 很特殊，这个缓冲池的下界是 -128，上界默认是 127，但是这个上界是可调的。
 
 强制类型转换cast。
 +=、-=、*=、/=运算符可以执行隐式类型转换。
@@ -31,9 +34,9 @@ Java 的参数是按值传递，方法得到的是所有参数值的一个拷贝
 成员变量是对象的一部分，它随着对象的创建而存在，而局部变量随着方法的调用而自动消失。
 成员变量如果没有被赋初值:如果是基本数据类型则会自动以类型的默认值而赋值（一种情况例外被 final 修饰的成员变量也必须显示地赋值），如果是引用类型 则为null；而局部变量则不会自动赋值。
 
-2.String和数组
+2.String 和数组
 String 被声明为 final，因此它不可被继承。
-在 Java 8 中，String 内部使用 char 数组存储数据，同时使用 coder 来标识使用了哪种编码。
+在 Java 8 中，String 内部使用 char 数组存储数据  。
 在 Java 9 之后，String 类的实现改用 byte 数组value存储字符串，同时使用 coder 来标识使用了哪种编码。
 value 数组被声明为 final，这意味着 value 数组初始化之后就不能再引用其它数组。并且 String 内部没有改变 value 数组的方法，因此可以保证 String 不可变。
 
@@ -56,12 +59,23 @@ String 不可变，StringBuffer 和 StringBuilder 可变。
 String 是线程安全的，StringBuffer 是线程安全的（内部使用 synchronized 进行同步），StringBuilder 不是线程安全的。
 每次对 String 类型进行改变的时候，都会生成一个新的 String 对象，然后将指针指向新的 String 对象。StringBuffer 每次都会对 StringBuffer 对象本身进行操作，而不是生成新的对象并改变对象引用。StringBuilder 比 StringBuffer 性能高，且适用于单线程。
 
-字符串常量池String Pool：保存着所有字符串字面量，这些字面量在编译时期就确定。不仅如此，还可以使用 String 的 intern() 方法在运行过程中将字符串添加到 String Pool 中。
+字符串常量池 String Pool：保存着所有字符串字面量，这些字面量在编译时期就确定。不仅如此，还可以使用 String 的 intern() 方法在运行过程中将字符串添加到 String Pool 中。
 当一个字符串调用 intern() 方法时，如果 String Pool 中已经存在一个字符串和该字符串值相等（使用 equals() 方法进行确定），那么就会返回 String Pool 中字符串的引用；否则，就会在 String Pool 中添加一个新的字符串，并返回这个新字符串的引用。
 在 Java 7 之前，String Pool 被放在运行时常量池中，它属于永久代。而在 Java 7，String Pool 被移到堆中。这是因为永久代的空间有限，在大量使用字符串的场景下会导致 OutOfMemoryError 错误。
-当创建 String 类型的对象时，虚拟机会在常量池中查找有没有已经存在的值和要创建的值相同的对象，如果有就把它赋给当前引用。如果没有就在常量池中重新创建一个 String 对象。
 
-new String("abc")会创建两个字符串对象（前提是 String Pool 中还没有 "abc" 字符串对象）:"abc" 属于字符串字面量，因此编译时期会在 String Pool 中创建一个字符串对象，指向这个 "abc" 字符串字面量；而使用 new 的方式会在堆中创建一个字符串对象。
+String 类和常量池
+String 对象的两种创建方式：
+String str1 = "abcd";  //先检查字符串常量池中有没有"abcd"，如果字符串常量池中没有，则创建一个，然后 str1 指向字符串常量池中的对象，如果有，则直接将 str1 指向"abcd""；
+String str2 = new String("abcd");  //堆中创建一个新的对象
+只要使用 new 方法，便需要创建新的对象。
+
+String 类型的常量池：
+直接使用双引号声明出来的 String 对象会直接存储在常量池中。
+String.intern() 是一个 Native 方法，它的作用是：如果运行时常量池中已经包含一个等于此 String 对象内容的字符串，则返回常量池中该字符串的引用；如果没有，JDK1.7 之前（不包含 1.7）的处理方式是在常量池中创建与此 String 内容相同的字符串，并返回常量池中创建的字符串的引用，JDK1.7 以及之后的处理方式是在常量池中记录此字符串的引用，并返回该引用。
+字符串拼接会新建对象。如果需要改变字符串的话，可以使用 StringBuilder 或者 StringBuffer。
+
+问：String s1 = new String("abc"); 这句话创建了几个字符串对象？
+将创建 1 或 2 个字符串。如果池中已存在字符串文字 “abc”，则池中只会创建一个字符串 “s1”。如果池中没有字符串文字 “abc”，那么它将首先在池中创建，然后在堆空间中创建，因此将创建总共 2 个字符串对象。
 
 数组：
 初始化默认值：大括号初始化数组必须出现在创建数组的地方。
