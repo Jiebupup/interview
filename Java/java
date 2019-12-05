@@ -6,7 +6,7 @@ long（64），double（64）
 boolean（true or false）所占大小为 1B 或者 4B，取决于虚拟机。JVM 会在编译时期将 boolean 类型的数据转换为 int，使用 1 来表示 true，0 表示 false。JVM 支持 boolean 数组，但是是通过读写 byte 数组来实现的。
 基本数据类型储存在栈中，更加高效。所有数值类型都有正负号。 
 
-包装类型：基本类型都有对应的包装类型，基本类型与其对应的包装类型之间的赋值使用自动装箱与拆箱完成。包装类不能被继承。
+包装类型：基本类型都有对应的包装类型，基本类型与其对应的包装类型之间的赋值使用自动装箱与拆箱完成。包装类不能被继承。包装类大部分实现了常量池技术。
 
 《阿里巴巴Java开发手册》：所有的 POJO 类属性必须使用包装数据类型。RPC 方法的返回值和参数必须使用包装数据类型。推荐所有的局部变量使用基本数据类型。
 POJO 类属性没有初值是提醒使用者在需要使用时，必须自己显式地进行赋值，任何 NPE 问题，或者入库检查，都由使用者来保证。
@@ -14,10 +14,16 @@ POJO 类属性没有初值是提醒使用者在需要使用时，必须自己显
 缓存池
 new Integer() 与 Integer.valueOf() 的区别：new Integer() 每次都会新建一个对象，Integer.valueOf() 会使用缓存池中的对象，多次调用会取得同一个对象的引用。
 valueOf() 方法的实现比较简单，就是先判断值是否在缓存池中，如果在的话就直接返回缓存池的内容。
-在 Java 8 中，Integer 缓存池的大小默认为 -128~127。
+在 Java 8 中，Integer 缓存池的大小默认为 -128~127。这个区间是性能和资源之间的权衡。
 编译器会在自动装箱过程调用 valueOf() 方法，因此多个值相同且值在缓存池范围内的 Integer 实例使用自动装箱来创建，那么就会引用相同的对象。
 基本类型对应的缓冲池：boolean values true and false，all byte values，short values between -128 and 127，int values between -128 and 127，char in the range \u0000 to \u007F。
 JDK1.8 Integer 的缓冲池 IntegerCache 很特殊，这个缓冲池的下界是 -128，上界默认是 127，但是这个上界是可调的。
+
+Integer i4 = new Integer(40);
+Integer i5 = new Integer(40);
+Integer i6 = new Integer(0);
+i4=i5+i6   true
+语句 i4 == i5 + i6，因为+这个操作符不适用于 Integer 对象，首先 i5 和 i6 进行自动拆箱操作，进行数值相加，即 i4 == 40。然后 Integer 对象无法与数值进行直接比较，所以 i4 自动拆箱转为 int 值 40，最终这条语句转为 40 == 40 进行数值比较。
 
 强制类型转换cast。
 +=、-=、*=、/=运算符可以执行隐式类型转换。
