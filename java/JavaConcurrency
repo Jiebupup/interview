@@ -76,7 +76,7 @@ CachedThreadPool 和 ScheduledThreadPool：允许创建的线程数量为 Intege
 管理一组同构工作线程的资源池。使得线程可以复用，就是执行完一个任务，并不被销毁，而是可以继续执行其他的任务。
 线程池状态
 RUNNING：当创建线程池后，初始时，线程池处于 RUNNING 状态；
-SHUTDOWN：如果调用了shutdown()方法，则线程池处于 SHUTDOWN 状态，此时线程池不能够接受新的任务，它会等待所有任务执行完毕；
+SHUTDOWN：如果调用了 shutdown() 方法，则线程池处于 SHUTDOWN 状态，此时线程池不能够接受新的任务，它会等待所有任务执行完毕；
 STOP：如果调用了 shutdownNow() 方法，则线程池处于 STOP 状态，此时线程池不能接受新的任务，并且会去尝试终止正在执行的任务；
 TERMINATED：当线程池处于 SHUTDOWN 或 STOP 状态，并且所有工作线程已经销毁，任务缓存队列已经清空或执行结束后，线程池被设置为 TERMINATED 状态。
 
@@ -128,7 +128,7 @@ SingleThreadExecutor：相当于大小为 1 的 FixedThreadPool。
 FIFO 队列 ：LinkedBlockingQueue（单向链表）、ArrayBlockingQueue（固定长度）。其并发控制采用可重入锁来控制，分非公平性（默认）和公平性。
 优先级队列 ：PriorityBlockingQueue，无界，空间不够的话会自动扩容，排序，并发控制采用的是 ReentrantLock，不可以插入 null 值，插入队列的对象必须是可比较大小的（comparable），否则报 ClassCastException 异常。
 提供了阻塞的 take() 和 put() 方法：如果队列为空 take() 将阻塞，直到队列中有内容；如果队列为满 put() 将阻塞，直到队列有空闲位置。
-自己实现 BlockingQueue：参考ArrayBlockingQueue，put()、take()用 ReentrantLock 和 Condition 实现可中断、公平、选择性通知，消费者 wait()、生产者 notify()，enqueue()、dequeue()。
+自己实现 BlockingQueue：参考 ArrayBlockingQueue，put()、take() 用 ReentrantLock 和 Condition 实现可中断、公平、选择性通知，消费者 wait()、生产者 notify()，enqueue()、dequeue()。
 
 Daemon 守护线程：程序运行时在后台提供服务的线程，不属于程序中不可或缺的部分。当所有非守护线程结束时，程序也就终止，同时会杀死所有守护线程。main() 属于非守护线程。在线程启动之前使用 setDaemon() 方法可以将一个线程设置为守护线程。
 
@@ -147,9 +147,9 @@ synchronized 同步代码块，同步方法，同步类。
 synchronized 关键字加到 static 静态方法和 synchronized(class) 代码块上都是是给 Class 类上锁。synchronized 关键字加到实例方法上是给对象实例上锁。尽量不要使用 synchronized(String a) 因为 JVM 中，字符串常量池具有缓存功能。
 如果一个线程 A 调用一个实例对象的非静态 synchronized 方法，而线程 B 需要调用这个实例对象所属类的静态 synchronized 方法，是允许的，不会发生互斥现象，因为访问静态 synchronized 方法占用的锁是当前类的锁，而访问非静态 synchronized 方法占用的锁是当前实例对象锁。
 
-synchronized 底层实现：基于进入和退出管程 Monitor 对象，无论是显式同步(有明确的 monitorenter 和 monitorexit 指令，即同步代码块)还是隐式同步（由方法调用指令读取运行时常量池中方法的 ACC_SYNCHRONIZED 标志，即同步方法）都是如此。
+synchronized 底层实现：基于进入和退出管程 Monitor 对象，无论是显式同步 (有明确的 monitorenter 和 monitorexit 指令，即同步代码块) 还是隐式同步（由方法调用指令读取运行时常量池中方法的 ACC_SYNCHRONIZED 标志，即同步方法）都是如此。
 JVM 中对象在内存中的布局分为三块区域：对象头、实例变量和填充数据。
-对象头：synchronized 使用的锁对象是存储在 Java 对象头里的，JVM 中采用 2 个字来存储对象头(如果对象是数组则会分配 3 个字，多出来的 1 个字记录的是数组长度)，其主要由 Mark Word 和 Class Metadata Address 组成。
+对象头：synchronized 使用的锁对象是存储在 Java 对象头里的，JVM 中采用 2 个字来存储对象头 (如果对象是数组则会分配 3 个字，多出来的 1 个字记录的是数组长度)，其主要由 Mark Word 和 Class Metadata Address 组成。
 Mark Word：存储对象的 hashCode、锁信息或分代年龄或 GC 标志等信息。考虑到 JVM 的空间效率，Mark Word 被设计成为一个非固定的数据结构，以便存储更多有效的数据，它会根据对象本身的状态复用自己的存储空间
 锁对象标记 tag bits 对应锁状态有无锁状态 unlocked、偏向锁状态 biasble、轻量级锁状态 lightweight locked 和重量级锁状态 inflated。它们会随着竞争的激烈而逐渐升级，注意锁可以升级不可降级，这种策略是为了提高获得锁和释放锁的效率。
 
@@ -191,7 +191,7 @@ Object.wait()：进入的是限期等待或者无限期等待。
 只能用在同步方法或者同步控制块中使用，否则会在运行时抛出 IllegalMonitorStateException。
 使用 wait() 挂起期间，线程会释放锁。这是因为，如果没有释放锁，那么其它线程就无法进入对象的同步方法或者同步控制块中，那么就无法执行 notify() 或者 notifyAll() 来唤醒挂起的线程，造成死锁。
 
-两者都可以暂停线程的执行，wait()和sleep()的区别：
+两者都可以暂停线程的执行，wait() 和 sleep() 的区别：
 wait() 会释放锁，而 sleep() 不会释放锁。最主要的区别。
 wait() 是 Object 的方法，而 sleep() 是 Thread 的静态方法。
 wait() 方法被调用后，线程不会自动苏醒，需要别的线程调用同一个对象上的 notify() 或者 notifyAll() 方法。sleep() 方法执行完成后，线程会自动苏醒。或者可以使用 wait(long timeout) 超时后线程会自动苏醒。
@@ -213,14 +213,14 @@ yield()：声明了当前线程已经完成了生命周期中最重要的部分�
 java.util.concurrent（J.U.C）大大提高了并发性能，AbstractQueuedSynchronizer（AQS）被认为是 J.U.C 的核心。
 AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高效地构造出应用广泛的大量的同步器。
 AQS 的核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是用 CLH 队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
-CLH 队列是一个虚拟的双向队列（虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系）。AQS 是将每条请求共享资源的线程封装成一个 CLH 锁队列的一个结点来实现锁的分配。是FIFO 队列。
+CLH 队列是一个虚拟的双向队列（虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系）。AQS 是将每条请求共享资源的线程封装成一个 CLH 锁队列的一个结点来实现锁的分配。是 FIFO 队列。
 AQS 使用一个 int 成员变量 state 来表示同步状态，并使用 CAS 对该同步状态进行原子操作实现对其值的修改。
 AQS 定义两种资源共享方式：Exclusive（独占，又可分为公平锁和非公平锁）和 Share。AQS 也支持自定义同步器同时实现独占和共享两种方式，如 ReentrantReadWriteLock 可以看成是组合式，允许多个线程同时对某一资源进行读。
 自定义同步器在实现时只需要实现共享资源 state 的获取与释放方式即可，至于具体线程等待队列的维护（如获取资源失败入队/唤醒出队等），AQS 已经在顶层实现好了。
 AQS 底层使用了模板方法模式，重写 AQS 提供的模板方法的实现必须是内部线程安全的，并且通常应该简短而不是阻塞。
 
-ReentrantLock基于AQS实现。同步队列存放着竞争同步资源的线程的引用，Condition的等待队列存放着待唤醒的线程的引用。同步队列和等待队列互相协同。
-自旋/挂起：通过挂起线程前的低频自旋保证了AQS阻塞线程上下文切换开销及CUP时间片占用的最优化选择。保证在等待时间短通过自旋去占有锁而不需要挂起，而在等待时间长时将线程挂起。实现锁性能的最大化。
+ReentrantLock 基于 AQS 实现。同步队列存放着竞争同步资源的线程的引用，Condition 的等待队列存放着待唤醒的线程的引用。同步队列和等待队列互相协同。
+自旋/挂起：通过挂起线程前的低频自旋保证了 AQS 阻塞线程上下文切换开销及 CUP 时间片占用的最优化选择。保证在等待时间短通过自旋去占有锁而不需要挂起，而在等待时间长时将线程挂起。实现锁性能的最大化。
 
 CountDownLatch：用来控制一个线程等待多个线程。维护了一个计数器 cnt，每次调用 countDown() 方法会让计数器的值减 1，减到 0 的时候，那些因为调用 await() 方法而在等待的线程就会被唤醒。
 CyclicBarrier：用来控制多个线程互相等待，只有当多个线程都到达时，这些线程才会继续执行。和 CountdownLatch 相似，都是通过维护计数器来实现的。
@@ -243,7 +243,7 @@ join()：等待该任务的处理线程处理完毕，获得返回值。
 9.Java 内存模型 JMM
 Java 内存模型试图屏蔽各种硬件和操作系统的内存访问差异，以实现让 Java 程序在各种平台下都能达到一致的内存访问效果。
 
-在 JDK1.2 之前，Java的内存模型实现总是从主存（即共享内存）读取变量，是不需要进行特别的注意的。
+在 JDK1.2 之前，Java 的内存模型实现总是从主存（即共享内存）读取变量，是不需要进行特别的注意的。
 处理器上的寄存器的读写的速度比内存快几个数量级，为了解决这种速度矛盾，在它们之间加入了高速缓存。加入高速缓存带来了缓存一致性的问题。
 所有的变量都存储在主内存中，每个线程还有自己的工作内存，工作内存存储在高速缓存或者寄存器中，保存了该线程使用的变量的主内存副本拷贝。
 线程只能直接操作工作内存中的变量，不同线程之间的变量值传递需要通过主内存来完成。
@@ -370,7 +370,7 @@ HotSpot 虚拟机对象头的内存布局里的数据被称为 Mark Word，tag b
 但是不同是：轻量级锁在无竞争的情况下使用 CAS 操作去代替使用互斥量。而偏向锁在无竞争的情况下会把整个同步都消除掉。
 
 12.并发容器
-ConcurrentSkipListMap：这是一个Map，使用跳表的数据结构进行快速查找。
+ConcurrentSkipListMap：这是一个 Map，使用跳表的数据结构进行快速查找。
 跳表有点类似于平衡树。
 对平衡树的插入和删除往往很可能导致平衡树进行一次全局的调整。而对跳表的插入和删除只需要对整个数据结构的局部进行操作即可。
 这样带来的好处是：在高并发的情况下，你会需要一个全局锁来保证整个平衡树的线程安全。而对于跳表，你只需要部分锁即可。
@@ -389,26 +389,26 @@ ConcurrentSkipListMap：这是一个Map，使用跳表的数据结构进行快�
 抢占式调度：每条线程执行的时间、线程的切换都由系统控制，一个线程的堵塞不会导致整个进程堵塞。
 协同式调度：某一线程执行完后主动通知系统切换到另一线程上执行，线程的执行时间由线程本身控制，线程切换可以预知，不存在多线程同步问题。
 
-Java使用的线程调度是抢占式调度，在JVM中体现为让可运行池中优先级高的线程拥有CPU使用权，如果可运行池中线程优先级一样则随机选择线程，但要注意的是实际上一个绝对时间点只有一个线程在运行（对于一个CPU）
-不一一对应，程序不应该依赖于优先级，Java线程是通过映射到系统的原生线程上来实现的，所以线程调度最终还是取决于操作系统。
+Java 使用的线程调度是抢占式调度，在 JVM 中体现为让可运行池中优先级高的线程拥有 CPU 使用权，如果可运行池中线程优先级一样则随机选择线程，但要注意的是实际上一个绝对时间点只有一个线程在运行（对于一个 CPU）
+不一一对应，程序不应该依赖于优先级，Java 线程是通过映射到系统的原生线程上来实现的，所以线程调度最终还是取决于操作系统。
 
 
-三个线程如何实现交替打印ABC：
+三个线程如何实现交替打印 ABC：
 1.Synchronized
-使用同步块和wait（）、notify（），每一个线程同时持有两个对象锁prev和self
-打印完后count--，self.notifyAll()释放self锁
-进入try-catch，如果count=0，prev.notifyAll()，否则prev.wait()释放prev锁
+使用同步块和 wait（）、notify（），每一个线程同时持有两个对象锁 prev 和 self
+打印完后 count--，self.notifyAll() 释放 self 锁
+进入 try-catch，如果 count=0，prev.notifyAll()，否则 prev.wait() 释放 prev 锁
 
 2.ReentrantLock
-lock.lock()和lock.unlock()，打印前lock.lock()其他线程阻塞，打印完lock.unlock()释放锁，用state全局变量控制交替打印（state%3）
+lock.lock() 和 lock.unlock()，打印前 lock.lock() 其他线程阻塞，打印完 lock.unlock() 释放锁，用 state 全局变量控制交替打印（state%3）
 
-3.ReentrantLock结合Condition
-和Synchronized相似使用await()和signal()以及在try-catch-finally使用lock.lock()和lock.unlock()
+3.ReentrantLock 结合 Condition
+和 Synchronized 相似使用 await() 和 signal() 以及在 try-catch-finally 使用 lock.lock() 和 lock.unlock()
 
 4.Semaphore
-初始信号量A=1，B=0，C=0
-A.acquire()， A获取信号执行,A信号量减1,当A为0时将无法继续获得该信号量，然后打印A
-B.release()， B释放信号，B信号量加1（初始为0），此时可以获取B信号量
+初始信号量 A=1，B=0，C=0
+A.acquire()， A 获取信号执行,A 信号量减 1,当 A 为 0 时将无法继续获得该信号量，然后打印 A
+B.release()， B 释放信号，B 信号量加 1（初始为 0），此时可以获取 B 信号量
 
 5.AtomicInteger
-ai.get()与state相似，打印完后ai.getAndIncrement()
+ai.get() 与 state 相似，打印完后 ai.getAndIncrement()
