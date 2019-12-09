@@ -1,0 +1,14 @@
+1.简介
+Netty 是由 JBOSS 提供的一个 java 开源框架。Netty 提供异步的、事件驱动的网络应用程序框架和工具，用以快速开发高性能、高可靠性的网络服务器和客户端程序。
+Netty 是一个基于 NIO（为了高并发）的客户、服务器端编程框架，使用 Netty 可以确保你快速和简单的开发出一个网络应用，例如实现了某种协议的客户、服务端应用。Netty 相当于简化和流线化了网络应用的编程开发过程，例如：基于 TCP 和 UDP 的 socket 服务开发。
+作为高并发的底层实现。
+
+2.线程模型
+在 JAVA NIO 方面 Selector 给 Reactor 模式提供了基础，Netty 结合 Selector 和 Reactor 模式设计了高效的线程模型。
+Reactor 模式：单线程、多线程、主从
+Netty 主要基于主从 Reactors 多线程模型做了一定的修改，其中主从 Reactor 多线程模型有多个 Reactor：
+MainReactor 负责客户端的连接请求，并将请求转交给 SubReactor。
+SubReactor 负责相应通道的 IO 读写请求。
+非 IO 请求（具体逻辑处理）的任务则会直接写入队列，等待 worker threads 进行处理。
+
+事件驱动与轮询
