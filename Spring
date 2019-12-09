@@ -79,40 +79,40 @@ BeanDefinition：用来管理 bean 的属性和对象间的相互依赖关系
 
 控制器 Controller 是应用程序中处理用户交互的部分。
 通常控制器负责从视图读取数据，控制用户输入，并向模型发送数据。
-ResponseEntity：HTTP响应
-@ResponseBody：返回给前端json格式的结果
+ResponseEntity：HTTP 响应
+@ResponseBody：返回给前端 json 格式的结果
 @ResponseStatus：返回状态
 
 流程：
-客户端（浏览器）发送请求到前端控制器DispatcherServlet。
-DispatcherServlet根据请求信息调用控制器映射HandleMapping，解析请求对应的Handler（控制器Controller），然后返回一个执行链给DispatcherServlet。
-适配器HandlerAdapter会根据Handler来调用真正的处理器处理请求和相应的业务逻辑。
-处理器返回一个ModelAndView给DispatcherServlet。
-DispatcherServlet通过视图解析器ViewResolver找到对应的视图对象View。 
-DispatcherServlet把返回的Model传给View（视图渲染），并返回到浏览器。
+客户端（浏览器）发送请求到前端控制器 DispatcherServlet。
+DispatcherServlet 根据请求信息调用控制器映射 HandleMapping，解析请求对应的 Handler（控制器 Controller），然后返回一个执行链给 DispatcherServlet。
+适配器 HandlerAdapter 会根据 Handler 来调用真正的处理器处理请求和相应的业务逻辑。
+处理器返回一个 ModelAndView 给 DispatcherServlet。
+DispatcherServlet 通过视图解析器 ViewResolver 找到对应的视图对象 View。 
+DispatcherServlet 把返回的 Model 传给 View（视图渲染），并返回到浏览器。
 
 Model1 时代：整个 Web 应用几乎全部用 JSP 页面组成，JSP 即是控制层又是表现层。
 Model2 时代：Java Bean(Model)+ JSP（View）+Servlet（Controller），抽象和封装程度还远远不够。Struts2 比较笨重。
-Spring MVC 下我们一般把后端项目分为 Service层（处理业务）、Dao层（数据库操作）、Entity层（实体类）、Controller层(控制层，返回数据给前台页面)。
+Spring MVC 下我们一般把后端项目分为 Service 层（处理业务）、Dao 层（数据库操作）、Entity 层（实体类）、Controller 层 (控制层，返回数据给前台页面)。
 
-SSM三层架构
-View层：JSP/HTML页面发送请求，获取响应。
-Controller层SpringMVC，接受请求并进行相应的流程处理。
-Service层Spring：完成具体的业务逻辑
-DAO层MyBatis：对数据库进行操作
+SSM 三层架构
+View 层：JSP/HTML 页面发送请求，获取响应。
+Controller 层 SpringMVC，接受请求并进行相应的流程处理。
+Service 层 Spring：完成具体的业务逻辑
+DAO 层 MyBatis：对数据库进行操作
 
 分层模型：应用层、服务层、数据层。
 
 @RestController vs @Controller
 Controller 返回一个页面：单独使用 @Controller 不加 @ResponseBody 的话一般使用在要返回一个视图的情况。前后端不分离。
-@RestController 返回 JSON 格式数据。返回 domain 对象，再由 MappingJackson2HttpMessageConverter 自动转换为 JSON。对象数据直接以 JSON 或 XML 形式写入 HTTP 响应(Response)中，这种情况属于 RESTful Web 服务。前后端分离。Spring 4 之后新加的注解。         
-@Controller + @ResponseBody 等于 @RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的 view 对象通过适当的转换器转换为指定的格式之后，写入到 HTTP 响应(Response)对象的 body 中。                    
+@RestController 返回 JSON 格式数据。返回 domain 对象，再由 MappingJackson2HttpMessageConverter 自动转换为 JSON。对象数据直接以 JSON 或 XML 形式写入 HTTP 响应 (Response) 中，这种情况属于 RESTful Web 服务。前后端分离。Spring 4 之后新加的注解。         
+@Controller + @ResponseBody 等于 @RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的 view 对象通过适当的转换器转换为指定的格式之后，写入到 HTTP 响应 (Response) 对象的 body 中。                    
 
 @RequestMapping 将对页面的 HTTP 请求映射到方法，并且默认映射所有 HTTP 方法。
 
 4.bean 生命周期（bean 实例化过程）
-实例化 bean 对象(通过构造方法或者工厂方法)。Bean 容器找到配置文件中 Spring Bean 的定义。Bean 容器利用 Java Reflection API 创建一个Bean的实例。
-设置对象属性(setter 等)（依赖注入）
+实例化 bean 对象 (通过构造方法或者工厂方法)。Bean 容器找到配置文件中 Spring Bean 的定义。Bean 容器利用 Java Reflection API 创建一个 Bean 的实例。
+设置对象属性 (setter 等)（依赖注入）
 如果 bean 实现了 BeanNameAware 接口，调用 setBeanName() 传入 bean 的 ID（检查 Aware 接口）
 如果 bean 实现了 BeanFactoryAware 接口，调用 setBeanFactory() 传入 ClassLoader 对象的实例
 将 bean 传递给 BeanPostProcessor，调用 postProcessBeforeInitialization()
@@ -123,32 +123,32 @@ Controller 返回一个页面：单独使用 @Controller 不加 @ResponseBody �
 调用 DisposableBean 的 destroy()
 调用自定义的销毁方法
 
-5.bean的作用域
-@scope注解定义Bean的作用域。
+5.bean 的作用域
+@scope 注解定义 Bean 的作用域。
 
 singleton：唯一 bean 实例，Spring 中的 bean 默认都是单例的。
 线程安全问题：当多个线程操作同一个对象的时候，对这个对象的非静态成员变量的写操作会存在线程安全问题。
-解决方法：在类中定义一个ThreadLocal成员变量，将需要的可变成员变量保存在 ThreadLocal 中。
+解决方法：在类中定义一个 ThreadLocal 成员变量，将需要的可变成员变量保存在 ThreadLocal 中。
 
 prototype：每次请求都会创建一个新的 bean 实例。
-request：每一次HTTP请求都会产生一个新的bean，该bean仅在当前HTTP request内有效。
-session：每一次HTTP请求都会产生一个新的 bean，该bean仅在当前 HTTP session 内有效。
-global-session：全局session作用域，仅仅在基于portlet的web应用中才有意义，Spring5已经没有了。
+request：每一次 HTTP 请求都会产生一个新的 bean，该 bean 仅在当前 HTTP request 内有效。
+session：每一次 HTTP 请求都会产生一个新的 bean，该 bean 仅在当前 HTTP session 内有效。
+global-session：全局 session 作用域，仅仅在基于 portlet 的 web 应用中才有意义，Spring5 已经没有了。
 
 6.注解
 @Component 和 @Bean 的区别：
-@Component 注解作用于类，而@Bean注解作用于方法。
-@Component通常是通过类路径扫描来自动侦测以及自动装配到Spring容器中，@Bean 注解通常是在标有该注解的方法中定义产生这个 bean。
-@Bean 注解比 Component 注解的自定义性更强，而且很多地方我们只能通过 @Bean 注解来注册bean。
+@Component 注解作用于类，而@Bean 注解作用于方法。
+@Component 通常是通过类路径扫描来自动侦测以及自动装配到 Spring 容器中，@Bean 注解通常是在标有该注解的方法中定义产生这个 bean。
+@Bean 注解比 Component 注解的自定义性更强，而且很多地方我们只能通过 @Bean 注解来注册 bean。
 
 使用 @Autowired 注解自动装配 bean
-将一个类声明为Spring的 bean 的注解：
-@Component：通用的注解，可标注任意类为 Spring 组件。如果一个Bean不知道属于哪个层，可以使用@Component 注解标注。
+将一个类声明为 Spring 的 bean 的注解：
+@Component：通用的注解，可标注任意类为 Spring 组件。如果一个 Bean 不知道属于哪个层，可以使用@Component 注解标注。
 @Repository: 对应持久层即 Dao 层，主要用于数据库相关操作。
-@Service: 对应服务层，主要涉及一些复杂的逻辑，需要用到 Dao层。
+@Service: 对应服务层，主要涉及一些复杂的逻辑，需要用到 Dao 层。
 @Controller: 对应 Spring MVC 控制层，主要用户接受用户请求并调用 Service 层返回数据给前端页面。
 
-启动类@SpringBootApplication元注解：无实际功能
+启动类@SpringBootApplication 元注解：无实际功能
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -158,19 +158,19 @@ global-session：全局session作用域，仅仅在基于portlet的web应用中�
 @ComponentScan：
 @EnableAutoConfiguration：
 
-@Enable开头的注解
+@Enable 开头的注解
 
 @RequestMapping：处理请求地址映射
-@ResponseBody：返回json数据。
+@ResponseBody：返回 json 数据。
 
-7.Spring用到的设计模式
-工厂模式 : Spring使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。
+7.Spring 用到的设计模式
+工厂模式 : Spring 使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。
 代理模式 : Spring AOP 功能的实现。
-单例模式 : Spring 中的 Bean 默认都是单例的。把已经初始过的变量放在一个Map中，下次再要使用这个变量的时候，先判断Map中有没有。
+单例模式 : Spring 中的 Bean 默认都是单例的。把已经初始过的变量放在一个 Map 中，下次再要使用这个变量的时候，先判断 Map 中有没有。
 模板模式 : Spring 中 jdbcTemplate、hibernateTemplate 等以 Template 结尾的对数据库操作的类，它们就使用到了模板模式。
 装饰器模式 : 连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。
 观察者模式: Spring 事件驱动模型。
-适配器模式 :Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配Controller。
+适配器模式 :Spring AOP 的增强或通知 (Advice) 使用到了适配器模式、spring MVC 中也是用到了适配器模式适配 Controller。
 
 8.事务
 事务管理：按照给定的事务规则来执行提交或者回滚操作。
@@ -205,28 +205,28 @@ MyBatis 是一款持久层框架，它支持定制化 SQL、存储过程以及�
 
 在 Mybatis 中我们可以定义一个叫做 TypeHandler 类型处理器的东西，通过它可以实现 Java 类型跟数据库类型的相互转换。
 
-动态 sql 是 mybatis 的主要特性之一，在 mybatis 中我们可以把参数传到 xml 文件，由 mybatis 对 sql 及其语法进行解析，mybatis支 持使用 ${} 和 #{}。
+动态 sql 是 mybatis 的主要特性之一，在 mybatis 中我们可以把参数传到 xml 文件，由 mybatis 对 sql 及其语法进行解析，mybatis 支 持使用 ${} 和 #{}。
 # 和 $ 的区别：
 使用 ${} 方式传入的参数，mybatis 不会对它进行特殊处理，一般用于传入数据库对象。MyBatis 排序时使用 order by 动态参数时需要注意，用 $ 而不是 #。
 使用 #{} 传进来的参数，mybatis 默认会将其当成字符串，加双引号。
 # 和 $ 在预编译处理中是不一样的。# 类似 jdbc 中的 PreparedStatement，对于传入的参数，在预处理阶段会使用 ? 代替，待真正查询的时候即在数据库管理系统 DBMS 中才会代入参数。而 ${} 则是简单的替换。
 由于 PreparedStatement，#{} 可以有效防止 sql 注入，${} 则可能导致 sql 注入成功。因此能使用 #{} 的地方应尽量使用 #{}。
 
-MyBatis的 SQL 建议写在 XML 里，或者写在注解里。
+MyBatis 的 SQL 建议写在 XML 里，或者写在注解里。
 实现 DAO 接口：建议 Mapper 自动实现，只需给出 DAO 接口；或者 API 编程方式。
 
 MyBatis XML 标签类型：
 resultMap 标签的类型属性为 type（必填）。
-id, result 标签的类型属性为javaType（可选）。
+id, result 标签的类型属性为 javaType（可选）。
 idArg, arg 标签和上面两个类似，也都是 javaType（可选）。
 association 标签的类型属性为 javaType（可选）。
 discriminator 标签的类型属性为 javaType（可选）。
 collection 这个标签最特殊，有两个类型属性，分别为 javaType（可选） 和 ofType（结果映射时必填）。
 
 10.springBoot Starter
-starter会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater机制帮我们完成了项目起步所需要的的相关jar包。
-ConfigurationProperties和AutoConfiguration，application.properties 文件满足自定义配置。
-利用starter实现自动化配置只需要两个条件——maven依赖、配置文件。
+starter 会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater 机制帮我们完成了项目起步所需要的的相关 jar 包。
+ConfigurationProperties 和 AutoConfiguration，application.properties 文件满足自定义配置。
+利用 starter 实现自动化配置只需要两个条件——maven 依赖、配置文件。
 
 11.jdbcTemplate
 ORM 持久化技术：JDBC、Hibernate、MyBatis、JPA，Spring 都对其进行了封装 Template 模板类。
@@ -244,11 +244,11 @@ jdbc 查询操作：Connection conn,PreparedStatement psmt,ResultSet rs。
 
 12.SSH
 Struts+Spring+Hibernate
-对象关系映射ORM
+对象关系映射 ORM
 
-Hibernate和Spring整合时，Hibernate核心配置文件和位置没有固定要求
-Spring提供HibernateTemplate进行封装
+Hibernate 和 Spring 整合时，Hibernate 核心配置文件和位置没有固定要求
+Spring 提供 HibernateTemplate 进行封装
 
-Struts核心：Action、值栈、拦截器
+Struts 核心：Action、值栈、拦截器
 
-Spring中s使用ServletContext对象和监听器
+Spring 中 s 使用 ServletContext 对象和监听器
