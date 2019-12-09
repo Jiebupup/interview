@@ -1,6 +1,6 @@
 1.简介
-Spring Cloud是一系列框架的有序集合。它利用Spring Boot的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、数据监控等，都可以用Spring Boot的开发风格做到一键启动和部署。
-Spring Cloud并没有重复制造轮子，它只是将目前各家公司开发的比较成熟、经得起实际考验的服务框架组合起来，通过Spring Boot风格进行再封装屏蔽掉了复杂的配置和实现原理，最终给开发者留出了一套简单易懂、易部署和易维护的分布式系统开发工具包。
+Spring Cloud 是一系列框架的有序集合。它利用 Spring Boot 的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、数据监控等，都可以用 Spring Boot 的开发风格做到一键启动和部署。
+Spring Cloud 并没有重复制造轮子，它只是将目前各家公司开发的比较成熟、经得起实际考验的服务框架组合起来，通过 Spring Boot 风格进行再封装屏蔽掉了复杂的配置和实现原理，最终给开发者留出了一套简单易懂、易部署和易维护的分布式系统开发工具包。
 阿里开源的 Spring Cloud Alibaba 是 Spring Cloud 规范的实现。Apache Dubbo Ecosystem 是围绕 Apache Dubbo 打造的微服务生态，是经过生产验证的微服务的最佳实践组合。在阿里巴巴的微服务解决方案中，Dubbo、Nacos 和 Sentinel，以及后续将开源的微服务组件，都是 Dubbo EcoSystem 的一部分。阿里后续也会将 Dubbo EcoSystem 集成到 Spring Cloud 的生态中。
 
 2.微服务架构
@@ -27,6 +27,6 @@ Spring Cloud并没有重复制造轮子，它只是将目前各家公司开发�
 尽管数据库架构有很强的优势，但是也面对数据分布式管理的挑战。第一个挑战就是如何在多服务之间维护业务交易一致性；第二个挑战是如何从多服务环境中获取一致性数据。
 最佳解决办法是采用事件驱动架构。其中碰到的一个挑战是如何原子性的更新状态和发布事件。有几种方法可以解决此问题，包括将数据库视为消息队列、交易日志挖掘和事件源。
 
-6.Dubbo 和 Spring Cloud的关系
+6.Dubbo 和 Spring Cloud 的关系
 未来 Dubbo 将会作为 Spring Cloud Alibaba 的 RPC 组件，并与 Spring Cloud 原生的 Feign 以及 RestTemplate 进行无缝整合，实现“零”成本迁移。
 在阿里巴巴的微服务解决方案中，Dubbo、Nacos 和 Sentinel，以及后续将开源的微服务组件，都是 Dubbo EcoSystem 的一部分。我们后续也会将 Dubbo EcoSystem 集成到 Spring Cloud 的生态中。
