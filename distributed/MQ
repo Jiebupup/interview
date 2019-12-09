@@ -76,23 +76,6 @@ MQ 功能较为完善，扩展性好
 接口这块不是按照标准 JMS 规范走的，有些系统要迁移需要修改大量代码
 RocketMQ 思路起源于 Kafka，具有高吞吐量、高可用性、适合大规模分布式系统应用的特点
 
-RocketMQ 用 2PC 实现分布式消息。
-RocketMQ 不使用 ZooKeeper 作为注册中心，而使用自制的 NameServer。
-ZooKeeper 支持顺序一致性，在某些情况下，它为了满足一致性，会丢失一定时间内的可用性。RocketMQ 需要注册中心只是为了发现组件地址，在某些情况下，NameServer 可以出现数据不一致性，因为 NameServer 集群间互不通信。 当有新的服务器加入时，NameServer 并不会立马通知到 Produer，而是由 Produer 定时去请求 NameServer 获取最新的 Broker/Consumer 信息（这种情况是通过 Producer 发送消息时，负载均衡解决）。
-组件通信间使用 Netty 的自定义协议。
-Dubbo 负载均衡策略。
-消息过滤器：Producer 发送消息到 Broker，Broker 存储消息信息，Consumer 消费时请求 Broker 端从磁盘文件查询消息文件时,在 Broker 端就使用过滤服务器进行过滤。
-Broker 同步双写和异步双写中 Master 和 Slave 的交互。
-Broker 在 4.5.0 版本更新中引入了基于 Raft 协议的多副本选举。
-消息丢失：当你系统需要保证百分百消息不丢失，你可以使用生产者每发送一个消息，Broker 同步返回一个消息发送成功的反馈消息。即每发送一个消息，同步落盘后才返回生产者消息发送成功，这样只要生产者得到了消息发送生成的返回，事后除了硬盘损坏，都可以保证不会消息丢失。
-加快同步落盘：使用 FileChannel + DirectBuffer 池，使用堆外内存，加快内存拷贝。使用数据和索引分离，当消息需要写入时，使用 commitlog 文件顺序写，当需要定位某个消息时，查询 index 文件来定位，从而减少文件 IO 随机读写的性能损耗。
-消息堆积：后台定时任务每隔 72 小时，删除旧的没有使用过的消息信息。根据不同的业务实现不同的丢弃任务。消息定时转移，或者对某些重要的 TAG 型（支付型）消息真正落库。
-定时消息：newSingleThreadScheduledExecutor 定时执行任务。
-顺序消息：MessageQueue，锁。
-消息的 push 延迟问题：因为这并不是真正的将消息主动的推送到消费者，而是 Broker 定时任务每 5s 将消息推送到消费者。
-消息重复发送的避免：由于网络延迟不可避免，默认允许消息重复发送。RocketMQ 让使用者在消费者端去解决该问题。最简单的解决方案是每条消费记录有个消费状态字段，根据这个消费状态字段来是否消费或者使用一个集中式的表，来存储所有消息的消费状态，从而避免重复消费。
-广播消费与集群消费：广播消费，订阅该 Topic 的消息者们都会消费每个消息，每个消费者都独立的去消费每个消息，因此每个消费者各自保存自己的消息消费进度。集群消费，订阅该 Topic 的消息者们只会有一个去消费某个消息，总体的消费进度保存在 Broker 上集中的管理。
-
 Kafka：
 和 RocketMQ 相似，功能较为简单，主要支持简单的 MQ 功能。
 大数据领域的实时计算、日志采集等场景，用 Kafka 是业内标准，社区活跃度很高。
@@ -100,31 +83,6 @@ Kafka 主要特点是基于 Pull 的模式来处理消息消费，追求高吞�
 同时 kafka 最好是支撑较少的 topic 数量即可，保证其超高吞吐量。
 kafka 唯一的一点劣势是有可能消息重复消费，那么对数据准确性会造成极其轻微的影响。
 基于发布/订阅。
-
-topic：消息的主题、队列，每一个消息都有它的 topic，Kafka 通过 topic 对消息进行归类。Kafka 中可以将 topic 从物理上划分成一个或多个分区 partition，每个分区在物理上对应一个文件夹，以 ”topicName_partitionIndex” 的命名方式命名，该 dir 包含了这个分区的所有消息（.log）和索引文件（.index），这使得 Kafka 的吞吐率可以水平扩展。
-partition：每个分区都是一个顺序的、不可变的消息队列，并且可以持续的添加。分区中的消息都被分了一个序列号，称之为偏移量 offset，在每个分区中此偏移量都是唯一的。producer 在发布消息的时候，可以为每条消息指定 key，这样消息被发送到 broker 时，会根据分区算法把消息存储到对应的分区中（一个分区存储多个消息），如果分区规则设置的合理，那么所有的消息将会被均匀的分布到不同的分区中，这样就实现了负载均衡。 
-broker：Kafka server，用来存储消息，Kafka 集群中的每一个服务器都是一个 broker，消费者将从 broker 拉取订阅的消息 producer 向 Kafka 发送消息，生产者会根据 topic 分发消息。生产者也负责把消息关联到 topic 上的哪一个分区。最简单的方式从分区列表中轮流选择。也可以根据某种算法依照权重选择分区。算法可由开发者定义。
-cousumer：consermer 实例可以是独立的进程，负责订阅和消费消息。消费者用 consumerGroup 来标识自己。同一个消费组可以并发地消费多个分区的消息，同一个 partition 也可以由多个 consumerGroup 并发消费，但是在 consumerGroup 中一个 partition 只能由一个 consumer 消费。同一个 consumerGroup 中的 consumers，Kafka 将相应 topic 中的每个消息只发送给其中一个 consumer。
-
-Kafka producer 发送消息的流程：序列化消息和计算 partition，发送到 batch 和唤醒 sender 线程，确定 tp relica leader 所在的 broker 和 sender 有序&幂等性发送消息，sender 处理 broker 发来的 produce response。
-sender 线程和长连接：每初始化一个 producer 实例，都会初始化一个 sender 实例，新增到 broker 的长连接。
-
-consumer：
-poll 消息
-位移管理
-Kafka group 状态
-重平衡 reblance，过程&存在的问题&改进
-
-broker：
-broker zk 注册
-broker 消息存储
-broker 状态数据
-broker 负载均衡
-
-Kafka 高可用：Isr 动态更新，controller 负责 broker 故障检查&&故障转移（fail/recover），controller 挂掉。
-幂等性：consumer 拉取到消息先保存，commit 成功后删除缓存数据。
-可靠性：首先 kafka 保证了对已提交消息的 at least 保证 sender 有重试机制 producer 业务方在使用 producer 发送消息时，注册回调函数。在 onError 方法中重发消息 consumer 拉取到消息后，处理完毕再 commit，保证 commit 的消息一定被处理完毕。
-高性能：partition 提升了并发，zero-copy 顺序写入，消息聚集 batch，页缓存，业务方对 Kafka producer 的优化。增大 producer 数量，ack 配置，batch。
 
 5.如何保证高可用
 RabbitMQ 的高可用性（主从式）：
@@ -201,9 +159,74 @@ RabbitMQ 中消息只能存储在队列中，这一点和 Kafka 这种消息中�
 Broker：消息中间件的服务节点或者服务实例，大多数情况下也可以将一个 RabbitMQ Broker 看作一台 RabbitMQ 服务器。
 
 12.RocketMQ
+消息丢失：当你系统需要保证百分百消息不丢失，你可以使用生产者每发送一个消息，Broker 同步返回一个消息发送成功的反馈消息。即每发送一个消息，同步落盘后才返回生产者消息发送成功，这样只要生产者得到了消息发送生成的返回，事后除了硬盘损坏，都可以保证不会消息丢失。
+加快同步落盘：使用 FileChannel + DirectBuffer 池，使用堆外内存，加快内存拷贝。使用数据和索引分离，当消息需要写入时，使用 commitlog 文件顺序写，当需要定位某个消息时，查询 index 文件来定位，从而减少文件 IO 随机读写的性能损耗。
+消息堆积：后台定时任务每隔 72 小时，删除旧的没有使用过的消息信息。根据不同的业务实现不同的丢弃任务。消息定时转移，或者对某些重要的 TAG 型（支付型）消息真正落库。
+定时消息：实际 RocketMQ 没有实现任意精度的定时消息，它只支持某些特定的时间精度的定时消息。创建特定时间精度的 MessageQueue，newSingleThreadScheduledExecutor 定时执行任务。
+顺序消息：与定时消息同原理，生产者生产消息时指定特定的 MessageQueue，消费者消费消息时，消费特定的 MessageQueue。前提是消费者串行消费，锁，阻塞。
+消息的 push 延迟问题：因为这并不是真正的将消息主动的推送到消费者，而是 Broker 定时任务每 5s 将消息推送到消费者。
+消息重复发送的避免：由于网络延迟不可避免，默认允许消息重复发送。RocketMQ 让使用者在消费者端去解决该问题。最简单的解决方案是每条消费记录有个消费状态字段，根据这个消费状态字段来是否消费或者使用一个集中式的表，来存储所有消息的消费状态，从而避免重复消费。
+广播消费与集群消费：广播消费，订阅该 Topic 的消息者们都会消费每个消息，每个消费者都独立的去消费每个消息，因此每个消费者各自保存自己的消息消费进度。集群消费，订阅该 Topic 的消息者们只会有一个去消费某个消息，总体的消费进度保存在 Broker 上集中的管理。消息落盘。
 
+RocketMQ 用 2PC 实现分布式消息。prepared->commit/rollback。注意，就算是事务消息最后回滚了也不会物理删除，只会逻辑删除该消息。
+RocketMQ 不使用 ZooKeeper 作为注册中心，而使用自制的 NameServer。
+ZooKeeper 支持顺序一致性，在某些情况下，它为了满足一致性，会丢失一定时间内的可用性。RocketMQ 需要注册中心只是为了发现组件地址，在某些情况下，NameServer 可以出现数据不一致性，因为 NameServer 集群间互不通信。 
+当有新的服务器加入时，NameServer 并不会立马通知到 Produer，而是由 Produer 定时去请求 NameServer 获取最新的 Broker/Consumer 信息（这种情况是通过 Producer 发送消息时，负载均衡解决）。
 
+组件通信间使用 Netty 的自定义协议。
+Dubbo 负载均衡策略。
+消息过滤器：Producer 发送消息到 Broker，Broker 存储消息信息，Consumer 消费时请求 Broker 端从磁盘文件查询消息文件时,在 Broker 端就使用过滤服务器进行过滤。
+Broker 同步双写和异步双写中 Master 和 Slave 的交互。
+Broker 在 4.5.0 版本更新中引入了基于 Raft 协议的多副本选举。
 
+13.Kafka
+Kafka 是一种分布式的，基于发布/订阅的消息系统。主要设计目标如下：
+以时间复杂度为 O(1) 的方式提供消息持久化能力，即使对 TB 级以上数据也能保证常数时间复杂度的访问性能。
+高吞吐率。即使在非常廉价的商用机器上也能做到单机支持每秒 100K 条以上消息的传输。
+支持 Kafka Server 间的消息分区，及分布式消费，同时保证每个 Partition 内的消息顺序传输。
+同时支持离线数据处理和实时数据处理。
+Scale out：支持在线水平扩展。
+
+Kafka 的一个关键性质是日志保留，我们可以配置主题的消息保留策略，譬如只保留一段时间的日志或者只保留特定大小的日志。当超过这些限制时，老的消息会被删除。我们也可以针对某个主题单独设置消息过期策略，这样对于不同应用可以实现个性化。
+多集群的原因：基于数据的隔离；基于安全的隔离；多数据中心（容灾）。
+多个数据中心需要实现消息互通。多个数据中心的数据需要汇总到一个总控中心来做数据分析。
+对于多个 Kafka 集群消息同步可以使用 Kafka 提供的 MirrorMaker 工具。本质上来说，MirrorMaker 只是一个 Kafka 消费者和生产者，并使用一个队列连接起来而已。它从一个集群中消费消息，然后往另一个集群生产消息。
+
+Kafka 的消息是存在于文件系统之上的。现代的操作系统针对磁盘的读写已经做了一些优化方案来加快磁盘的访问速度。
+预读会提前将一个比较大的磁盘快读入内存。后写会将很多小的逻辑写操作合并起来组合成一个大的物理写操作。并且，操作系统还会将主内存剩余的所有空闲内存空间都用作磁盘缓存，所有的磁盘读写操作都会经过统一的磁盘缓存（除了直接 I/O 会绕过磁盘缓存）。
+综合这几点优化特点，如果是针对磁盘的顺序访问，某些情况下它可能比随机的内存访问都要快，甚至可以和网络的速度相差无几。
+Topic 其实是逻辑上的概念，面向消费者和生产者，物理上存储的其实是 Partition，每一个 Partition 最终对应一个目录，每一个目录又被平均分配成多个大小相等的 Segment File，里面存储所有的消息和索引文件。默认情况下，每一个 Topic 在创建时如果不指定 Partition 数量时只会创建 1 个 Partition。
+任何发布到 Partition 的消息都会被追加到 Partition 数据文件的尾部，这样的顺序写磁盘操作让 Kafka 的效率非常高（经验证，顺序写磁盘效率比随机写内存还要高，这是 Kafka 高吞吐率的一个很重要的保证）。
+每一条消息被发送到 Broker 中，会根据 Partition 规则选择被存储到哪一个 Partition。如果 Partition 规则设置的合理，所有消息可以均匀分布到不同的 Partition 中。
+
+Kafka 采取稀疏索引存储的方式，每隔一定字节的数据建立一条索引，它减少了索引文件大小，使得能够把 index 映射到内存，降低了查询时的磁盘 IO 开销，同时也并没有给查询带来太多的时间消耗。
+当需要查找一个指定 offset 的 message 时，通过在所有 segment 的文件名中进行二分查找就能找到它归属的 segment，再在其 index 文件中找到其对应到文件上的物理位置，就能拿出该 message。
+由于消息在 Partition 的 Segment 数据文件中是顺序读写的，且消息消费后不会删除（删除策略是针对过期的 Segment 文件），这种顺序磁盘 IO 存储设计是 Kafka 高性能很重要的原因。
+
+topic：消息的主题、队列，每一个消息都有它的 topic，Kafka 通过 topic 对消息进行归类。Kafka 中可以将 topic 从物理上划分成一个或多个分区 partition，每个分区在物理上对应一个文件夹，以 ”topicName_partitionIndex” 的命名方式命名，该 dir 包含了这个分区的所有消息（.log）和索引文件（.index），这使得 Kafka 的吞吐率可以水平扩展。
+partition：每个分区都是一个顺序的、不可变的消息队列，并且可以持续的添加。分区中的消息都被分了一个序列号，称之为偏移量 offset，在每个分区中此偏移量都是唯一的。producer 在发布消息的时候，可以为每条消息指定 key，这样消息被发送到 broker 时，会根据分区算法把消息存储到对应的分区中（一个分区存储多个消息），如果分区规则设置的合理，那么所有的消息将会被均匀的分布到不同的分区中，这样就实现了负载均衡。 
+broker：Kafka server，用来存储消息，Kafka 集群中的每一个服务器都是一个 broker，消费者将从 broker 拉取订阅的消息 producer 向 Kafka 发送消息，生产者会根据 topic 分发消息。生产者也负责把消息关联到 topic 上的哪一个分区。最简单的方式从分区列表中轮流选择。也可以根据某种算法依照权重选择分区。算法可由开发者定义。
+cousumer：consermer 实例可以是独立的进程，负责订阅和消费消息。消费者用 consumerGroup 来标识自己。同一个消费组可以并发地消费多个分区的消息，同一个 partition 也可以由多个 consumerGroup 并发消费，但是在 consumerGroup 中一个 partition 只能由一个 consumer 消费。同一个 consumerGroup 中的 consumers，Kafka 将相应 topic 中的每个消息只发送给其中一个 consumer。
+
+Kafka producer 发送消息的流程：序列化消息和计算 partition，发送到 batch 和唤醒 sender 线程，确定 tp relica leader 所在的 broker 和 sender 有序&幂等性发送消息，sender 处理 broker 发来的 produce response。
+sender 线程和长连接：每初始化一个 producer 实例，都会初始化一个 sender 实例，新增到 broker 的长连接。
+
+consumer：
+poll 消息
+位移管理
+Kafka group 状态
+重平衡 reblance，过程&存在的问题&改进
+
+broker：
+broker zk 注册
+broker 消息存储
+broker 状态数据
+broker 负载均衡
+
+Kafka 高可用：Isr 动态更新，controller 负责 broker 故障检查&&故障转移（fail/recover），controller 挂掉。
+幂等性：consumer 拉取到消息先保存，commit 成功后删除缓存数据。
+可靠性：首先 kafka 保证了对已提交消息的 at least 保证 sender 有重试机制 producer 业务方在使用 producer 发送消息时，注册回调函数。在 onError 方法中重发消息 consumer 拉取到消息后，处理完毕再 commit，保证 commit 的消息一定被处理完毕。
+高性能：partition 提升了并发，zero-copy 顺序写入，消息聚集 batch，页缓存，业务方对 Kafka producer 的优化。增大 producer 数量，ack 配置，batch。
 
 
 
