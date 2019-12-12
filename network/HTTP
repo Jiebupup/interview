@@ -2,27 +2,37 @@
 HTTP 超文本传输协议，是一个客户端和服务端之间请求和应答的标准，通常使用 TCP 协议，服务器上默认端口为 80。
 HTTPS 通过计算机网络进行安全通信的传输协议。
 RFC 规范是记录互联网规范、协议、过程等的标准文件。
-URI(Uniform Resource Identifier) 是统一资源标志符，URL(Uniform Resource Location) 是统一资源定位符。URL 是一种具体的 URI，它不仅唯一标识资源，而且还提供了定位该资源的信息。
+URI 统一资源标志符，URL 统一资源定位符。URL 是一种具体的 URI，它不仅唯一标识资源，而且还提供了定位该资源的信息。
 
 2.HTTP 方法
-GET：获取资源
-POST：传输数据
+GET：获取资源。当前网络请求中，绝大部分使用的是 GET 方法。
+POST：传输数据。
 PUT：上传文件。不带验证机制，任何人都可以上传文件，因此存在安全性问题。
-DELETE：与 PUT 对应
-HEAD：获取报文首部，主要用于确认 URL 的有效性以及资源更新的日期时间等。
+DELETE：与 PUT 对应。
+HEAD：获取报文首部。主要用于确认 URL 的有效性以及资源更新的日期时间等。
 PATCH：对资源进行部分修改。PUT 也可以用于修改资源，但是只能完全替代原始资源。
 OPTIONS：查询指定的 URL 能够支持的方法。
-CONNECT：使用 SSL（Secure Sockets Layer，安全套接层）和 TLS（Transport Layer Security，传输层安全）协议把通信内容加密后经网络隧道传输。
-TRACE：追踪路径，服务器会将通信路径返回给客户端。
+CONNECT：使用安全套接层 SSL 和传输层安全 TLS 协议把通信内容加密后经网络隧道传输。
+TRACE：追踪路径。服务器会将通信路径返回给客户端。通常不会使用 TRACE，并且它容易受到跨站追踪 XST 攻击。
 
 GET 和 POST 的区别：
-GET 的参数是以查询字符串出现在 URL 中，并且两者使用"?"连接，而各个变量之间使用"&"连接。而 POST 的参数存储在 Request body 中（可以通过一些抓包工具（Fiddler）查看）。             
-GET 请求只能进行 url 编码，而 POST 支持多种编码方式。
-GET 只接受 ASCII 字符类型的参数，而 POST 没有限制。
+作用：GET 用于获取资源，而 POST 用于传输实体主体。
+
+参数：
+GET 和 POST 的请求都能使用额外的参数，但是 GET 的参数是以查询字符串出现在 URL 中（并且两者使用 "?" 连接，而各个变量之间使用 "&" 连接），而 POST 的参数存储在实体主体 request body 中。不能因为 POST 参数存储在实体主体中就认为它的安全性更高，因为照样可以通过一些抓包工具（Fiddler）查看。           
+因为 URL 只支持 ASCII 码，因此 GET 的参数中如果存在中文等字符就需要先进行编码。POST 参数支持标准字符集。
+
 GET 请求的数据会暴露在地址栏中，保留在浏览器历史记录里，而 POST 请求则不会。GET 不安全。
 GET 传输的数据要受到 URL 长度限制（最大长度是 2048 个字符），而 POST 可以传输大量的数据，上传文件通常要使用 POST 方式。
-GET 方法是安全的，而 POST 却不是。安全的 HTTP 方法不会改变服务器状态，也就是说它只是可读的。POST 的目的是传送实体主体内容，服务器可能把这个数据存储到数据库中，状态也就发生了改变。安全的方法 GET、HEAD、OPTIONS。不安全的方法 POST、PUT、DELETE。
-GET 是幂等的，连续调用多次，客户端接收到的结果都是一样的。POST 不是，如果调用多次，就会增加多行记录。幂等的 HTTP 方法，同样的请求被执行一次与连续执行多次的效果是一样的，服务器的状态也是一样的。幂等方法不应该具有副作用。所有的安全方法也都是幂等的。
+
+安全：
+GET 方法是安全的，而 POST 却不是。
+安全的 HTTP 方法不会改变服务器状态，也就是说它只是可读的。
+POST 的目的是传送实体主体内容，服务器可能把这个数据存储到数据库中，状态也就发生了改变。
+安全的方法 GET、HEAD、OPTIONS。不安全的方法 POST、PUT、DELETE。
+   
+幂等性：  
+GET 是幂等的，POST 不是，如果调用多次，就会增加多行记录。幂等的 HTTP 方法，同样的请求被执行一次与连续执行多次的效果是一样的，服务器的状态也是一样的。幂等方法不应该具有副作用。所有的安全方法也都是幂等的。
 GET 可缓存（会被浏览器主动缓存），POST 不可缓存（除非手动设置）。
 在使用 XMLHttpRequest（为客户端提供了在客户端和服务器之间传输数据的功能，通过 URL 来获取数据，网页只更新一部分页面，在 AJAX 中被大量使用）的 GET 方法时浏览器将会把 Header 和 Data 一起发送。 而 POST 方法，浏览器会先发送 Header 再发送 Data。但并不是所有浏览器会这么做，例如火狐。
 
@@ -59,10 +69,10 @@ GET 方式提交表单的典型应用是搜索引擎。GET 方式就是被设计
 503 Service Unavailable ：服务器暂时处于超负载或正在进行停机维护，现在无法处理请求。
 
 4.HTTP 请求响应报文结构
-HTTP 请求报文由请求行（request line）、请求头部（header）、空行（blank line）和请求正文（request-body）4 个部分组成。
+HTTP 请求报文由请求行 request line、请求头部 headers、空行 blank line 和请求正文 request body 4 个部分组成。
 请求行由请求方法、URL 和 HTTP 协议版本三部分组成，它们用空格分隔。
 
-HTTP 响应报文也由四个部分组成，分别是：状态行（status-line）、响应头部（headers）、空行（blank line）和响应正文（response-body）。
+HTTP 响应报文由状态行 status line、响应头部 headers、空行 blank line 和响应正文 response-body 4 个部分组成。
 状态行由 HTTP 协议版本、状态码、状态码描述三部分组成。
 
 典型请求头部和响应头部：
@@ -70,8 +80,8 @@ Accept：用户代理可处理的媒体类型。
 Host：请求资源所在服务器。
 User-Agent：HTTP 客户端程序的信息。
 
-Location：令客户端重定向至指定 URI
-Server：HTTP 服务器的安装信息
+Location：令客户端重定向至指定 URI。
+Server：HTTP 服务器的安装信息。
 
 5.应用
 短连接与长连接：
