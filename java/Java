@@ -258,7 +258,7 @@ Throwable 可以用来表示任何可以作为异常抛出的类，分为两种�
 Error 用来表示 JVM 无法处理的错误。它们在应用程序的控制和处理能力之外，这些错误发生时，JVM 一般会选择线程终止。
 Exception 分为受检异常（需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复）和非受检异常（是程序运行时错误）。异常能被程序本身处理。
 
-常见异常：NullPointerException 空指针异常，ClassCastException 类型强制转换异常，ArrayIndexOutOfBoundsException 数组下标越界异常，IOException 输入输出异常，SQLException 操作数据库异常。
+常见异常：NullPointerException 空指针异常，ClassCastException 类型强制转换异常，ArrayIndexOutOfBoundsException 数组下标越界异常，IOException 输入输出异常，SQLException 操作数据库异常，IllegalArgumentException 参数不合法。
 
 异常处理：
 try 块：用于捕获异常。其后可接零个或多个 catch 块，如果没有 catch 块，则必须跟一个 finally 块。
