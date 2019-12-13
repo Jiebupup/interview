@@ -30,3 +30,51 @@ Spring Cloud 并没有重复制造轮子，它只是将目前各家公司开发�
 6.Dubbo 和 Spring Cloud 的关系
 未来 Dubbo 将会作为 Spring Cloud Alibaba 的 RPC 组件，并与 Spring Cloud 原生的 Feign 以及 RestTemplate 进行无缝整合，实现“零”成本迁移。
 在阿里巴巴的微服务解决方案中，Dubbo、Nacos 和 Sentinel，以及后续将开源的微服务组件，都是 Dubbo EcoSystem 的一部分。我们后续也会将 Dubbo EcoSystem 集成到 Spring Cloud 的生态中。
+
+7.Spring Cloud 服务发现——Eureka
+Eureka 是基于表现层状态转换 REST 的服务，主要在 AWS 云中用于定位服务，以实现负载均衡和中间层服务器的故障转移。我们称此服务为 Eureka 服务器。Eureka 还带有一个基于 Java 的客户端组件 Eureka Client，它使与服务的交互变得更加容易。
+客户端还具有一个内置的负载平衡器，可以执行基本的循环负载平衡。
+在 Netflix，更复杂的负载均衡器将 Eureka 包装起来，以基于流量，资源使用，错误条件等多种因素提供加权负载均衡，以提供出色的弹性。
+
+角色：服务提供者 Eureka Client Provider、消费者、中介 Eureka Server（服务提供者可以把自己注册到服务中介那里，而服务消费者如需要消费一些服务(使用一些功能)就可以在服务中介中寻找注册在服务中介的服务提供者）。
+服务注册 Register：当 Eureka Client Provider 向 Eureka Server 注册时，它提供自身的元数据 metaData，比如 IP 地址、端口，运行状况指示符 URL，主页等。
+服务续约 Renew：Eureka 客户会每隔 30 秒(默认情况下)发送一次心跳来续约。通过续约来告知 Eureka Server 该 Eureka 客户仍然存在，没有出现问题。正常情况下，如果 Eureka Server 在 90 秒没有收到 Eureka 客户的续约，它会将实例从其注册表中删除（服务剔除 Eviction）。
+
+获取注册列表信息 Fetch Registries：
+Eureka 客户端从服务器获取注册表信息，并将其缓存在本地。客户端会使用该信息查找其他服务，从而进行远程调用。
+该注册列表信息定期（每 30 秒钟）更新一次。每次返回注册列表信息可能与 Eureka 客户端的缓存信息不同， Eureka 客户端自动处理。如果由于某种原因导致注册列表信息不能及时匹配，Eureka 客户端则会重新获取整个注册表信息。
+Eureka 服务器缓存注册列表信息，整个注册表以及每个应用程序的信息进行了压缩，压缩内容和没有压缩的内容完全相同。
+Eureka 客户端和 Eureka 服务器可以使用 JSON/XML 格式进行通讯。在默认的情况下 Eureka 客户端使用压缩 JSON 格式来获取注册列表的信息。
+
+服务下线 Cancel：Eureka 客户端在程序关闭时向 Eureka 服务器发送取消请求。发送请求后，该客户端实例信息将从服务器的实例注册表中删除。该下线请求不会自动完成。
+
+可以充当服务发现的组件有很多：Zookeeper，Consul，Eureka 等。
+
+8.负载均衡 Ribbon
+Ribbon 是 Netflix 公司的一个开源的负载均衡项目，是一个客户端/进程内负载均衡器，运行在消费者端。
+其工作原理就是 Consumer 端获取到了所有的服务列表之后，在其内部使用负载均衡算法，进行对多个系统的调用。
+
+Nginx 和 Ribbon 的对比：
+Nignx 和 Ribbon 不同的是，它是一种集中式的负载均衡器。将所有请求都集中起来，然后再进行负载均衡。
+Nginx 中请求是先进入负载均衡器，而在 Ribbon 中是先在客户端进行负载均衡才进行请求的。
+
+Ribbon 中有更多的负载均衡调度算法，其默认是使用的 RoundRobinRule 轮询策略。还有 RandomRule 随机策略和 RetryRule 重试策略。
+在 Ribbon 中你还可以自定义负载均衡算法，你只需要实现 IRule 接口，然后修改配置文件或者自定义 Java Config 类。
+
+9.Open Feign
+RestTemplate 是 Spring 提供的一个访问 Http 服务的客户端类，微服务之间的调用是使用的 RestTemplate。
+Eureka 框架中的注册、续约等，底层都是使用的 RestTemplate。
+每次都调用 RestRemplate 的 API 太麻烦，可以将被调用的服务代码映射到消费者端，就是 Open Feign。
+Open Feign 也是运行在消费者端的，使用 Ribbon 进行负载均衡，所以 Open Feign 直接内置了 Ribbon。
+
+10.Hystrix
+
+11.Zuul
+
+12.Spring Cloud 配置管理——Config
+
+
+
+
+
+
