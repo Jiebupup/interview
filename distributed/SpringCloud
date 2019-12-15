@@ -61,20 +61,27 @@ Nginx 中请求是先进入负载均衡器，而在 Ribbon 中是先在客户端
 Ribbon 中有更多的负载均衡调度算法，其默认是使用的 RoundRobinRule 轮询策略。还有 RandomRule 随机策略和 RetryRule 重试策略。
 在 Ribbon 中你还可以自定义负载均衡算法，你只需要实现 IRule 接口，然后修改配置文件或者自定义 Java Config 类。
 
-9.Open Feign
+9.Feign
 RestTemplate 是 Spring 提供的一个访问 Http 服务的客户端类，微服务之间的调用是使用的 RestTemplate。
 Eureka 框架中的注册、续约等，底层都是使用的 RestTemplate。
 每次都调用 RestRemplate 的 API 太麻烦，可以将被调用的服务代码映射到消费者端，就是 Open Feign。
 Open Feign 也是运行在消费者端的，使用 Ribbon 进行负载均衡，所以 Open Feign 直接内置了 Ribbon。
 
-10.Hystrix
+10.Zuul
+Zuul 是从设备和 web 站点到 Netflix 流应用后端的所有请求的前门。作为边界服务应用，Zuul 是为了实现动态路由、监视、弹性和安全性而构建的。它还具有根据情况将请求路由到多个亚马逊自动缩放组（亚马逊的一种云计算方式）的能力。
+网关是系统唯一对外的入口，介于客户端与服务器端之间，用于对请求进行鉴权、限流、 路由、监控等功能。
+Zuul中最关键的功能：路由和过滤器。
+Zuul 首先需要向 Eureka 进行注册，能拿到所有 Consumer 的信息如元数据(名称，ip，端口)来进行路由映射。
+过滤：能实现限流，灰度发布，权限控制等等。
+Zuul 作为网关肯定也存在单点问题，如果我们要保证 Zuul 的高可用，我们就需要进行 Zuul 的集群配置，这个时候可以借助额外的一些负载均衡器比如 Nginx。
 
-11.Zuul
-
-12.Spring Cloud 配置管理——Config
-
-
-
-
-
-
+11.Spring Cloud 配置管理——Config
+既能对配置文件统一地进行管理，又能在项目运行时动态修改配置文件。
+Spring Cloud Config 为分布式系统中的外部化配置提供服务器和客户端支持。使用 Config服务器，可以在中心位置管理所有环境中应用程序的外部属性。
+Spring Cloud Config 就是能将各个应用/系统/模块的配置文件存放到统一的地方然后进行管理(Git 或者 SVN)。
+启动的时候才会进行配置文件的加载，那么我们的 Spring Cloud Config 就暴露出一个接口给启动应用来获取它所想要的配置文件，应用获取到配置文件然后再进行它的初始化工作。
+Webhooks，这是 github 提供的功能，它能确保远程库的配置文件更新后客户端中的配置信息也得到更新。
+使用 Bus 消息总线 + Spring Cloud Config 进行配置的动态刷新。
+Spring Cloud Bus：用于将服务和服务实例与分布式消息系统链接在一起的事件总线。在集群中传播状态更改很有用（例如配置更改事件）。
+Spring Cloud Bus 的作用就是管理和广播分布式系统中的消息，也就是消息引擎系统中的广播模式。当然作为消息总线的 Spring Cloud Bus 可以做很多事而不仅仅是客户端的配置刷新功能。
+拥有了 Spring Cloud Bus 之后，我们只需要创建一个简单的请求，并且加上 @ResfreshScope 注解就能进行配置的动态修改了。
