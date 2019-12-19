@@ -105,3 +105,29 @@ Webhooks，这是 github 提供的功能，它能确保远程库的配置文件�
 Spring Cloud Bus：用于将服务和服务实例与分布式消息系统链接在一起的事件总线。在集群中传播状态更改很有用（例如配置更改事件）。
 Spring Cloud Bus 的作用就是管理和广播分布式系统中的消息，也就是消息引擎系统中的广播模式。当然作为消息总线的 Spring Cloud Bus 可以做很多事而不仅仅是客户端的配置刷新功能。
 拥有了 Spring Cloud Bus 之后，我们只需要创建一个简单的请求，并且加上 @ResfreshScope 注解就能进行配置的动态修改了。
+
+12.微服务 2.0 技术栈选型
+服务框架
+Spring Boot/Cloud：RESTful 框架（不是 RPC 框架），序列化协议主要采用基于文本的 JSON，通讯协议一般基于 HTTP。
+RESTful 框架天然支持跨语言，任何语言只要有 HTTP 客户端都可以接入调用，但是客户端一般需要自己解析 payload。
+目前 Spring 框架也支持 Swagger 契约编程模型，能够基于契约生成各种语言的强类型客户端，极大方便不同语言栈的应用接入，但是因为 RESTful 框架和 Swagger 规范的弱契约特性，生成的各种语言客户端的互操作性还是有不少坑的。
+
+Dubbo：基于 Java 的 RPC 框架，当当 Dubbox 扩展了 Dubbo 支持 RESTful 接口暴露能力。Dubbo 主要面向 Java 技术栈，跨语言支持不足是它的一个弱项，另外因为治理能力太丰富，以至于这个框架比较重，完全用好这个框架的门槛比较高。
+
+运行时支撑服务
+服务注册中心：Eureka，客户端配合 Ribbon 可以实现灵活的客户端软负载均衡。
+服务网关：Zuul，支持灵活的动态过滤器脚本机制，异步性能不足。
+配置中心：Spring Cloud Config
+
+日志监控：ELK
+服务容错：Hystrix，Zuul 网关也可以集成 Hystrix 实现网关层集中式限流容错。
+
+后台服务
+消息系统：Kafka，RocketMQ，RabbitMQ
+数据库访问中间层 proxy 模式：阿里 Cobar 演化出来的社区开源分库分表中间件 MyCAT
+
+服务安全：OAuth
+
+服务部署平台
+集群资源调度系统：Kubernetes
+镜像治理：Docker
