@@ -160,5 +160,5 @@ CLI 实现容器和镜像的管理，为用户提供统一的操作界面。
 
 C/S 架构：Client 通过接口与 Server 进程通信实现容器的构建，运行和发布。client 和 server 可以运行在同一台集群，也可以通过跨主机实现远程通信。
 
-![docker2](https://github.com/jiebcoder/interview/blob/master/pics/docker2.png)
+![docker2](https://github.com/jiebcoder/interview/blob/master/pics/docker2.jpg)
 
