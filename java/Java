@@ -308,19 +308,38 @@ Throw 后只能跟一个异常对象，Throws 后可以一次声明多种异常�
 
 9.注解 Annontation
 Java 注解是附加在代码中的一些元信息，用于一些工具在编译、运行时进行解析和使用，起到说明、配置的功能。注解不会也不能影响代码的实际逻辑，仅仅起到辅助性的作用。
+Annontation 是 Java5 开始引入的新特征，包含在 java.lang.annotation 包中。
 
-注解的用处:
-生成文档。
+注解的用处：
+这是最常见的生成文档。
 跟踪代码依赖性，实现替代配置文件功能。
 在编译时进行格式检查。
 
 注解的原理：注解本质是一个继承了 Annotation 的特殊接口，其具体实现类是 Java 运行时生成的动态代理类。
-而我们通过反射获取注解时，返回的是 Java 运行时生成的动态代理对象$Proxy1。通过代理对象调用自定义注解（接口）的方法，会最终调用 AnnotationInvocationHandler 的 invoke 方法。该方法会从 memberValues 这个 Map 中索引出对应的值。而 memberValues 的来源是 Java 常量池。
+而我们通过反射获取注解时，返回的是 Java 运行时生成的动态代理对象 $Proxy1。通过代理对象调用自定义注解（接口）的方法，会最终调用 AnnotationInvocationHandler 的 invoke 方法。该方法会从 memberValues 这个 Map 中索引出对应的值。而 memberValues 的来源是 Java 常量池。
 
-元注解（专门注解其他的注解）：@Documented、@Retention、@Target、@Inherited。
-常见注解：@Override 重载、@Deprecated 不被推荐使用、@SuppressWarnings 抑制警告
+元注解（专门注解其他的注解）：
+@Documented：注解是否将包含在 JavaDoc 中。
+@Retention：什么时候使用该注解。
+@Target：注解用于什么地方。
+@Inherited：是否允许子类继承该注解。
 
-单元测试 JUnit
+常见注解：@Override 重载、@Deprecated 不被推荐使用、@SuppressWarnings 抑制警告。
+
+自定义注解格式：
+元注解
+public @interface 注解名称{
+    属性列表;
+}
+编写规则：
+所有的 Annotation 会自动继承 java.lang.annotation.Annotation 这一接口，并且不能再去继承别的类或是接口。
+参数成员只能用 public 或 default 这两个访问权修饰。
+参数成员只能用基本数据类型和 String、Enum、Class、annotations 等数据类型，以及这些类型的数组。
+如果定义属性时，使用 default 关键字给属性默认初始化值，则使用注解时，可以不进行属性的赋值。
+如果只有一个属性需要赋值，并且属性的名称是 value，则 value 可以省略，直接定义值即可。
+数组赋值时，值使用 {} 包裹。如果数组中只有一个值，则 {} 可以省略。
+要获取类方法和字段的注解信息，必须通过 Java 的反射技术来获取 Annotation 对象，因为你除此之外没有别的获取注解对象的方法。获取注解属性值，注解替换配置文件。
+注解也可以没有定义成员，不过这样注解就没啥用了。
 
 10.Java SE 8 新特性
 lambda 表达式和函数式接口，lambda 表达式匿名函数。
