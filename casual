@@ -8,6 +8,8 @@
 测试驱动的开发 TDD 要求我们先写单元测试，再写实现代码。
 单元测试属于白盒测试。JUnit。
 
+系统测试 自动测试     
+
 2.秒杀场景设计
 要达到强一致性
 
@@ -80,4 +82,4 @@ CAS（Central Authentication Service）：SSO 认证中心类似一个中转站�
 3. printf “0x%x\n”线程PID：0x431  //将线程PID转换为 16 进制，为后面查找 jstack 日志做准备
 4. jstack 进程PID | vim +/十六进制线程PID -  // 例如：jstack 1040|vim +/0x431 -
 
-工具 show-busy-java-threads.sh 发现：java 正则表达式回溯和线程死锁两个问题导致的 CPU 负载特别高。
+工具 show-busy-java-threads.sh 发现：Java 正则表达式回溯和线程死锁两个问题导致的 CPU 负载特别高。
