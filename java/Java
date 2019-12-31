@@ -35,7 +35,9 @@ char byte short 在进行数学运算时会先提升为 int。boolean 不能发�
 +=、-=、*=、/=、%= 复合赋值运算符会执行隐式的强制类型转换。a=a+b 和 a+=b 有区别。
 javac 会在 char byte short 赋值时右侧数值没有超过范围时隐式强转，超过范围则会报错。
 
-从 Java 7 开始，可以在 switch 条件判断语句中使用 String 对象。switch 不支持 long。
+从 Java 7 开始，可以在 switch 条件判断语句中使用 String 对象。switch 还可以 byte short char int 和枚举 enum。
+
+不是 void 返回值的方法可以进行单独调用，打印调用和赋值调用，void 返回值的方法只能进行单独调用。
 
 大数据类型 BigInteger 和 BigDecimal 实现任意精度。但是运算速度变慢。BigDecimal 的实现利用到了 BigInteger, 所不同的是 BigDecimal 加入了小数位的概念。
 在使用 BigDecimal 时，为了防止精度丢失，推荐使用它的 BigDecimal(String) 构造方法来创建对象。
@@ -130,7 +132,7 @@ public
 方法调用的优先级：this.func(this)、super.func(this)、this.func(super)、super.func(super) 转型。
 final，private，static 方法不能被重写，其他方法都是运行时绑定。
 
-重载 Overload：存在于同一个类中，指一个方法与已经存在的方法名称上相同，但是参数类型、个数、顺序至少有一个不同。返回值不同，其它都相同不算是重载。
+重载 Overload：存在于同一个类中，指一个方法与已经存在的方法名称上相同，但是参数类型、个数、多类型顺序至少有一个不同。返回类型（参数名称）不同，其它都相同不算是重载。
 
 父类的构造方法并不能被继承，所以构造器不能被重写，但是可以被重载。
 类的构造方法主要作用是完成对类对象的初始化工作。一个类即使没有声明构造方法也会有默认的不带参数的构造方法。
