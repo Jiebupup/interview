@@ -99,7 +99,7 @@ public void quickSort2(int[] a,int l,int r){
 }
 
 三路快排
-快速选择
+快速选择：线性时间复杂度
 
 稳定版：创建一个数组存储要交换的数据，记录位置信息
 
@@ -116,7 +116,7 @@ public void selectSort(int[] a){
     }
 }
 
-堆排序：java 的 PriorityQueue 默认小根堆
+堆排序：Java 的 PriorityQueue 默认小根堆，复杂度CNlogN（堆排序会有很多无用的比较，C 会比较大）。
 private int[] buildMaxHeap(int[] a){
     for(int i=a.length/2;i>=0;i--){
         adjust(a,a.length,i);
