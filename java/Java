@@ -12,7 +12,12 @@ float 表示的范围要大于 long。
 编译器的常量优化：javac 会将常量表达式计算后赋值给变量。
 double 值也可以 ++。
 
-包装类型：基本类型都有对应的包装类型，基本类型与其对应的包装类型之间的赋值使用自动装箱与拆箱完成。包装类不能被继承。包装类大部分实现了常量池技术。
+包装类型：基本类型都有对应的包装类型，基本类型与其对应的包装类型之间的赋值使用自动装箱与拆箱完成。包装类不能被继承。包装类大部分实现了常量池技术。重写了 toString()。
+装箱：构造方法 Integer(int 和基本类型的 String)，静态方法 valueOf(int 和 String)。
+拆箱：intValue()。
+JDK1.5 之后自动装箱和拆箱。
+除了 Character 类之外，其他包装类都有静态方法 parseXxx() 将字符串转换为对应的基本类型。
+将基本类型转换为字符串：静态方法 toString(int i) 和 valueOf(int i)。
 
 《阿里巴巴 Java 开发手册》：所有的 POJO 类属性必须使用包装数据类型。RPC 方法的返回值和参数必须使用包装数据类型。推荐所有的局部变量使用基本数据类型。
 POJO 类属性没有初值是提醒使用者在需要使用时，必须自己显式地进行赋值，任何 NPE 问题，或者入库检查，都由使用者来保证。
@@ -57,6 +62,8 @@ Java 的参数是按值传递，方法得到的是所有参数值的一个拷贝
 + 表示字符连接，任何数据类型和字符串连接时都会得到字符串，如 "Java"+20+30 -> Java2030。
 所以双引号字符串都是 String 类的对象，不管是否 new。字符串的内容永不可变，是常量，可以共享使用。会生成新的字符串。
 双引号字符串在字符串常量池里。
+字符串缓冲区内的字符串是可以变的。StringBuilder 底层也是 byte[] value，但是没有被 final 修饰，超出了容量会自动扩容。
+链式编程：方法的返回值是一个对象，可以继续调用方法。
 
 String 被声明为 final，因此它不可被继承。
 在 Java 8 中，String 内部使用 char 数组存储数据。
@@ -80,7 +87,8 @@ String Pool 的需要：如果一个 String 对象已经被创建过了，那么
 String，StringBuffer and StringBuilder：
 String 不可变，StringBuffer 和 StringBuilder 可变。
 String 是线程安全的，StringBuffer 是线程安全的（内部使用 synchronized 进行同步），StringBuilder 不是线程安全的。
-每次对 String 类型进行改变的时候，都会生成一个新的 String 对象，然后将指针指向新的 String 对象。StringBuffer 每次都会对 StringBuffer 对象本身进行操作，而不是生成新的对象并改变对象引用。StringBuilder 比 StringBuffer 性能高，且适用于单线程。
+每次对 String 类型进行改变的时候，都会生成一个新的 String 对象，然后将指针指向新的 String 对象。StringBuffer（StringBuilder）每次都会对 StringBuffer 对象本身进行操作，而不是生成新的对象并改变对象引用。StringBuilder 比 StringBuffer 性能高，且适用于单线程。
+StringBuilder 占用空间少，效率高。
 
 字符串常量池 String Pool：保存着所有字符串字面量，这些字面量在编译时期就确定。不仅如此，还可以使用 String 的 intern() 方法在运行过程中将字符串添加到 String Pool 中。
 当一个字符串调用 intern() 方法时，如果 String Pool 中已经存在一个字符串和该字符串值相等（使用 equals() 方法进行确定），那么就会返回 String Pool 中字符串的引用；否则，就会在 String Pool 中添加一个新的字符串，并返回这个新字符串的引用。
