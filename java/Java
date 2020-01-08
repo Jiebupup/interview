@@ -119,6 +119,9 @@ String.intern() 是一个 Native 方法，它的作用是：如果运行时常�
 Arrays.asList() 将数组转换为集合后，底层其实还是数组，不能使用其修改集合相关的方法。体现了适配器模式，只是转换接口。
 注意传递的数组必须是对象数组，而不是基本类型。当传入一个基本数据类型数组时，Arrays.asList() 的真正得到的参数就不是数组中的元素，而是数组对象本身。
 
+查询快，增删慢。增删时需要新建数组，复制原数组的元素，销毁原数组，效率低下
+二维数组本质上也是一维数组，只是数组中的每一个元素都指向了另一个一维数组而已。
+
 3.面向对象思想
 封装：
 利用抽象数据类型将数据和基于数据的操作封装在一起，使其构成一个不可分割的独立实体。
@@ -350,12 +353,18 @@ Throw 后只能跟一个异常对象，Throws 后可以一次声明多种异常�
 
 8.泛型
 使用参数化类型，使代码可以应用于多种类型。不能使用基本类型用作类型参数。
-使用泛型，可以在编译器防止将错误类型的对象放置到容器中。
+使用泛型，可以在编译期防止将错误类型的对象放置到容器中。但是只能存储泛型类型的元素。
 
 类型擦除：在泛型代码的内部，无法获得任何有关泛型参数类型的信息。
 
 元组：仅一次方法调用就能返回多个对象。通过创建一个对象，来持有想要返回的多个对象。
-通配符：被限制为单一边界。
+通配符：被限制为单一边界。<?>，只能接受数据，不能往集合中存储数据。只能用在方法的参数。
+
+未知的数据类型 E，在创建集合对象的时候，会确定泛型的数据类型。Class<E>。
+泛型方法
+含有泛型的接口可以指定接口的类型，public final class Scanner implements Iterator<String>{public String next(){}}。
+泛型上限：<? extends E>，使用泛型只能是 E 类型或其子类。
+泛型下限：<? super E>
 
 9.注解 Annontation
 Java 注解是附加在代码中的一些元信息，用于一些工具在编译、运行时进行解析和使用，起到说明、配置的功能。注解不会也不能影响代码的实际逻辑，仅仅起到辅助性的作用。
@@ -422,20 +431,23 @@ Java 不支持条件编译，C++ 通过 #ifdef #ifndef 等预处理命令从而�
 面向对象与面向过程的区别
 
 12.容器
-容器主要包括 Collection 和 Map 两种，Collection 存储着对象的集合，而 Map 存储着键值对（两个对象）的映射表。
+容器主要包括 Collection 和 Map 两种，Collection 存储着对象的集合，而 Map 存储着键值对（两个对象）的映射表。集合的长度可以改变。
 容器不能持有基本类型，需要使用自动包装。
+集合可以装不同类型的对象。集合不加泛型时默认为 Object 类的对象，但是不安全，会引发 ClassCastException。
+有序：存和取元素的顺序一致。
+单向链表不能保证元素顺序，双向链表是有序的。
 
 Collection
-Set：不允许重复
+Set：不允许重复，没有索引
 TreeSet：基于红黑树实现，有序，支持范围查找，查找的时间复杂度为 O(logN)。
 
-HashSet：基于 HashMap 实现，无序，查找的时间复杂度为 O(1)。
+HashSet：基于 HashMap 实现，无序，查找的时间复杂度为 O(1)。使用 Iterator 遍历 HashSet 得到的结果是不确定的。
 封装了一个 HashMap 对象来存储所有的集合元素，所有放入 HashSet 中的集合元素实际上由 HashMap 的 key 来保存，而 HashMap 的 value 则存储了一个 PRESENT，它是一个静态的 Object 对象。如果向 HashSet 中添加一个已经存在的元素，新添加的集合元素不会覆盖已有的集合元素。
-除了 clone() 、writeObject()、readObject() 是 HashSet 自己不得不实现之外，其他方法都是直接调用 HashMap 中的方法。
+除了 clone()、writeObject()、readObject() 是 HashSet 自己不得不实现之外，其他方法都是直接调用 HashMap 中的方法。
 
 LinkedHashSet：内部使用双向链表维护元素的插入顺序，具有 HashSet 的查找效率。
 
-List
+List：地址不是连续的
 ArrayList：基于动态数组实现，支持快速随机访问。实现了 RandomAccess（只是标识），Cloneable 和 Serializable 接口。默认大小为 10。
 扩容：新容量的大小为旧容量的 1.5 倍，Arrays.copyOf() 把原数组整个复制到新数组中。
 删除元素：System.arraycopy() 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为 O(N)。
@@ -461,7 +473,7 @@ CopyOnWriteArrayList
 使用场景：CopyOnWriteArrayList 在写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景。实现的 fail-safe。
 缺陷：在写操作时需要复制一个新的数组，内存占用为原来的两倍左右；部分写操作的数据还未同步到读数组中导致数据不一致。因此不适合内存敏感以及对实时性要求很高的场景。
 
-LinkedList：基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。实现了 Deque 接口。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList 为双向链表。JDK1.6 之前为循环链表，JDK1.7 取消了循环。
+LinkedList：基于双向链表实现，只能顺序访问（查询慢），但是可以快速地在链表中间插入和删除元素。实现了 Deque 接口。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList 为双向链表。JDK1.6 之前为循环链表，JDK1.7 取消了循环。
 使 LinkedList 变成线程安全的：List list=Collections.synchronizedList(new LinkedList(...));或者 BlockingQueue 阻塞队列和 ConcurrentLinkedQueue 非阻塞队列（CAS）。
 与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。ArrayList 结尾会预留一定的容量空间花费空间，LinkedList 每一个元素都需要存放直接后继和直接前驱以及数据花费空间。
 
@@ -471,6 +483,8 @@ LinkedList：基于双向链表实现，只能顺序访问，但是可以快速�
 Queue
 双向队列 Deque：通过 LinkedList 实现。
 PriorityQueue：基于堆结构实现。调用 remove 方法，总会获得当前优先级队列中的最小元素。PriorityQueue 不是线程安全的，入队和出队的时间复杂度是 O(log(n))。
+
+Stack
 
 Map
 TreeMap：基于红黑树实现。由 Comparable 或 Comparator 排序。
@@ -521,14 +535,15 @@ Tomcat 中的 ConcurrentCache 使用了 WeakHashMap 来实现缓存功能。
 当调用 get() 方法时，会先从 eden 区获取，如果没有找到的话再到 longterm 获取，当从 longterm 获取到就把对象放入 eden 中，从而保证经常被访问的节点不容易被回收。
 当调用 put() 方法时，如果 eden 的大小超过了 size，那么就将 eden 中的所有对象都放入 longterm 中，利用虚拟机回收掉一部分不经常使用的对象。
 
-IdentityHashMap:使用==代替 equals 对键进行比较。
+IdentityHashMap:使用 == 代替 equals 对键进行比较。
 
 容器中的设计模式：
-迭代器模式：Collection 继承了 Iterable 接口，其中的 iterator() 方法能够产生一个 Iterator 对象，通过这个对象就可以迭代遍历 Collection 中的元素。
+迭代器模式：Collection 继承了 Iterable 接口，其中的 iterator() 方法能够产生一个 Iterator 对象，通过这个对象就可以迭代遍历 Collection 中的元素。hasNext() 判断，next() 取出下个元素（Object 类）。
 JDK 1.5 之后使用 foreach 方法来遍历实现了 Iterable 接口的聚合对象。
 不要在 foreach 循环里进行集合类的 remove/add 操作，可以调用迭代器的 remove/add 方法。并发操作需要对 Iterator 对象加锁。
 Java 中的 Iterator 可用来遍历 Set 和 List 集合，并且只能单向移动。ListIterator 实现了 Iterator 接口，既可以前向也可以后向遍历，还可以添加对象和修改对象。
 Enumeration 接口和 Iterator 接口的区别：Enumeration 速度是 Iterator 的 2 倍，同时占用更少的内存。但是，Iterator 远远比 Enumeration 安全，因为其他线程不能够修改正在被 iterator 遍历的集合里面的对象。同时，Iterator 允许调用者删除底层集合里面的元素，这对 Enumeration 来说是不可能的。
+迭代：获取集合元素。迭代器的泛型和集合泛型一致。NoSuchElementException。Iterator 指针一开始在 -1。
 
 适配器模式
 
