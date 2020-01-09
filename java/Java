@@ -196,8 +196,8 @@ interface 接口没有任何的方法实现（Java8 开始也可以拥有默认�
 选择抽象类：需要在几个相关的类中共享代码。需要能控制继承来的成员的访问权限，而不是都为 public。需要继承非静态和非常量字段。
 不管是抽象类还是接口，都不能通过抽象类或者接口直接创建对象，但可以通过匿名内部类的方式访问（让接口的引用来指向内部类对象，该内部类实现了接口）。
 
-Comparator 接口：外部排序，定制比较器。出自 java.util 包。compare(Object obj1, Object obj2)。
-Comparable 接口：在集合内部定义的方法实现的排序。出自 java.lang 包。compareTo(Object obj)。
+Comparator 接口：外部排序，定制比较器。出自 java.util 包。compare(Object obj1, Object obj2)，升序：obj1 - obj2。new Comparator<E>(){@Override public int compare(){}}。
+Comparable 接口：在集合内部定义的方法实现的排序。出自 java.lang 包。compareTo(Object obj)，升序：this - obj。
 
 枚举类 enum
 lambda 表达式，函数式接口
@@ -236,6 +236,7 @@ Objects.equals(Object a,Object b) 是空指针安全的，Objects 工具类。
 
 hashCode()：native 本地操作系统给的地址值，十进制。当你把对象加入 HashSet 时，HashSet 会先计算对象的 hashcode 值来判断对象加入的位置，同时也会与其他已经加入的对象的 hashcode 值作比较，如果没有相符的 hashcode，HashSet 会假设对象没有重复出现。
 但是如果发现有相同 hashcode 值的对象，这时会调用 equals（）方法来检查 hashcode 相等的对象是否真的相同。如果两者相同，HashSet 就不会让其加入操作成功。如果不同的话，就会重新散列到其他位置。
+Set 没有重复元素的前提（保证 key 唯一）：元素要重写 hashCode 和 equals 方法。
 大大减少了 equals 的次数，提高了执行速度。
 
 重写 equals 为什么要重写 hashCode？
@@ -446,7 +447,7 @@ HashSet：基于 HashMap 实现，无序，查找的时间复杂度为 O(1)。�
 封装了一个 HashMap 对象来存储所有的集合元素，所有放入 HashSet 中的集合元素实际上由 HashMap 的 key 来保存，而 HashMap 的 value 则存储了一个 PRESENT，它是一个静态的 Object 对象。如果向 HashSet 中添加一个已经存在的元素，新添加的集合元素不会覆盖已有的集合元素。
 除了 clone()、writeObject()、readObject() 是 HashSet 自己不得不实现之外，其他方法都是直接调用 HashMap 中的方法。
 
-LinkedHashSet：内部使用双向链表维护元素的插入顺序，具有 HashSet 的查找效率。
+LinkedHashSet：内部使用双向链表维护元素的插入顺序，有序，具有 HashSet 的查找效率。
 
 List：有序，有索引（可以普通 for 循环），允许重复
 ArrayList：基于动态数组实现，支持快速随机访问。实现了 RandomAccess（只是标识），Cloneable 和 Serializable 接口。默认大小为 10。
@@ -487,10 +488,10 @@ PriorityQueue：基于堆结构实现。调用 remove 方法，总会获得当�
 
 Stack
 
-Map
+Map：键不能重复，一个键只能映射一个值。
 TreeMap：基于红黑树实现。由 Comparable 或 Comparator 排序。
 
-HashMap：基于哈希表实现，查询快。Entry<K,V>[] table，数组中的每个位置被当成一个桶，一个桶存放一个链表 Entry（存储着键值对）。根据哈希值放到数组中。
+HashMap：基于哈希表实现，查询快，无序。Entry<K,V>[] table，数组中的每个位置被当成一个桶，一个桶存放一个链表 Entry（存储着键值对）。根据哈希值放到数组中。
 拉链法解决冲突：put 操作头插法。要存入的元素与要存放位置上已有元素的 hash 值以及 key 相同的话直接覆盖。如果是红黑树节点则红黑树插入。
 HashMap 只允许一个 key 为 null，允许多个 value 为 null。因为无法调用 null 的 hashCode()，也就无法确定该键值对的桶下标，HashMap 使用第 0 个桶存放键为 null 的键值对。
 使用扰动函数（hash()）之后可以减少碰撞。
@@ -500,14 +501,13 @@ HashMap 只允许一个 key 为 null，允许多个 value 为 null。因为无�
 当 Entry 的数量超过 threshold 且新建的 Entry 刚好落在一个非空的 table 上，触发扩容 capacity*2，并采用 transfer() 将原有的 Entry 对象插入到新数组中（会进行 rehash() 重新计算桶下标）。并发下的 Rehash 会造成元素之间会形成一个循环链表，jdk 1.8 后解决了这个问题。
 
 从 JDK 1.8 开始，一个桶存储的链表长度大于等于 8 时会将链表转换为红黑树。Entry 改为了 Node。为了提高查询速度。
-为什么  是   是
+为什么要使用红黑树？
 
 HashMap 的容量是 2 的幂次方：tableSizeFor()。好处：
 通过限制 length 是一个 2 的幂数，indexFor()（求桶的位置）中 h & (length-1) 和 h % length 结果是一致的。取模转换成了&与操作更加高效。
 通过右移可以使低位的数据尽量的不同，从而使 hash 值的均匀分布减少碰撞。
 
-HashTable：和 HashMap 类似，但它是线程安全的，因此也效率低。
-HashTable 与 HashMap 比较：
+HashTable：和 HashMap 类似，但它是线程安全的，因此也效率低。HashTable 的子类 Properties 依旧活跃，是唯一和 IO 流结合的集合。HashTable 与 HashMap 比较：
 HashTable 使用 synchronized 来进行同步。
 HashMap 可以插入键为 null 的 Entry。
 HashMap 的迭代器是 fail-fast 迭代器。
@@ -527,7 +527,7 @@ JDK 1.8 取消了分段锁，使用了 CAS 操作来支持更高的并发度，�
 Hashtable 和 ConcurrentHashmap 都是支持并发的，这样会有一个问题，当你通过 get(k) 获取对应的 value 时，如果获取到的是 null 时，你无法判断，它是 put（k,v）的时候 value 为 null，还是这个 key 从来没有做过映射。
 HashMap 是非并发的，可以通过 contains(key) 来做这个判断。而支持并发的 Map 在调用 m.contains（key）和 m.get(key),m 可能已经不同了。
 
-LinkedHashMap：使用双向链表来维护元素的顺序，顺序为插入顺序或者最近最少使用（LRU）顺序。可以使用 LinkedHashMap 实现的一个 LRU 缓存。
+LinkedHashMap：使用双向链表来维护元素的顺序，有序，顺序为插入顺序或者最近最少使用（LRU）顺序。可以使用 LinkedHashMap 实现的一个 LRU 缓存。
 
 WeakHashMap：Entry 继承自 WeakReference，被 WeakReference 关联的对象在下一次垃圾回收时会被回收。主要用来实现缓存，通过使用 WeakHashMap 来引用缓存对象，由 JVM 对这部分缓存进行回收。。
 Tomcat 中的 ConcurrentCache 使用了 WeakHashMap 来实现缓存功能。
@@ -725,3 +725,9 @@ SimpleDateFormat 为什么不是线程安全的？
 SimpleDateFormat 维护的用于 format 和 parse 方法计算日期-时间的 calendar 被清空了，如果此时线程 A 将 calendar 清空且没有设置新值，线程 B 也进入 parse 方法用到了 SimpleDateFormat 对象中的 calendar 对象，此时就会产生线程安全问题。
 
 解决方法：每一个使用 SimpleDateFormat 对象进行日期-时间进行 format 和 parse 方法的时候就创建一个新的 SimpleDateFormat 对象，用完就销毁。此时就可以使用 ThreadLocal 将 SimpleDateFormat 绑定到线程上。
+
+可变参数：JDK1.5 之后，参数列表的类型已经确定，但是参数的个数不确定。格式：方法名(数据类型...变量名)
+底层就是数组（变量名），会根据传递参数个数的不同创建不同长度的数组来存储这些参数。传递参数个数可以是 0 个。  
+参数列表只能有一个可变参数，且可变参数必须写在参数列表的末尾。
+
+JDK1.9 的 List、Set、Map 接口（其实现类不可以）的静态方法 of：给集合一次性添加多个元素。
