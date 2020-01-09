@@ -12,6 +12,7 @@ Collections：clear() 清空，contains() 包含，toArray() 转换为数组，r
 Arrays：sort() 排序（默认生序），binarySearch() 二分查找，equals() 相等，fill() 填充，asList() 转成列表，toString() 转成字符串，copyOf() 复制数组。
 TreeSet：floor(val) 返回小于 val 的值，ceiling() 大于。
 ArrayList：get() 获取元素，clear() 清空，stream().mapToInt(Integer::intValue).toArray() 转化为 int[]。
+LinkedList：add()/push() 等效于 addFirst，remove()/pop() 等效于 removeFirst()。
 
 sequence 不需要连续
 
