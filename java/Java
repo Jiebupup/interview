@@ -231,10 +231,10 @@ Object 类方法：
 equals()：equals() 判断引用的对象是否等价。equals 方法不能作用于基本数据类型的变量。类没有覆盖 equals() 方法，则通过 equals() 比较该类的两个对象时，等价于通过“==”比较这两个对象。一般，我们都覆盖 equals() 方法来比较两个对象的内容是否相等。
 ==：基本数据类型==比较的是值，引用数据类型==判断两个变量是否引用同一个对象。
 equals() 实现（重写）：检查是否为同一个对象的引用，如果是直接返回 true；检查是否是同一个类型，如果不是，直接返回 false；将 Object 对象进行转型；判断每个关键域是否相等。
-String 中的 equals 方法是被重写过的，因为 object 的 equals 方法是比较的对象的内存地址，而 String 的 equals 方法比较的是对象的值。推荐 "abc".equals(str)，因为当 str=null 时也不会报空指针异常。
+String 中的 equals 方法是被重写过的（hashCode() 也被重写过），因为 object 的 equals 方法是比较的对象的内存地址，而 String 的 equals 方法比较的是对象的值。推荐 "abc".equals(str)，因为当 str=null 时也不会报空指针异常。
 Objects.equals(Object a,Object b) 是空指针安全的，Objects 工具类。
 
-hashCode()：当你把对象加入 HashSet 时，HashSet 会先计算对象的 hashcode 值来判断对象加入的位置，同时也会与其他已经加入的对象的 hashcode 值作比较，如果没有相符的 hashcode，HashSet 会假设对象没有重复出现。
+hashCode()：native 本地操作系统给的地址值，十进制。当你把对象加入 HashSet 时，HashSet 会先计算对象的 hashcode 值来判断对象加入的位置，同时也会与其他已经加入的对象的 hashcode 值作比较，如果没有相符的 hashcode，HashSet 会假设对象没有重复出现。
 但是如果发现有相同 hashcode 值的对象，这时会调用 equals（）方法来检查 hashcode 相等的对象是否真的相同。如果两者相同，HashSet 就不会让其加入操作成功。如果不同的话，就会重新散列到其他位置。
 大大减少了 equals 的次数，提高了执行速度。
 
@@ -436,9 +436,10 @@ Java 不支持条件编译，C++ 通过 #ifdef #ifndef 等预处理命令从而�
 集合可以装不同类型的对象。集合不加泛型时默认为 Object 类的对象，但是不安全，会引发 ClassCastException。
 有序：存和取元素的顺序一致。
 单向链表不能保证元素顺序，双向链表是有序的。
+索引越界异常 IndexOutOfBoundsException
 
 Collection
-Set：不允许重复，没有索引
+Set
 TreeSet：基于红黑树实现，有序，支持范围查找，查找的时间复杂度为 O(logN)。
 
 HashSet：基于 HashMap 实现，无序，查找的时间复杂度为 O(1)。使用 Iterator 遍历 HashSet 得到的结果是不确定的。
@@ -447,7 +448,7 @@ HashSet：基于 HashMap 实现，无序，查找的时间复杂度为 O(1)。�
 
 LinkedHashSet：内部使用双向链表维护元素的插入顺序，具有 HashSet 的查找效率。
 
-List：地址不是连续的
+List：有序，有索引（可以普通 for 循环），允许重复
 ArrayList：基于动态数组实现，支持快速随机访问。实现了 RandomAccess（只是标识），Cloneable 和 Serializable 接口。默认大小为 10。
 扩容：新容量的大小为旧容量的 1.5 倍，Arrays.copyOf() 把原数组整个复制到新数组中。
 删除元素：System.arraycopy() 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为 O(N)。
@@ -459,7 +460,7 @@ ArrayList 实现了 writeObject() 序列化和 readObject() 反序列化来控�
 List<Integer> list=new ArrayList<>();  //JDK 1.7 开始，右侧的 <> 内部可以不写。
 对于 ArrayList 来说，直接打印 list 得到的不是地址值（重写了 toString()）。
 
-Vector：和 ArrayList 类似，但它是线程安全的，使用了 synchronized 进行同步。
+Vector：JDK1.2 之前，和 ArrayList 类似，但它是线程安全的，使用了 synchronized 进行同步。
 与 ArrayList 的比较：
 Vector 是同步的，因此开销就比 ArrayList 要大，访问速度更慢。最好使用 ArrayList 而不是 Vector，因为同步操作完全可以由程序员自己来控制。
 Vector 每次扩容请求其大小的 2 倍空间，而 ArrayList 是 1.5 倍。
@@ -473,8 +474,8 @@ CopyOnWriteArrayList
 使用场景：CopyOnWriteArrayList 在写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景。实现的 fail-safe。
 缺陷：在写操作时需要复制一个新的数组，内存占用为原来的两倍左右；部分写操作的数据还未同步到读数组中导致数据不一致。因此不适合内存敏感以及对实时性要求很高的场景。
 
-LinkedList：基于双向链表实现，只能顺序访问（查询慢），但是可以快速地在链表中间插入和删除元素。实现了 Deque 接口。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList 为双向链表。JDK1.6 之前为循环链表，JDK1.7 取消了循环。
-使 LinkedList 变成线程安全的：List list=Collections.synchronizedList(new LinkedList(...));或者 BlockingQueue 阻塞队列和 ConcurrentLinkedQueue 非阻塞队列（CAS）。
+LinkedList：基于双向链表实现，只能顺序访问，查询慢增删快。实现了 Deque 接口。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList 为双向链表。JDK1.6 之前为循环链表，JDK1.7 取消了循环。包含大量操作首尾元素的方法。
+使 LinkedList 变成线程安全的：List list=Collections.synchronizedList(new LinkedList(...))。或者 BlockingQueue 阻塞队列和 ConcurrentLinkedQueue 非阻塞队列（CAS）。
 与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。ArrayList 结尾会预留一定的容量空间花费空间，LinkedList 每一个元素都需要存放直接后继和直接前驱以及数据花费空间。
 
 实现了 RandomAccess 接口的 list，优先选择普通 for 循环 ，其次 foreach。
@@ -489,7 +490,7 @@ Stack
 Map
 TreeMap：基于红黑树实现。由 Comparable 或 Comparator 排序。
 
-HashMap：基于哈希表实现。Entry<K,V>[] table，数组中的每个位置被当成一个桶，一个桶存放一个链表 Entry（存储着键值对）。
+HashMap：基于哈希表实现，查询快。Entry<K,V>[] table，数组中的每个位置被当成一个桶，一个桶存放一个链表 Entry（存储着键值对）。根据哈希值放到数组中。
 拉链法解决冲突：put 操作头插法。要存入的元素与要存放位置上已有元素的 hash 值以及 key 相同的话直接覆盖。如果是红黑树节点则红黑树插入。
 HashMap 只允许一个 key 为 null，允许多个 value 为 null。因为无法调用 null 的 hashCode()，也就无法确定该键值对的桶下标，HashMap 使用第 0 个桶存放键为 null 的键值对。
 使用扰动函数（hash()）之后可以减少碰撞。
@@ -498,7 +499,8 @@ HashMap 只允许一个 key 为 null，允许多个 value 为 null。因为无�
 默认的 table 容量 capacity 是 16，默认的装载因子 loadFactor 是 0.75（loadFactor 太大导致查找元素效率低，太小导致数组的利用率低）。默认的键值对数量 size 的临界值 threshold = capacity * loadFactor=12。
 当 Entry 的数量超过 threshold 且新建的 Entry 刚好落在一个非空的 table 上，触发扩容 capacity*2，并采用 transfer() 将原有的 Entry 对象插入到新数组中（会进行 rehash() 重新计算桶下标）。并发下的 Rehash 会造成元素之间会形成一个循环链表，jdk 1.8 后解决了这个问题。
 
-从 JDK 1.8 开始，一个桶存储的链表长度大于等于 8 时会将链表转换为红黑树。Entry 改为了 Node。
+从 JDK 1.8 开始，一个桶存储的链表长度大于等于 8 时会将链表转换为红黑树。Entry 改为了 Node。为了提高查询速度。
+为什么  是   是
 
 HashMap 的容量是 2 的幂次方：tableSizeFor()。好处：
 通过限制 length 是一个 2 的幂数，indexFor()（求桶的位置）中 h & (length-1) 和 h % length 结果是一致的。取模转换成了&与操作更加高效。
@@ -538,7 +540,7 @@ Tomcat 中的 ConcurrentCache 使用了 WeakHashMap 来实现缓存功能。
 IdentityHashMap:使用 == 代替 equals 对键进行比较。
 
 容器中的设计模式：
-迭代器模式：Collection 继承了 Iterable 接口，其中的 iterator() 方法能够产生一个 Iterator 对象，通过这个对象就可以迭代遍历 Collection 中的元素。hasNext() 判断，next() 取出下个元素（Object 类）。
+迭代器模式：JDK1.2 开始，Collection 继承了 Iterable 接口，其中的 iterator() 方法能够产生一个 Iterator 对象，通过这个对象就可以迭代遍历 Collection 中的元素。hasNext() 判断，next() 取出下个元素（Object 类）。
 JDK 1.5 之后使用 foreach 方法来遍历实现了 Iterable 接口的聚合对象。
 不要在 foreach 循环里进行集合类的 remove/add 操作，可以调用迭代器的 remove/add 方法。并发操作需要对 Iterator 对象加锁。
 Java 中的 Iterator 可用来遍历 Set 和 List 集合，并且只能单向移动。ListIterator 实现了 Iterator 接口，既可以前向也可以后向遍历，还可以添加对象和修改对象。
