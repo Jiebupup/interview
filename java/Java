@@ -151,7 +151,7 @@ public
 
 重写与重载
 重写 Override：存在于继承体系中，指子类实现了一个与父类在方法声明上完全相同的一个方法。
-@Override 注解让编译器帮忙检查重写的三个限制：子类方法的访问权限必须大于等于父类方法；子类方法的返回类型必须是父类方法返回类型或为其子类型。子类方法抛出的异常类型必须是父类抛出异常类型或为其子类型。
+@Override 注解让编译器帮忙检查重写的三个限制：子类方法的访问权限必须大于等于父类方法；子类方法的返回类型必须是父类方法返回类型或为其子类型。子类方法抛出的异常类型必须是父类抛出异常类型或为其子类型（或者不抛出异常）。
 方法调用的优先级：this.func(this)、super.func(this)、this.func(super)、super.func(super) 转型。
 final，private，static 方法不能被重写，其他方法都是运行时绑定。
 
@@ -232,7 +232,7 @@ equals()：equals() 判断引用的对象是否等价。equals 方法不能作�
 ==：基本数据类型==比较的是值，引用数据类型==判断两个变量是否引用同一个对象。
 equals() 实现（重写）：检查是否为同一个对象的引用，如果是直接返回 true；检查是否是同一个类型，如果不是，直接返回 false；将 Object 对象进行转型；判断每个关键域是否相等。
 String 中的 equals 方法是被重写过的（hashCode() 也被重写过），因为 object 的 equals 方法是比较的对象的内存地址，而 String 的 equals 方法比较的是对象的值。推荐 "abc".equals(str)，因为当 str=null 时也不会报空指针异常。
-Objects.equals(Object a,Object b) 是空指针安全的，Objects 工具类。
+Objects.equals(Object a,Object b) 是空指针安全的，Objects 工具类。Objects.requireNonNull。
 
 hashCode()：native 本地操作系统给的地址值，十进制。当你把对象加入 HashSet 时，HashSet 会先计算对象的 hashcode 值来判断对象加入的位置，同时也会与其他已经加入的对象的 hashcode 值作比较，如果没有相符的 hashcode，HashSet 会假设对象没有重复出现。
 但是如果发现有相同 hashcode 值的对象，这时会调用 equals（）方法来检查 hashcode 相等的对象是否真的相同。如果两者相同，HashSet 就不会让其加入操作成功。如果不同的话，就会重新散列到其他位置。
@@ -327,15 +327,15 @@ RMI 远程方法调用：需要在运行时获取类的信息。允许运行在�
 动态代理使用到了反射。
 
 7.异常
-Throwable 可以用来表示任何可以作为异常抛出的类，分为两种：Error 和 Exception。
+Throwable 可以用来表示任何可以作为异常抛出的类，分为 Error 和 Exception。
 Error 用来表示 JVM 无法处理的错误。它们在应用程序的控制和处理能力之外，这些错误发生时，JVM 一般会选择线程终止。
-Exception 分为受检异常（需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复）和非受检异常（是程序运行时错误）。异常能被程序本身处理。
+Exception 分为受检异常（需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复）和非受检异常（是程序运行时错误）。
 
 常见异常：NullPointerException 空指针异常，ClassCastException 类型强制转换异常，ArrayIndexOutOfBoundsException 数组下标越界异常，IOException 输入输出异常，SQLException 操作数据库异常。
 
 异常处理：
-try 块：用于捕获异常。其后可接零个或多个 catch 块，如果没有 catch 块，则必须跟一个 finally 块。
-catch 块：用于处理 try 捕获到的异常。可以重新抛出异常。
+try 块：可能产生异常的代码。其后可接零个或多个 catch 块（异常有父子关系则子类必须写在上面），如果没有 catch 块，则必须跟一个 finally 块。
+catch 块：处理捕获到的异常。可以重新抛出异常。一般会把异常的信息记录到日志中。只有产生了异常才会执行 catch 里的代码。
 finally 块：无论是否捕获或处理异常，finally 块里的语句都会被执行。当在 try 块或 catch 块中遇到 return 语句时，finally 语句块将在方法返回之前被执行。
 当 try 语句和 finally 语句中都有 return 语句时，在方法返回之前，finally 语句的内容将被执行，并且 finally 语句的返回值将会覆盖原始的返回值。
 
@@ -350,7 +350,15 @@ Throw 用于方法内部，Throws 用于方法声明上。
 Throw 后跟异常对象，Throws 后跟异常类型。
 Throw 后只能跟一个异常对象，Throws 后可以一次声明多种异常类型。
 
+Throw 抛出指定类型的异常对象，就必须处理这个对象。用 try...catch 或者 throws（没有处理就会和运行异常一样）。
+调用声明了异常的方法，就必须处理这个声明的异常。
+
 断言和日志
+
+运行异常 RuntimeException：可以把异常对象（内容，原因，位置）交给虚拟机来处理，中断程序，并在控制台打印错误信息。
+异常的方法（打印内容由少变多）：getMessage() toString() printStackTrace()。
+父类方法没有抛出异常，子类重写该方法也不可以抛出异常。此时子类产生该异常，只能捕获处理，不能声明抛出。
+所有异常类都会有一个带异常信息的构造方法，方法内部 super() 让父类处理这个异常信息。
 
 8.泛型
 使用参数化类型，使代码可以应用于多种类型。不能使用基本类型用作类型参数。
