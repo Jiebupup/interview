@@ -143,11 +143,11 @@ Daemon 守护线程：程序运行时在后台提供服务的线程，不属于�
 如果只想中断 Executor 中的一个线程，可以通过使用 submit() 方法来提交一个线程，它会返回一个 Future<?> 对象，通过调用该对象的 cancel(true) 方法就可以中断线程。
 
 5.互斥同步
-Java 提供了两种锁机制来控制多个线程对共享资源的互斥访问，第一个是 JVM 实现的 synchronized，而另一个是 JDK 实现的 ReentrantLock（需要 lock() 和 unlock() 方法配合 try/finally 语句块来完成）。
+Java 提供了两种锁机制来控制多个线程对共享资源的互斥访问，第一个是 JVM 实现的 synchronized，而另一个是 JDK 实现的 ReentrantLock（需要 lock() 和 unlock() 方法配合 try/finally 语句块来完成，无论程序是否异常，都会把锁释放掉）。
 
 synchronized 关键字解决的是多个线程之间访问资源的同步性，synchronized 关键字可以保证被它修饰的方法或者代码块在任意时刻只能有一个线程执行。synchronized 是基于原子性的内部锁机制。
 synchronized 同步代码块，同步方法，同步类。
-synchronized 关键字加到 static 静态方法和 synchronized(class) 代码块上都是是给 Class 类上锁。synchronized 关键字加到实例方法上是给对象实例上锁。尽量不要使用 synchronized(String a) 因为 JVM 中，字符串常量池具有缓存功能。
+synchronized 关键字加到 static 静态方法和 synchronized(.class) 代码块上都是是给 Class 类上锁。synchronized 关键字加到实例方法上是给对象实例上锁。尽量不要使用 synchronized(String a) 因为 JVM 中，字符串常量池具有缓存功能。
 如果一个线程 A 调用一个实例对象的非静态 synchronized 方法，而线程 B 需要调用这个实例对象所属类的静态 synchronized 方法，是允许的，不会发生互斥现象，因为访问静态 synchronized 方法占用的锁是当前类的锁，而访问非静态 synchronized 方法占用的锁是当前实例对象锁。
 
 synchronized 底层实现：基于进入和退出管程 Monitor 对象，无论是显式同步 (有明确的 monitorenter 和 monitorexit 指令，即同步代码块) 还是隐式同步（由方法调用指令读取运行时常量池中方法的 ACC_SYNCHRONIZED 标志，即同步方法）都是如此。
@@ -192,7 +192,7 @@ sleep() 可能会抛出 InterruptedException，因为异常不能跨线程传播
 
 Object.wait()：进入的是限期等待或者无限期等待。
 只能用在同步方法或者同步控制块中使用，否则会在运行时抛出 IllegalMonitorStateException。
-使用 wait() 挂起期间，线程会释放锁。这是因为，如果没有释放锁，那么其它线程就无法进入对象的同步方法或者同步控制块中，那么就无法执行 notify() 或者 notifyAll() 来唤醒挂起的线程，造成死锁。
+使用 wait() 挂起期间，线程会释放锁。这是因为，如果没有释放锁，那么其它线程就无法进入对象的同步方法或者同步控制块中，那么就无法执行 notify() 或者 notifyAll() 来唤醒挂起的线程，造成死锁。wait()/notify() 需要和 synchronized 配合。
 
 两者都可以暂停线程的执行，wait() 和 sleep() 的区别：
 wait() 会释放锁，而 sleep() 不会释放锁。最主要的区别。
