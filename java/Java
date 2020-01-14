@@ -518,8 +518,8 @@ HashMap 的容量是 2 的幂次方：tableSizeFor()。好处：
 通过限制 length 是一个 2 的幂数，indexFor()（求桶的位置）中 h & (length-1) 和 h % length 结果是一致的。取模转换成了&与操作更加高效。
 通过右移可以使低位的数据尽量的不同，从而使 hash 值的均匀分布减少碰撞。
 
-HashTable：和 HashMap 类似，但它是线程安全的，因此也效率低。HashTable 的子类 Properties 依旧活跃，是唯一和 IO 流结合的集合。HashTable 与 HashMap 比较：
-HashTable 使用 synchronized 来进行同步。
+Hashtable：和 HashMap 类似，但它是线程安全的，因此也效率低。Hashtable 与 HashMap 比较：
+Hashtable 使用 synchronized 来进行同步。
 HashMap 可以插入键为 null 的 Entry。
 HashMap 的迭代器是 fail-fast 迭代器。
 HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。
@@ -747,3 +747,5 @@ JDK1.9 的 List、Set、Map 接口（其实现类不可以）的静态方法 of�
 
 函数式编程更加强调程序执行的结果而非执行的过程。
 构造函数不能有递归。
+
+Properties 是唯一和 IO 流相结合的集合。Properties extends Hashtable，key 和 value 默认都是 String。
