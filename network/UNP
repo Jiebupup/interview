@@ -18,6 +18,10 @@ socket()
 服务器：bind()
 close()
 
+服务器使用客户端的流和客户端进行交互。
+Socket 和 InputStream/OutputStream 配合。
+fis.read() 阻塞，也不会写结束标记。需要 socket.shutDownOutput() 添加连接终止标记。
+
 3.I/O 模型
 对于一个套接字上的输入操作，第一步通常涉及等待数据从网络中到达。当所等待数据到达时，它被复制到内核中的某个缓冲区。第二步就是把数据从内核缓冲区复制到应用进程缓冲区。
 Unix 有五种 I/O 模型：
