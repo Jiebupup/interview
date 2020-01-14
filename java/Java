@@ -412,19 +412,24 @@ public @interface 注解名称{
 注解也可以没有定义成员，不过这样注解就没啥用了。
 
 10.Java SE 8 新特性
-lambda 表达式和函数式接口，()->{}。
+lambda 表达式和函数式接口（有且只有一个抽象方法），()->{}。特点是延迟加载，如果最后一步不进行，则前置的几步也不会进行。
 省略规则：小括号里的参数类型可以省略；如果小括号里只有一个参数则小括号可以省略；如果大括号里只有一条语句则大括号可以省略。
+方法引用对 lambda 表达式的简化，:: 引用运算符。
 
 Optional 是一个简单的容器，其值可能是 null 或者不是 null。在 Java 8 之前一般某个函数应该返回非空对象但是有时却什么也没有返回，而在 Java 8 中，你应该返回 Optional 而不是 null。用于防止 NullPointerException。
 
-Stream：能应用在一组元素上一次执行的操作序列。Stream 操作分为中间操作或者最终操作两种，最终操作返回一特定类型的计算结果，而中间操作返回 Stream 本身，这样你就可以将多个操作依次串起来。Stream 的创建需要指定一个数据源。Stream 的操作可以串行执行或者并行执行（Parallel Streams）。
+Stream：能应用在一组元素上一次执行的操作序列。Stream 操作分为中间操作或者最终操作两种，最终操作返回一特定类型的计算结果，而中间操作返回 Stream 本身，这样你就可以将多个操作依次串起来（Pipelining，有延迟执行和短路的优化）。Stream 的创建需要指定一个数据源。Stream 的操作可以串行执行或者并行执行（Parallel Streams）。
 Stream 操作
 Filter(过滤)：过滤通过一个 Predicate 接口来过滤并只保留符合条件的元素，该操作属于中间操作。
 Sorted(排序)：如果你不指定一个自定义的 Comparator 则会使用默认排序，该操作属于中间操作。创建了一个排列好后的 Stream，而不会影响原有的数据源。
 Map(映射)：中间操作 map 会将元素根据指定的 Function 接口来依次将元素转成另外的对象。
-Match(匹配)：Stream 提供了多种匹配操作，允许检测指定的 Predicate 是否匹配整个 Stream。所有的匹配操作都是最终操作 ，并返回一个 boolean 类型的值。
+Match(匹配)：Stream 提供了多种匹配操作，允许检测指定的 Predicate 是否匹配整个 Stream。所有的匹配操作都是最终操作，并返回一个 boolean 类型的值。
 Count(计数)：计数是一个最终操作，返回 Stream 中元素的个数，返回值类型是 long。
-Reduce(规约)：这是一个最终操作 ，允许通过指定的函数来讲 Stream 中的多个元素规约为一个元素，规约后的结果是通过 Optional 接口表示的。
+Reduce(规约)：这是一个最终操作，允许通过指定的函数来讲 Stream 中的多个元素规约为一个元素，规约后的结果是通过 Optional 接口表示的。
+
+Stream 不会对数据进行存储，而是按需计算。Stream 属于管道流，只能被消费一次，流到下一个 Stream 时，上一个 Stream 将会关闭。
+内部迭代 forEach()。
+中间操作（延迟方法）。
 
 新的日期和时间 API
 接口的默认方法：使用 default 关键字向接口添加非抽象方法实现。可以在不影响子类的情况下在接口添加默认方法，子类会继承到这个默认方法。接口也可以定义静态方法（也是 Java 8 开始的），可以直接用接口名调用。实现类对象是不可以调用接口的默认方法。如果同时实现两个接口，接口中定义了一样的默认方法，则必须重写，不然会报错（和普通的抽象方法不一样）。如果父类的方法和接口的默认方法冲突，则会优先选择父类的方法。                       
@@ -490,7 +495,7 @@ LinkedList：基于双向链表实现，只能顺序访问，查询慢增删快�
 使 LinkedList 变成线程安全的：List list=Collections.synchronizedList(new LinkedList(...))。或者 BlockingQueue 阻塞队列和 ConcurrentLinkedQueue 非阻塞队列（CAS）。
 与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。ArrayList 结尾会预留一定的容量空间花费空间，LinkedList 每一个元素都需要存放直接后继和直接前驱以及数据花费空间。
 
-实现了 RandomAccess 接口的 list，优先选择普通 for 循环 ，其次 foreach。
+实现了 RandomAccess 接口的 list，优先选择普通 for 循环，其次 foreach。
 未实现 RandomAccess 接口的 list，优先选择 foreach（底层通过 iterator 实现）。大 size 的数据，千万不要使用普通 for 循环。
 
 Queue
@@ -581,6 +586,8 @@ File 类可以用于表示文件和目录的信息，但是它不表示文件的
 字符操作 Reader 和 Writer
 编码就是把字符转换为字节，而解码是把字节重新组合成字符。
 如果编码和解码过程使用不同的编码方式那么就出现了乱码。
+charset：
+ASCII：1 个字节；
 GBK：中文字符占 2 个字节，英文字符占 1 个字节；
 UTF-8：中文字符占 3 个字节，英文字符占 1 个字节；
 UTF-16be：中文字符和英文字符都占 2 个字节。大端 Big Endian，大端序最高位字节存储在最低的内存地址处。
@@ -588,10 +595,14 @@ Java 的内存编码使用双字节编码 UTF-16be，这不是指 Java 只支持
 在调用无参数 getBytes() 方法时，默认的编码方式不是 UTF-16be。双字节编码的好处是可以使用一个 char 存储中文和英文，而将 String 转为 bytes[] 字节数组就不再需要这个好处，因此也就不再需要双字节编码。getBytes() 的默认编码方式与平台有关，一般为 UTF-8。
 
 在程序中操作的通常是字符形式的数据。
-InputStreamReader 实现从字节流解码成字符流；
+InputStreamReader 实现从字节流解码成字符流。可以指定编码表。
 OutputStreamWriter 实现字符流编码成为字节流。
 
 write() 先把数据写到内存缓冲区（字符转换为字节），flush() 再把内存缓冲区的数据刷新到文件中。释放资源 close() 前也会隐含执行 flush()。
+缓冲流 BufferedXxx。
+FileReader 只能使用默认的编码 UTF-8。
+PrintStream 打印流，永远不会抛出 IOException，extends OutputStream。
+System.setOut(new PrintStream()) 可以改变输出语句的目的地。
 
 获取键盘输入：通过 Scanner 或 BufferedReader。
 Scanner sc=new Scanner(System.in);  //System.in 从键盘输入
@@ -608,9 +619,9 @@ I/O 流操作分为字节流操作和字符流操作。
 如果音频文件、图片等媒体文件用字节流比较好，如果涉及到字符的话使用字符流比较好。
 
 对象操作 Serializable
-序列化就是将一个对象转换成字节序列，方便存储和传输。
-序列化：ObjectOutputStream.writeObject()
-反序列化：ObjectInputStream.readObject()
+序列化就是将一个对象转换成字节序列（流），方便存储和传输。
+序列化：ObjectOutputStream.writeObject()。
+反序列化：ObjectInputStream.readObject()。还需要存在类对应的 .class 文件，否则会抛出 ClassNotFoundException。也不能修改源代码使生成 UID 不同的 .class 文件，否则会抛出 InvalidClassException。
 不会对静态变量进行序列化，因为序列化只是保存对象的状态，静态变量属于类的状态。
 序列化的类需要实现 Serializable 接口，它只是一个标准，没有任何方法需要实现，但是如果不去实现它的话而进行序列化，会抛出异常。
 transient 关键字可以使修饰的变量不被序列化。通过重写序列化和反序列化方法，使得可以只序列化数组中有内容的那部分数据。
