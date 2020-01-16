@@ -16,179 +16,10 @@ LinkedList：add()/push() 等效于 addFirst，remove()/pop() 等效于 removeFi
 
 sequence 不需要连续
 
-1.插入:
-public void insertSort(int[] a){
-    for(int i=1;i<a.length;i++){
-        int tmp=a[i];
-        int j=i-1;
-        while(j>=0&&a[j]>tmp){
-            a[j+1]=a[j];
-            j--;
-        }
-        a[j+1]=tmp;
-    }
-}
+快排稳定版：创建一个数组存储要交换的数据，记录位置信息。
+堆排序：Java 的 PriorityQueue 默认小根堆，复杂度 CNlogN（堆排序会有很多无用的比较，C 会比较大）。
 
-希尔：
-public void shellSort(int[] a){
-    int n=1;
-    while(n<a.length/3){
-        n=3*n+1;
-    }
-    while(n>=1){
-        for(int i=n;i<a.length;i++){
-            for(int j=i;j>=n&&a[j]<a[j-n];j-=n){
-                int tmp=a[j];
-                a[j]=a[j-n];
-                a[j-n]=tmp; 
-            }
-        }
-        n/=3;
-    }
-}
-
-2.交换
-冒泡：
-public void bubbleSort(int[] a){
-    boolean isSorted=false; 
-    for(int i=a.length-1;i>0&&!isSorted;i--){
-        isSorted=true;
-        for(int j=0;j<i;j++){
-            if(a[j]>a[j+1]){
-                isSorted=false;
-                int tmp=a[j];
-                a[j]=a[j+1];
-                a[j+1]=tmp; 
-            }
-        }
-    }
-}
-
-快排：
-private int partiton(int[] a,int l,int r) {
-    int i=l,j=r,pivot=a[l];
-    while(i<j){
-        while(i<j&&a[j]>=pivot) j--;
-        a[i]=a[j];
-        while(i<j&&a[i]<=pivot) i++;
-        a[j]=a[i];
-    }
-    a[i]=pivot;
-    return i;
-}
-public void quickSort1(int[] a,int l,int r){
-    if(l<r){
-        int idx=Partition(a,l,r);
-        QuickSort(a,l,idx-1);
-        QuickSort(a,idx+1,r);
-    }
-}
-    
-public void quickSort2(int[] a,int l,int r){
-    if(l<r){
-        int i=l,j=r,pivot=a[i];
-        while(i<j){
-            while(i<j&&a[j]>=pivot) j--;
-            if(i<j) a[i++]=a[j];
-            while(i<j&&a[i]<=pivot) i++;
-            if(i<j) a[i]=a[j--];
-        }
-        a[i]=pivot;
-        QuickSort2(a,l,i-1); 
-        QuickSort2(a,i+1,r);
-    }
-}
-
-三路快排
-快速选择：线性时间复杂度
-
-稳定版：创建一个数组存储要交换的数据，记录位置信息
-
-3.选择:
-public void selectSort(int[] a){
-    for(int i=0;i<a.length-1;i++){
-        int min=i;
-        for(int j=i+1;j<a.length;j++){
-            if(a[j]<a[min]) min=j;
-        }
-        int tmp=a[i];
-        a[i]=a[min];
-        a[min]=tmp;
-    }
-}
-
-堆排序：Java 的 PriorityQueue 默认小根堆，复杂度CNlogN（堆排序会有很多无用的比较，C 会比较大）。
-private int[] buildMaxHeap(int[] a){
-    for(int i=a.length/2;i>=0;i--){
-        adjust(a,a.length,i);
-    }
-    return a;
-}
-
-private void adjust(int[] a,int len,int idx){       //向下调整
-    int tmp=a[idx];
-    for(int i=2*idx+1;i<len-1;i=i*2+1){
-        if(i<len&&a[i]<a[i+1]) i++;
-        if(a[i]<=tmp) break;
-        a[k]=a[i];
-        k=i;
-    }
-    a[k]=tmp;
-}
-
-public void heapSort(int[] a){
-    a=buildMaxHeap(a);
-    for(int i=a.length-1;i>=1;i--){
-        int tmp=a[0];
-        a[0]=a[i];
-        a[i]=tmp;
-        adjust(a,i,0;)
-    }
-}
-
-private void delete(int[] a){
-    a[0]=a[a.length-1];
-    a[a.length-1]=Integer.MIN_VALUE;
-    adjust(a,a.length,0);
-}
-
-private void insert(int[] a,int n){                 //向上调整
-    a[a.length]=n;
-    int k=a.length,parent=(k-1)/2;
-    while(parent>=0&&n>a[parent]){
-        a[k]=a[parent];
-        k=parent;
-        if(parent==0) break;
-        parent=(parent-1)/2;
-    }
-    a[k]=n;
-}
-
-4.归并:
-private void merge(int[] a,int l,int m,int h){
-    int[] tmp=new int[h-l+1];
-    int i=l,j=m+1,k=0;
-    while(i<=mid&&j<=h){
-        if(a[i]<a[j]) tmp[k++]=a[i++];
-        else tmp[k++]=a[j++];
-    }
-    while(i<=mid) tmp[k++]=a[i++];
-    while(j<=h) tmp[k++]=a[j++];
-    for(int n=0;n<tmp.length;n++){
-        a[l+n]=tmp[n];
-    }
-}
-
-public void mergeSort(int[] a,int l,int h){
-    if(l<h){
-        int m=l+(h-l)>>1;
-        mergeSort(a,l,m);
-        mergeSort(a,m+1,h);
-        merge(a,l,m,h);
-    }
-}
-
-5.二分查找
+1.二分查找
 public int binarySearch1(int[] a, int n) {
     int i=0,j=a.length-1;
     while(i<=j){
@@ -210,7 +41,7 @@ public int binarySearch2(int[] a, int n) {
     return i;
 }
 
-6.单例模式
+2.单例模式
 双检锁
 public class Singleton {
     private volatile static Singleton uniqueInstance;
@@ -247,7 +78,7 @@ public enum Singleton {
     }  
 }
 
-7.四则运算计算器
+3.四则运算计算器
 public int calculate(String s){
     if(s==null||s.length()<1) return 0;
     int num=0,res=0;
@@ -280,7 +111,7 @@ public int calculate(String s){
     return res;
 }
 
-8.代理模式
+4.代理模式
 静态代理： 
 public interface Subject {  //接口
     void request();
@@ -423,7 +254,7 @@ before
 real subject execute request
 after
 
-9.工厂模式
+5工厂模式
 简单工厂：
 public interface Shape {
     void draw();
@@ -512,9 +343,9 @@ public class Client {
 
 抽象工厂：
 
-10.生产者消费者问题
+6.生产者消费者问题
 
-11.泛型实现最小值函数
+7.泛型实现最小值函数
 方法只能接受 Number 的子类并且实现了 Comparable 接口。
 private static <T extends Number & Comparable<? super T>> T min(T[] values) {
     if (values == null || values.length == 0) return null;
