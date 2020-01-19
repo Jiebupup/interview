@@ -41,7 +41,7 @@ char byte short 在进行数学运算时会先提升为 int。boolean 不能发�
 +=、-=、*=、/=、%= 复合赋值运算符会执行隐式的强制类型转换。a=a+b 和 a+=b 有区别。
 javac 会在 char byte short 赋值时右侧数值没有超过范围时隐式强转，超过范围则会报错。
 
-从 Java 7 开始，可以在 switch 条件判断语句中使用 String 对象。switch 还可以 byte short char int 和枚举 enum。
+从 Java 7 开始，可以在 switch 条件判断语句中使用 String 对象。switch 还可以 byte short char int 和枚举 enum（JDK1.5 开始）。
 
 不是 void 返回值的方法可以进行单独调用，打印调用和赋值调用，void 返回值的方法只能进行单独调用。
 
