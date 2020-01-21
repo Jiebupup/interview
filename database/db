@@ -171,3 +171,5 @@ Connection 数据库连接对象：获取执行 sql 的对象，管理事务。
 Statement 执行 sql 的对象
 ResultSet 结果集对象，封装查询结果
 PreparedStatement 执行 sql 的对象
+
+JDBCTemplate
