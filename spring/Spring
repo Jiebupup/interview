@@ -71,6 +71,9 @@ spring 中 bean 生存的容器：BeanFactory、ApplicationContext、webApplicat
 BeanDefinition：用来管理 bean 的属性和对象间的相互依赖关系
 
 3.MVC
+SpringMVC 框架是以请求为驱动，围绕 Servlet 设计，将请求发给控制器，然后通过模型对象，分派器来展示请求结果视图。其中核心类是 DispatcherServlet，它是一个 Servlet，顶层是实现的 Servlet 接口。
+耦合低，重用性高。但使项目架构变得复杂。
+
 模型 Model 是应用程序中用于处理应用程序数据逻辑的部分。
 通常模型对象负责在数据库中存取数据。
 
@@ -78,35 +81,33 @@ BeanDefinition：用来管理 bean 的属性和对象间的相互依赖关系
 通常视图是依据模型数据创建的。
 
 控制器 Controller 是应用程序中处理用户交互的部分。
-通常控制器负责从视图读取数据，控制用户输入，并向模型发送数据。
-ResponseEntity：HTTP 响应
-@ResponseBody：返回给前端 json 格式的结果
-@ResponseStatus：返回状态
+通常控制器负责读取用户输入，向模型发送数据，把数据交给视图展示。
 
 流程：
-客户端（浏览器）发送请求到前端控制器 DispatcherServlet。
-DispatcherServlet 根据请求信息调用控制器映射 HandleMapping，解析请求对应的 Handler（控制器 Controller），然后返回一个执行链给 DispatcherServlet。
-适配器 HandlerAdapter 会根据 Handler 来调用真正的处理器处理请求和相应的业务逻辑。
-处理器返回一个 ModelAndView 给 DispatcherServlet。
-DispatcherServlet 通过视图解析器 ViewResolver 找到对应的视图对象 View。 
-DispatcherServlet 把返回的 Model 传给 View（视图渲染），并返回到浏览器。
+客户端/浏览器发送请求，直接请求到 DispatcherServlet。
+DispatcherServlet 根据请求信息调用 HandlerMapping，解析请求对应的 Handler。
+解析到对应的 Handler（也就是我们平常说的 Controller 控制器）后，开始由 HandlerAdapter 适配器处理。
+HandlerAdapter 会根据 Handler 来调用真正的处理器开处理请求，并处理相应的业务逻辑。
+处理器处理完业务后，会返回一个 ModelAndView 对象，Model 是返回的数据对象，View 是个逻辑上的 View。
+ViewResolver 会根据逻辑 View 查找实际的 View。
+DispaterServlet 把返回的 Model 传给 View（视图渲染）。
+把 View 返回给请求者。
+
+其中 Handler 和 View 需要自己开发，其他由框架提供。
 
 Model1 时代：整个 Web 应用几乎全部用 JSP 页面组成，JSP 即是控制层又是表现层。
-Model2 时代：Java Bean(Model)+ JSP（View）+Servlet（Controller），抽象和封装程度还远远不够。Struts2 比较笨重。
+Model2 时代：Java Bean（Model）+ JSP（View）+ Servlet（Controller），抽象和封装程度还远远不够。Struts2 比较笨重。
 Spring MVC 下我们一般把后端项目分为 Service 层（处理业务）、Dao 层（数据库操作）、Entity 层（实体类）、Controller 层 (控制层，返回数据给前台页面)。
 
 SSM 三层架构
-View 层：JSP/HTML 页面发送请求，获取响应。
-Controller 层 SpringMVC，接受请求并进行相应的流程处理。
-Service 层 Spring：完成具体的业务逻辑
-DAO 层 MyBatis：对数据库进行操作
-
-分层模型：应用层、服务层、数据层。
+表示层 SpringMVC：接受用户参数，显示页面。
+Service 层 Spring：处理业务逻辑。
+DAO 层 MyBatis：操作数据库。
 
 @RestController vs @Controller
-Controller 返回一个页面：单独使用 @Controller 不加 @ResponseBody 的话一般使用在要返回一个视图的情况。前后端不分离。
-@RestController 返回 JSON 格式数据。返回 domain 对象，再由 MappingJackson2HttpMessageConverter 自动转换为 JSON。对象数据直接以 JSON 或 XML 形式写入 HTTP 响应 (Response) 中，这种情况属于 RESTful Web 服务。前后端分离。Spring 4 之后新加的注解。         
-@Controller + @ResponseBody 等于 @RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的 view 对象通过适当的转换器转换为指定的格式之后，写入到 HTTP 响应 (Response) 对象的 body 中。                    
+Controller：返回一个页面，单独使用 @Controller 不加 @ResponseBody 的话一般使用在要返回一个视图的情况，这种情况属于比较传统的 Spring MVC 的应用，对应于前后端不分离的情况。
+@RestController：返回JSON 或 XML 形式数据，但只返回对象，对象数据直接以 JSON 或 XML 形式写入 HTTP 响应 Response 中，这种情况属于 RESTful Web 服务，这也是目前日常开发所接触的最常用的情况（前后端分离）。Spring 4 之后新加的注解。         
+@Controller + @ResponseBody 等于 @RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的 view 对象通过适当的转换器转换为指定的格式之后，写入到 HTTP 响应 Response 对象的 body 中。返回 JSON 数据的情况比较多。                    
 
 @RequestMapping 将对页面的 HTTP 请求映射到方法，并且默认映射所有 HTTP 方法。
 
@@ -223,21 +224,15 @@ association 标签的类型属性为 javaType（可选）。
 discriminator 标签的类型属性为 javaType（可选）。
 collection 这个标签最特殊，有两个类型属性，分别为 javaType（可选） 和 ofType（结果映射时必填）。
 
+EL 表达式：表达式语言，能替换和简化 JSP 页面中 Java 代码的编写。
+语法：${表达式}。
+JSP 默认支持 EL 表达式，但也能忽略。
+使用：运算和获取值。
+隐式对象
+
+JSTL：JSP 标准标签库。和 EL 表达式作用一样。
+
 10.springBoot Starter
 starter 会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater 机制帮我们完成了项目起步所需要的的相关 jar 包。
 ConfigurationProperties 和 AutoConfiguration，application.properties 文件满足自定义配置。
 利用 starter 实现自动化配置只需要两个条件——maven 依赖、配置文件。
-
-11.JDBCTemplate
-ORM 持久化技术：JDBC、Hibernate、MyBatis、JPA，Spring 都对其进行了封装 Template 模板类。
-
-12.SSH
-Struts+Spring+Hibernate
-对象关系映射 ORM
-
-Hibernate 和 Spring 整合时，Hibernate 核心配置文件和位置没有固定要求
-Spring 提供 HibernateTemplate 进行封装
-
-Struts 核心：Action、值栈、拦截器
-
-Spring 中 s 使用 ServletContext 对象和监听器
