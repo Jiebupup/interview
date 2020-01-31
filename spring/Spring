@@ -100,9 +100,9 @@ Model2 时代：Java Bean（Model）+ JSP（View）+ Servlet（Controller），�
 Spring MVC 下我们一般把后端项目分为 Service 层（处理业务）、Dao 层（数据库操作）、Entity 层（实体类）、Controller 层 (控制层，返回数据给前台页面)。
 
 SSM 三层架构
-表示层 SpringMVC：接受用户参数，显示页面。
-Service 层 Spring：处理业务逻辑。
-DAO 层 MyBatis：操作数据库。
+表现层 SpringMVC：接受用户参数，显示页面。
+业务层 Spring：处理业务逻辑。
+持久层 MyBatis：操作数据库。
 
 @RestController vs @Controller
 Controller：返回一个页面，单独使用 @Controller 不加 @ResponseBody 的话一般使用在要返回一个视图的情况，这种情况属于比较传统的 Spring MVC 的应用，对应于前后端不分离的情况。
@@ -201,28 +201,52 @@ PlatformTransactionManager.getTransaction(…) 方法返回一个 TransactionSta
 实现声明式事务的四种方式：TransactionInterceptor、TransactionProxyFactoryBean、<tx> 和 <aop> 命名空间、@Transactional。
 @Transactional(rollbackFor = Exception.class) 注解：如果类或者方法加了这个注解，那么这个类里面的方法抛出异常，就会回滚，数据库里面的数据也会回滚。在 @Transactional 注解中如果不配置 rollbackFor 属性，那么事物只会在遇到 RuntimeException 的时候才会回滚，加上 rollbackFor=Exception.class，可以让事物在遇到非运行时异常时也回滚。
 
-9.Mybatis
-MyBatis 是一款持久层框架，它支持定制化 SQL、存储过程以及高级映射。和 Hibernate 一样都是 ORM 对象关系映射，负责数据库和 Java 对象之间的映射。区别是 MyBatis 自己控制 SQL。
+9.MyBatis
+MyBatis 是一个 Java 持久化框架，它通过 XML 描述符或注解把对象与存储过程或 SQL 语句关联起来。
+MyBatis 是在 Apache 许可证 2.0 下分发的自由软件，是 iBATIS 3.0 的分支版本。
+对象关系映射 ORM：用于实现面向对象编程语言里不同类型系统的数据之间的转换。数据库的字段与实体类相对应。 
 
-在 Mybatis 中我们可以定义一个叫做 TypeHandler 类型处理器的东西，通过它可以实现 Java 类型跟数据库类型的相互转换。
+在 MyBatis 中我们可以定义一个叫做 TypeHandler 类型处理器的东西，通过它可以实现 Java 类型跟数据库类型的相互转换。
 
-动态 sql 是 mybatis 的主要特性之一，在 mybatis 中我们可以把参数传到 xml 文件，由 mybatis 对 sql 及其语法进行解析，mybatis 支 持使用 ${} 和 #{}。
+动态 sql 是 MyBatis 的主要特性之一，在 MyBatis 中我们可以把参数传到 xml 文件，由 MyBatis 对 sql 及其语法进行解析，MyBatis 支 持使用 ${} 和 #{}。
 # 和 $ 的区别：
-使用 ${} 方式传入的参数，mybatis 不会对它进行特殊处理，一般用于传入数据库对象。MyBatis 排序时使用 order by 动态参数时需要注意，用 $ 而不是 #。
-使用 #{} 传进来的参数，mybatis 默认会将其当成字符串，加双引号。
-# 和 $ 在预编译处理中是不一样的。# 类似 jdbc 中的 PreparedStatement，对于传入的参数，在预处理阶段会使用 ? 代替，待真正查询的时候即在数据库管理系统 DBMS 中才会代入参数。而 ${} 则是简单的替换。
+使用 ${} 方式传入的参数，MyBatis 不会对它进行特殊处理，一般用于传入数据库对象。MyBatis 排序时使用 order by 动态参数时需要注意，用 $ 而不是 #。
+使用 #{} 传进来的参数，MyBatis 默认会将其当成字符串，加双引号。
+# 和 $ 在预编译处理中是不一样的。# 类似 JDBC 中的 PreparedStatement，对于传入的参数，在预处理阶段会使用 ? 代替，待真正查询的时候即在数据库管理系统 DBMS 中才会代入参数。而 ${} 则是简单的替换。
 由于 PreparedStatement，#{} 可以有效防止 sql 注入，${} 则可能导致 sql 注入成功。因此能使用 #{} 的地方应尽量使用 #{}。
 
-MyBatis 的 SQL 建议写在 XML 里，或者写在注解里。
-实现 DAO 接口：建议 Mapper 自动实现，只需给出 DAO 接口；或者 API 编程方式。
+MyBatis 的 DAO 接口也叫 Mapper。
+xml 配置文件分为主配置文件 configuration（配置环境和指定映射配置文件或注解方式）和映射配置文件 mapper。
+xml 配置文件和注解的差别在得到 mappers 对象的过程，后面创建代理对象和执行查询是一样的。
+
+MyBatis 无需写 DAO 实现类的要求（当然也可以写实现类，但不推荐）：
+MyBatis 的映射配置文件位置必须和 DAO 接口的包结构相同。
+映射配置文件 mapper 标签的 namespace 属性的值必须是 DAO 接口的全限定类名。
+映射配置文件的操作（如 select）的 id 属性的取值必须是 DAO 接口的方法名。
+
+映射配置文件的作用：
+根据 namespace + id 找到一条 sql 语句。获取到 PreparedStatement 对象。
+获取结果对象 resultTyepe。
+ 
+使用 xml 配置文件方式的步骤：
+读取配置文件
+创建 SqlSessionFactory 
+创建 SqlSession。两条分支：自己写 DAO 接口实现类实现 CRUD，或者生成代理对象。
+创建 DAO 接口的代理对象。动态代理。
+执行 DAO 中的方法
+释放资源
 
 MyBatis XML 标签类型：
+resultTyepe 在配置中指定把查询结果封装到一实体类（全限定类名）。用到反射技术。如果是注解方式则是范型代表的实体类。
+parameterType
 resultMap 标签的类型属性为 type（必填）。
-id, result 标签的类型属性为 javaType（可选）。
-idArg, arg 标签和上面两个类似，也都是 javaType（可选）。
+id，result 标签的类型属性为 javaType（可选）。
+idArg，arg 标签和上面两个类似，也都是 javaType（可选）。
 association 标签的类型属性为 javaType（可选）。
 discriminator 标签的类型属性为 javaType（可选）。
 collection 这个标签最特殊，有两个类型属性，分别为 javaType（可选） 和 ofType（结果映射时必填）。
+
+注解：在 DAO 接口上方法上加注解
 
 EL 表达式：表达式语言，能替换和简化 JSP 页面中 Java 代码的编写。
 语法：${表达式}。
