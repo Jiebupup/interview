@@ -1,5 +1,5 @@
 1.简介
-Redis（全称：Remote Dictionary Server 远程字典服务）是一个开源的使用 ANSI C 语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value 数据库，并提供多种语言的 API。Redis 的开发工作由 VMware 主持，由 Pivotal 赞助。
+Remote Dictionary Server 远程字典服务，是一个开源的使用 ANSI C 语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value 数据库，并提供多种语言的 API。Redis 的开发工作由 VMware 主持，由 Pivotal 赞助。
 Redis 是速度非常快的非关系型 NoSQL 内存键值数据库。
 Redis 是一个单进程单线程且采用非阻塞多路 I/O 复用模型。
 
