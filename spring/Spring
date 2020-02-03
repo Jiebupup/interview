@@ -207,13 +207,20 @@ MyBatis 是在 Apache 许可证 2.0 下分发的自由软件，是 iBATIS 3.0 �
 对象关系映射 ORM：用于实现面向对象编程语言里不同类型系统的数据之间的转换。数据库的字段与实体类相对应。 
 
 在 MyBatis 中我们可以定义一个叫做 TypeHandler 类型处理器的东西，通过它可以实现 Java 类型跟数据库类型的相互转换。
+insert 可以加 selectKey 获取新增的属性值。
+以查询所有满足条件的 User 并封装为 List 为例（自己编写 DAO 实现类）：findAll() -> selectList() -> query() -> queryFromDatabase() -> doQuery() -> query() 出现 JDBC 的 PreparedStatement 对象完成查询 -> handleResultSets() 完成查询结果的封装。
+insert 和 delete 最终调用的都是 update。
+MyBatis 在 DAO 类中设置 SqlSession sqlSession=sqlSessionFactory.openSession(true); 设置事务自动提交。
+抽取重复的 SQL 语句。
 
-动态 sql 是 MyBatis 的主要特性之一，在 MyBatis 中我们可以把参数传到 xml 文件，由 MyBatis 对 sql 及其语法进行解析，MyBatis 支 持使用 ${} 和 #{}。
+动态 SQL 是 MyBatis 的主要特性之一，在 MyBatis 中我们可以把参数传到 xml 文件，由 MyBatis 对 SQL 及其语法进行解析，MyBatis 支 持使用 ${} 和 #{}。
 # 和 $ 的区别：
 使用 ${} 方式传入的参数，MyBatis 不会对它进行特殊处理，一般用于传入数据库对象。MyBatis 排序时使用 order by 动态参数时需要注意，用 $ 而不是 #。
 使用 #{} 传进来的参数，MyBatis 默认会将其当成字符串，加双引号。
 # 和 $ 在预编译处理中是不一样的。# 类似 JDBC 中的 PreparedStatement，对于传入的参数，在预处理阶段会使用 ? 代替，待真正查询的时候即在数据库管理系统 DBMS 中才会代入参数。而 ${} 则是简单的替换。
-由于 PreparedStatement，#{} 可以有效防止 sql 注入，${} 则可能导致 sql 注入成功。因此能使用 #{} 的地方应尽量使用 #{}。
+由于 PreparedStatement，#{} 可以有效防止 SQL 注入，${} 则可能导致 SQL 注入成功。因此能使用 #{} 的地方应尽量使用 #{}。
+
+MyBatis 使用 OGNL 表达式解析对象字段的值，#{} 和 ${} 括号中的值为 POJO 属性名称。
 
 MyBatis 的 DAO 接口也叫 Mapper。
 xml 配置文件分为主配置文件 configuration（配置环境和指定映射配置文件或注解方式）和映射配置文件 mapper。
@@ -225,7 +232,7 @@ MyBatis 的映射配置文件位置必须和 DAO 接口的包结构相同。
 映射配置文件的操作（如 select）的 id 属性的取值必须是 DAO 接口的方法名。
 
 映射配置文件的作用：
-根据 namespace + id 找到一条 sql 语句。获取到 PreparedStatement 对象。
+根据 namespace + id 找到一条 SQL 语句。获取到 PreparedStatement 对象。
 获取结果对象 resultTyepe。
  
 使用 xml 配置文件方式的步骤：
@@ -236,17 +243,35 @@ MyBatis 的映射配置文件位置必须和 DAO 接口的包结构相同。
 执行 DAO 中的方法
 释放资源
 
-MyBatis XML 标签类型：
-resultTyepe 在配置中指定把查询结果封装到一实体类（全限定类名）。用到反射技术。如果是注解方式则是范型代表的实体类。
-parameterType
-resultMap 标签的类型属性为 type（必填）。
+MyBatis XML 标签类型
+resultTyepe：在配置中指定把 select 结果封装到一实体类（全限定类名）。用到反射技术。如果是注解方式则是范型代表的实体类。
+parameterType：insert update delete。
+resultMap：查询结果的列名和实体类的属性名相对应。对应在 SQL 语句中起别名，但开发效率要高。
+property：配置连接池。
+typeAlias：配置别名。package 也是配置别名，配置后该包下的所有类都会注册别名，而且类名就是别名，不再区分大小写。
 id，result 标签的类型属性为 javaType（可选）。
-idArg，arg 标签和上面两个类似，也都是 javaType（可选）。
-association 标签的类型属性为 javaType（可选）。
-discriminator 标签的类型属性为 javaType（可选）。
-collection 这个标签最特殊，有两个类型属性，分别为 javaType（可选） 和 ofType（结果映射时必填）。
 
-注解：在 DAO 接口上方法上加注解
+注解：在 DAO 接口上方法上加注解，@Select，@Insert，@Update，@Delete。
+使用了注解方式就不能在项目里的特定位置有映射配置文件，否则会报错。
+@Results 能将数据库列名与实体类属性相对应。并且可以被多个方法使用。@Results 内有 @One 属性，能完成一对一查询。@Many 一对多。多表查询的 @One 和 @Many 有 select 和 fetchType 属性。
+注解使用二级缓存：@CacheNamespace。
+
+在主配置文件中 dataSource 指定 POOLED 和 UNPOOLED 配置数据库连接池。
+
+动态 SQL
+if 标签：条件，放在 where 标签里。
+foreach 标签：与 SQL 的 in 一起使用表示在某一范围内查询。
+
+多表查询
+一对一：resultMap 封装主表属性和从表属性 association，再在主表的 select 标签写 SQL。
+一对多：resultMap 从表改为 collection。
+多对多：SQL 额外加 left outer join 让数据库表中有多行数据。
+
+一对一、多对一需要立即加载，而一对多、多对多需要延迟加载。
+在主配置文件设置延迟加载 lazyLoadingEnabled。
+
+一级缓存：SqlSession 对象的缓存，当调用增删改、commit()、close() 方法时会清空缓存。
+二级缓存：SqlSessionFactory 对象的缓存，同一个 SqlSessionFactory 创建的 SqlSession 共享其缓存。需要配置支持二级缓存。二级缓存内存放的数据而不是对象。
 
 EL 表达式：表达式语言，能替换和简化 JSP 页面中 Java 代码的编写。
 语法：${表达式}。
