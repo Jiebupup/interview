@@ -180,9 +180,10 @@ Dubbo：基于 Java 的 RPC 框架，当当 Dubbox 扩展了 Dubbo 支持 RESTfu
 
 后台服务
 消息系统：Kafka，RocketMQ，RabbitMQ
-数据库访问中间层 proxy 模式：阿里 Cobar 演化出来的社区开源分库分表中间件 MyCAT
+数据库访问中间层 proxy 模式：阿里 Cobar 演化出来的社区开源分库分表中间件 MyCAT。
 
 服务安全：OAuth
+权限认证：Shiro
 
 服务部署平台
 集群资源调度系统：Kubernetes
