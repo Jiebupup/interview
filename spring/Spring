@@ -1,32 +1,27 @@
-1.AOP
-Aspect-Oriented Programming 面向切面编程。代理模式。
-横切关注点可以被描述为那些与业务无关，却为业务模块所共同调用的逻辑或责任。
-切面能帮助我们模块化横切关注点，在系统运行时需要的地方进行动态插入运行。扩展功能不修改源代码。
-分离业务逻辑与系统服务，应用对象只完成业务逻辑。可用于事务处理、日志管理、权限控制、缓存控制、性能监控、异常处理等。 
+1.简介
+Spring 是一种轻量级开发框架，旨在提高开发人员的开发效率以及系统的可维护性。
+Spring 框架包括：Core、Testing、Data Access、Spring MVC、Spring WebFlux、Integration、Languages。
 
-使用 AOP 的好处：
-集中处理某一关注点/横切逻辑。
-可以很方便地添加/删除关注点。
-侵入性少，增强代码地可读性及可维护性。
+2.AOP
+面向切面编程 aspect-oriented programming。代理模式。
+横切关注点可以被描述为那些与业务无关，却为业务模块所共同调用的逻辑或责任。
+切面能帮助我们模块化横切关注点，在系统运行时需要的地方进行动态插入运行。扩展功能不修改源代码。降低模块间的耦合度，并有利于未来的可拓展性和可维护性。把一些通用功能抽象出来，在需要用到的地方直接使用即可，这样大大简化了代码量。
+分离业务逻辑与系统服务，应用对象只完成业务逻辑。可用于事务处理、日志管理、权限控制、缓存控制、性能监控、异常处理等。 
+JDK & CGLIB 动态代理。
+Spring AOP 已经集成了 AspectJ。Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。Spring AOP 基于代理，而 AspectJ 基于字节码操作。Spring AOP 相对来说更简单。当切面太多的话，最好选择 AspectJ，它比 Spring AOP 快很多。 
 
 注意事项：
 无法拦截 static、final、private 方法。
 无法拦截内部方法调用。
 
-JDK 和 CGLIB 动态代理。Spring AOP 对于动态代理的选择：
+Spring AOP 对于动态代理的选择：
 默认使用 CGLIB 动态代理。
 如果目标对象实现了接口，则默认使用 JDK 动态代理。
 如果目标对象实现了接口，且强制使用 CGLIB 动态代理，则使用 CGLIB 动态代理。
 
-ASPECTJ 编译期织入，ASPECTJ 5+ 类加载时织入。Spring AOP 和 AspectJ AOP 的区别：
-Spring AOP 属于运行时增强，而 AspectJ 是编译（类加载）时增强。
-Spring AOP 基于代理，而 AspectJ 基于字节码操作。
-Spring AOP 相对来说简单，而 AspectJ 功能更加强大。
-当切面太多的话，最好选择 AspectJ，它比 Spring AOP 快很多。
-
 AspectJ 注解 @Aspect：
 连接点 joinpoint：准备增强的方法
-切点 pointcut：实际增强的方法。@Pointcut 切面表达式包含指示器 designators、通配符 wildcards 和运算符 operators。
+切入点 pointcut：实际增强的方法。@Pointcut 和 XML 中的 aop:aspect 标签，切面表达式包含指示器 designators、通配符 wildcards 和运算符 operators。
 通知/增强 advice：实现的功能
 切面 aspect：把增强应用到方法的过程
 引入 introduction：向现有的类添加新的方法或者属性
@@ -34,10 +29,13 @@ AspectJ 注解 @Aspect：
 
 五种通知 Advice：
 前置 @Before
-后置 @After
-成功 @AfterReturning
-异常 @AfterThrowing
+后置 @AfterReturning：切入点方法正常执行后，和异常通知两者只能执行一个（对应 commit 和 rollback）
+最终 @After：最后执行。XML 和注解的 @After 执行顺序不一样。
+异常 @AfterThrowing：切入点方法产生异常后执行后
 环绕 @Around，前面功能全有
+
+采用 XML：xmlns:aop 和 aop:config 标签。前面四个通知采用 XML 实现，环绕通知需要自己编码实现 ProceedingJoinPoint 接口，并 proceed() 调用切入点方法
+注解在 XML 中开启 AOP：aop:aspect-autoproxy。XML 可以被注解完全代替。
 
 多个 AOP 叠加：责任链模式 + 改进版本
 用 AOP 实现 transaction、security、cache
@@ -45,12 +43,27 @@ security：MethodSecurityInterceptor、PreInvocationAuthrizationAdviceVote、Exp
 @PreAuthorize 验证机制：decide -> vote -> before 只需要一个注解就可以实现，debug 进源码看实现流程。
 cache：AnnotationCacheSupport、CacheInterceptor、CacheAspectSupport，时序图 invoke -> execute -> doGet -> invokeJoinpoint -> cachePutRequest.apply
 
-2.IOC
-Inverse of Control 控制反转，或者叫依赖注入 DI。DI 不能单独存在，需要在 IOC 基础之上完成。工厂模式。
-将对象之间的相互依赖关系交给 IOC 容器来管理，并由 IOC 容器将依赖关系注入到对象之中。实现具有依赖关系的对象之间的解耦。IOC 容器实际上就是个 Map（key，value），Map 中存放的是各种对象。
-对象 A 依赖于对象 B，对象 A 获得依赖对象 B 的过程，由主动行为变为了被动行为，控制权颠倒了。控制反转是获得依赖对象的过程被反转。控制权交由 Spring 框架来管理。
-从上到下依赖变为从下到上注入。依赖注入在初始化的过程中就不可避免的会写大量的 new。Spring 通过 XML 文件来配置 Bean，SpringBoot 使用注解配置。不用每次初始化都要亲手去写那一大段初始化的代码。
-反射，根据配置文件中给出的类名生成相应的对象。
+3.IOC
+控制反转 inverse of control，将原本在程序中手动创建对象的控制权，交由 Spring 框架来管理。IOC 容器是 Spring 用来实现 IOC 的载体，IOC 容器实际上就是个 Map，存放的是各种对象。
+将对象之间的相互依赖关系交给 IOC 容器来管理，并由 IOC 容器完成对象的注入。这样可以很大程度上简化应用的开发，把应用从复杂的依赖关系中解放出来。IOC 容器就像是一个工厂一样，当我们需要创建一个对象的时候，只需要配置好配置文件/注解即可，完全不用考虑对象是如何被创建出来的。
+如果利用 IOC 的话，你只需要配置好，然后在需要的地方引用就行了，这大大增加了项目的可维护性且降低了开发难度。
+Spring 时代我们一般通过 XML 文件来配置 bean，后来开发人员觉得 XML 文件来配置不太好，于是 Spring Boot 注解配置就慢慢开始流行起来。
+Spring IOC 的初始化过程：XML 读取为 Resource，解析为 BeanDefinition，注册为 BeanFactory。
+
+Java bean 不只实体类。配置文件 + 反射创建类。
+配置文件可以先 ApplicationContext，再 getBean() 根据 bean 名称获取 bean 对象。
+spring 中 bean 生存的容器：BeanFactory、ApplicationContext、webApplicationContext。应用上下文更好，配合单例，也可以指定是否延迟初始化。
+先获取 ApplicationContext，再 getBean()。ApplicationContext 三个实现类 ClassPathXmlApplicationContext（更常用）、FileSystemXmlApplicationContext、AnnotationConfigApplicationContext。
+BeanFactory 使用到 bean 的时候（即 getBean() 时）才会创建对象，Resource -> BeanFactory。延迟加载。
+创建 bean 的三种方式：默认构造函数 id + class、工厂方法额外 factory-bean + factory-method、静态工厂 StaticFactory（JAR 包中的类使用 Spring 容器创建可以使用这两个工厂方法）。
+BeanDefinition：用来管理 bean 的属性和对象间的相互依赖关系
+
+依赖注入 DI。DI 不能单独存在，需要在 IOC 基础之上完成。工厂模式。
+对象 A 依赖于对象 B，对象 A 获得依赖对象 B 的过程，由主动行为变为了被动行为，控制权颠倒了。控制反转是获得依赖对象的过程被反转。控制权交由 Spring 框架来管理。从上到下依赖变为从下到上注入。依赖注入在初始化的过程中就不可避免的会写大量的 new。
+能注入的类型：基本类型和 String（配置文件的 value 属性，其他类型用 ref 且需要配置过）、XML 或注解配置的 bean、复杂类型（构造函数和 setter 来注入）和集合类型（结构相同的标签可以互换，map 对应 property，只能用 XML 实现）。
+注入方式：构造函数（配置文件的 constructor-arg 标签）、setter（配置文件的 property 标签，更常用，类中加 set 方法）、注解（XML 中加 xmlns:context 和 context:component-scan 标签）。
+构造函数方式注入必须要注入数据，不然创建对象不成功，如果用不到这些数据也必须提供。
+选择 XML 或者 注解需要看是用别人的 JAR 包还是自己开发。
 
 使用 IOC 的好处：
 降低耦合。
@@ -58,19 +71,12 @@ Inverse of Control 控制反转，或者叫依赖注入 DI。DI 不能单独存�
 在创建实例的时候不需要了解其中的细节。
 把对象生成放在配置文件里进行定义，更换一个实现子类将会变得很简单，只要修改配置文件就可以，具有热插拨特性。
 
-注意事项：
+缺点：
 引入了第三方 IOC 容器，生成对象的步骤变得复杂。
 IOC 容器通过反射方式生成对象，在运行效率上有一定的损耗。
 需要进行大量的配制工作，比较繁琐。
 
-依赖注入的方式：构造函数、Setter、接口。
-Spring IOC 的初始化过程：读取 XML 资源，解析为 BeanDefinition，最终注册到 Bean Factory 中。
-实例化 bean 对象的方法：构造函数（默认）、静态工厂、实例工厂。
-
-spring 中 bean 生存的容器：BeanFactory、ApplicationContext、webApplicationContext。应用上下文更好。
-BeanDefinition：用来管理 bean 的属性和对象间的相互依赖关系
-
-3.MVC
+4.MVC
 SpringMVC 框架是以请求为驱动，围绕 Servlet 设计，将请求发给控制器，然后通过模型对象，分派器来展示请求结果视图。其中核心类是 DispatcherServlet，它是一个 Servlet，顶层是实现的 Servlet 接口。
 耦合低，重用性高。但使项目架构变得复杂。
 
@@ -95,7 +101,7 @@ DispaterServlet 把返回的 Model 传给 View（视图渲染）。
 
 其中 Handler 和 View 需要自己开发，其他由框架提供。
 
-Model1 时代：整个 Web 应用几乎全部用 JSP 页面组成，JSP 即是控制层又是表现层。
+Model1 时代：整个 Web 应用几乎全部用 JSP 页面组成，只用少量的 JavaBean 来处理数据库连接、访问等操作，JSP 即是控制层又是表现层。
 Model2 时代：Java Bean（Model）+ JSP（View）+ Servlet（Controller），抽象和封装程度还远远不够。Struts2 比较笨重。
 Spring MVC 下我们一般把后端项目分为 Service 层（处理业务）、Dao 层（数据库操作）、Entity 层（实体类）、Controller 层 (控制层，返回数据给前台页面)。
 
@@ -105,55 +111,74 @@ SSM 三层架构
 持久层 MyBatis：操作数据库。
 
 @RestController vs @Controller
-Controller：返回一个页面，单独使用 @Controller 不加 @ResponseBody 的话一般使用在要返回一个视图的情况，这种情况属于比较传统的 Spring MVC 的应用，对应于前后端不分离的情况。
-@RestController：返回JSON 或 XML 形式数据，但只返回对象，对象数据直接以 JSON 或 XML 形式写入 HTTP 响应 Response 中，这种情况属于 RESTful Web 服务，这也是目前日常开发所接触的最常用的情况（前后端分离）。Spring 4 之后新加的注解。         
+@Controller：返回一个页面，单独使用 @Controller 不加 @ResponseBody 的话一般使用在要返回一个视图的情况，这种情况属于比较传统的 Spring MVC 的应用，对应于前后端不分离的情况。
+@RestController：返回 JSON 或 XML 形式数据，但只返回对象，对象数据直接以 JSON 或 XML 形式写入 HTTP 响应 Response 中，这种情况属于 RESTful web 服务，这也是目前日常开发所接触的最常用的情况（前后端分离）。Spring 4 之后新加的注解。         
 @Controller + @ResponseBody 等于 @RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的 view 对象通过适当的转换器转换为指定的格式之后，写入到 HTTP 响应 Response 对象的 body 中。返回 JSON 数据的情况比较多。                    
 
 @RequestMapping 将对页面的 HTTP 请求映射到方法，并且默认映射所有 HTTP 方法。
 
-4.bean 生命周期（bean 实例化过程）
-实例化 bean 对象 (通过构造方法或者工厂方法)。Bean 容器找到配置文件中 Spring Bean 的定义。Bean 容器利用 Java Reflection API 创建一个 Bean 的实例。
-设置对象属性 (setter 等)（依赖注入）
+5.bean
+可重用组件。那些组成应用程序的主体及由 Spring IOC 容器所管理的对象。IOC 容器初始化、装配及管理的对象。bean 的定义以及 bean 相互间的依赖关系将通过配置元数据来描述。
+bean 的生命周期（bean 实例化过程，不同作用域的 bean 不同，@PostConstruct 和 @PreDestory 注解生命周期）：
+bean 容器找到配置文件中 Spring bean 的定义。bean 容器利用 Java Reflection API 创建一个 bean 的实例。
+设置对象属性（setter 等）（依赖注入），构造器
 如果 bean 实现了 BeanNameAware 接口，调用 setBeanName() 传入 bean 的 ID（检查 Aware 接口）
 如果 bean 实现了 BeanFactoryAware 接口，调用 setBeanFactory() 传入 ClassLoader 对象的实例
+同理，其他 Aware 接口
 将 bean 传递给 BeanPostProcessor，调用 postProcessBeforeInitialization()
 调用 InitializingBean 的 afterPropertiesSet()
 调用自定义的初始化方法
 将 bean 传递给 BeanPostProcessor，调用 postProcessAfterInitialization()
-使用 Bean，将一直存在于应用上下文中，直到该应用上下文被销毁。
+使用 bean，将一直存在于应用上下文中，直到该应用上下文被销毁
 调用 DisposableBean 的 destroy()
 调用自定义的销毁方法
 
-5.bean 的作用域
-@scope 注解定义 Bean 的作用域。
+bean 的作用域：
+@scope 注解定义 bean 的作用域。
 
-singleton：唯一 bean 实例，Spring 中的 bean 默认都是单例的。
+singleton：唯一 bean 实例，Spring 中的 bean 默认都是单例的。创建容器时就同时自动创建了一个 bean 对象，或者指定延迟初始化。容器销毁 bean 死亡，
+Spring 的单例是基于 Spring 容器的，单例 Bean 在此容器内只有一个，Java 的单例是基于 JVM，每个 JVM 内只有一个实例。
 线程安全问题：当多个线程操作同一个对象的时候，对这个对象的非静态成员变量的写操作会存在线程安全问题。
 解决方法：在类中定义一个 ThreadLocal 成员变量，将需要的可变成员变量保存在 ThreadLocal 中。
 
-prototype：每次请求都会创建一个新的 bean 实例。
+prototype：每次请求都会创建一个新的 bean 实例。创建容器的时候并没有实例化，而是延迟初始化。JVM 垃圾回收。
+有状态的 bean 应该使用 prototype 作用域，而对无状态的 bean 则应该使用 singleton 作用域。
+
 request：每一次 HTTP 请求都会产生一个新的 bean，该 bean 仅在当前 HTTP request 内有效。
 session：每一次 HTTP 请求都会产生一个新的 bean，该 bean 仅在当前 HTTP session 内有效。
-global-session：全局 session 作用域，仅仅在基于 portlet 的 web 应用中才有意义，Spring5 已经没有了。
+global-session：全局 session 作用域，仅仅在基于 portlet 的 web 应用中才有意义，Spring5 已经没有了。集群环境，负载均衡。
+
+@Component 和 @Bean 的区别：
+@Component 注解作用于类，而 @Bean 注解作用于方法。
+@Component 通常是通过类路径扫描来自动侦测以及自动装配到 Spring 容器中，@Bean 注解通常是在标有该注解的方法中定义产生这个 bean。
+@Bean 注解比 Component 注解的自定义性更强，而且很多地方我们只能通过 @Bean 注解来注册 bean。比如当我们引用第三方库中的类需要装配到 Spring 容器时，则只能通过 @Bean 来实现。
+
+将一个类声明为 Spring 的 bean 的注解：
+使用 @Autowired 注解自动装配 bean，要想把类标识成可用于 @Autowired 注解自动装配的 bean 的类，采用以下注解可实现：
+@Component：通用的注解，可标注任意类为 Spring 组件。如果一个 bean 不知道属于哪个层，可以使用 @Component 注解标注。创建对象，把当前对象存入 Spring 容器中，相当于 XML 的 <bean>。
+@Repository：对应持久层即 DAO 层，主要用于数据库相关操作。
+@Service：对应服务层，主要涉及一些复杂的逻辑，需要用到 DAO 层。
+@Controller：对应 Spring MVC 控制层，主要用户接受用户请求并调用 Service 层返回数据给前端页面。
+
+@Autowired：只要容器中有唯一一个 bean 对象类型和要注入的变量类型相匹配，就可以注入成功。可以作用于变量上和方法上。
+@Qualifier：在按照类注入的基础上再根据名称注入。给类注入时不能单独使用，需要配合 @Autowired，给方法和变量注入时可以单独使用。
+@Resource：根据 bean 的 ID 注入，可以单独使用。
+基本类型和 String 无法用上述注解实现，需要使用 @Value，可以使用 Spring 的 EL 表达式 SpEL。
 
 6.注解
-@Component 和 @Bean 的区别：
-@Component 注解作用于类，而@Bean 注解作用于方法。
-@Component 通常是通过类路径扫描来自动侦测以及自动装配到 Spring 容器中，@Bean 注解通常是在标有该注解的方法中定义产生这个 bean。
-@Bean 注解比 Component 注解的自定义性更强，而且很多地方我们只能通过 @Bean 注解来注册 bean。
-
-使用 @Autowired 注解自动装配 bean
-将一个类声明为 Spring 的 bean 的注解：
-@Component：通用的注解，可标注任意类为 Spring 组件。如果一个 Bean 不知道属于哪个层，可以使用@Component 注解标注。
-@Repository: 对应持久层即 Dao 层，主要用于数据库相关操作。
-@Service: 对应服务层，主要涉及一些复杂的逻辑，需要用到 Dao 层。
-@Controller: 对应 Spring MVC 控制层，主要用户接受用户请求并调用 Service 层返回数据给前端页面。
-
-启动类@SpringBootApplication 元注解：无实际功能
-@Target({ElementType.TYPE})
+元注解：
+@Target({ElementType})
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
 @Inherited
+@Documented
+
+@Configuration：指定配置类。
+@ComponentScan：相当于在 XML 中加了 context:component-scan 标签。
+@Bean：把当前方法的返回值作为 bean 对象放入 Spring 容器中。如果方法有参数，会去 Spring 容器中查找可用的 bean 对象，查找方式和 @Autowired 一样。
+@AnnotationConfigApplicationContext：代替 XML，当传入了所有需要的 .class 时 @Configuration 可以不写。
+@Import：导入子配置类。
+@PropertySource：指定 properties 文件的位置。
+@RunWith 和 @ContextConfiguration：Spring 整合 JUnit。版本要对应。
 
 @SpringbootConfiguration：
 @ComponentScan：
@@ -165,123 +190,43 @@ global-session：全局 session 作用域，仅仅在基于 portlet 的 web 应�
 @ResponseBody：返回 json 数据。
 
 7.Spring 用到的设计模式
-工厂模式 : Spring 使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。
-代理模式 : Spring AOP 功能的实现。
-单例模式 : Spring 中的 Bean 默认都是单例的。把已经初始过的变量放在一个 Map 中，下次再要使用这个变量的时候，先判断 Map 中有没有。
-模板模式 : Spring 中 jdbcTemplate、hibernateTemplate 等以 Template 结尾的对数据库操作的类，它们就使用到了模板模式。
-装饰器模式 : 连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。
-观察者模式: Spring 事件驱动模型。
-适配器模式 :Spring AOP 的增强或通知 (Advice) 使用到了适配器模式、spring MVC 中也是用到了适配器模式适配 Controller。
+代理模式
+工厂模式
+单例模式：Spring 中的 Bean 默认都是单例的。把已经初始过的变量放在一个 map 中，下次再要使用这个变量的时候，先判断 map 中有没有。
+模板模式：Spring 中 jdbcTemplate、hibernateTemplate 等以 Template 结尾的对数据库操作的类，它们就使用到了模板模式。
+装饰器模式：连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。
+观察者模式：Spring 事件驱动模型。
+适配器模式：Spring AOP 的增强或通知 advice 使用到了适配器模式、Spring MVC 中也是用到了适配器模式适配 controller。
 
 8.事务
-事务管理：按照给定的事务规则来执行提交或者回滚操作。
-发生 unchecked 异常时会发生回滚。只有非只读事务才能回滚。
-
 Spring 事务管理接口
-PlatformTransactionManager：（平台）事务管理器，根据不同持久层框架提供对应的接口实现类。
-TransactionDefinition：事务定义信息（事务隔离级别、传播行为、超时、只读、回滚规则）。
+PlatformTransactionManager：（平台）事务管理器，根据不同持久层框架提供对应的接口实现类。具体的实现就是各个平台自己的事情了。
+TransactionDefinition：事务定义信息（事务隔离级别、传播行为、超时、只读、回滚规则）。事务属性可以理解成事务的一些基本配置，描述了事务策略如何应用到方法上。
 TransactionStatus：事务运行状态。
 
-Spring 并不直接管理事务，而是提供了多种事务管理器，将事务管理的职责委托给持久化机制所提供的相关平台框架的事务来实现。
+事务管理：按照给定的事务规则来执行提交或者回滚操作。
+Spring 并不直接管理事务，而是提供了多种事务管理器，将事务管理的职责委托给 Hibernate 或者 JTA 等持久化机制所提供的相关平台框架的事务来实现。
 
 PlatformTransactionManager 通过 getTransaction(TransactionDefinition definition) 方法来得到一个事务。
 TransactionDefinition 接口中定义了 5 个方法以及一些表示事务属性的常量比如隔离级别、传播行为等等的常量。
-隔离级别：定义了一个事务可能受其他并发事务影响的程度。Spring 事务中的隔离级别多了 DEFAULT，使用后端数据库默认的隔离级别。
-传播行为：为了解决业务层方法之间互相调用的事务问题。
-超时属性：一个事务允许执行的最长时间。
-只读属性：对事物资源是否执行只读操作。
-回滚规则：定义事务回滚规则。
+隔离级别：定义了一个事务可能受其他并发事务影响的程度。Spring 事务中的隔离级别多了 DEFAULT，使用后端数据库默认的隔离级别，MySQL 默认采用的 REPEATABLE_READ 隔离级别，Oracle 默认采用的 READ_COMMITTED 隔离级别。
+传播行为：为了解决业务层方法之间互相调用的事务问题。当事务方法被另一个事务方法调用时，必须指定事务应该如何传播。
+超时属性：一个事务允许执行的最长时间。如果超过该时间限制但事务还没有完成，则自动回滚事务。
+只读属性：对事物资源是否执行只读操作。将事务标志为只读以提高事务处理的性能。
+回滚规则：定义事务回滚规则。默认情况下，事务只有遇到运行期异常时才会回滚，而在遇到检查型异常时不会回滚（与 EJB 的回滚行为一致）。但是你可以声明事务在遇到特定的检查型异常时像遇到运行期异常那样回滚。同样，你还可以声明事务遇到特定的异常不回滚，即使这些异常是运行期异常。
 
 TransactionStatus 接口用来记录事务的状态，该接口定义了一组方法，用来获取或判断事务的相应状态信息。
 PlatformTransactionManager.getTransaction(…) 方法返回一个 TransactionStatus 对象。返回的 TransactionStatus 对象可能代表一个新的或已经存在的事务（如果在当前调用堆栈有一个符合条件的事务）。
 
-编程式事务与声明式事务
-编程式事务：通过 Transaction Template 手动管理事务，实际应用中很少使用。
-声明式事务：基于 XML 和基于注解，实际是通过 AOP 实现，推荐使用（代码侵入性最小）。
-实现声明式事务的四种方式：TransactionInterceptor、TransactionProxyFactoryBean、<tx> 和 <aop> 命名空间、@Transactional。
-@Transactional(rollbackFor = Exception.class) 注解：如果类或者方法加了这个注解，那么这个类里面的方法抛出异常，就会回滚，数据库里面的数据也会回滚。在 @Transactional 注解中如果不配置 rollbackFor 属性，那么事物只会在遇到 RuntimeException 的时候才会回滚，加上 rollbackFor=Exception.class，可以让事物在遇到非运行时异常时也回滚。
+@Transactional(rollbackFor = Exception.class)：这个类里面的方法抛出异常，就会回滚，数据库里面的数据也会回滚。
+在 @Transactional 注解中如果不配置 rollbackFor 属性,那么事物只会在遇到 RuntimeException 的时候才会回滚。
 
-9.MyBatis
-MyBatis 是一个 Java 持久化框架，它通过 XML 描述符或注解把对象与存储过程或 SQL 语句关联起来。
-MyBatis 是在 Apache 许可证 2.0 下分发的自由软件，是 iBATIS 3.0 的分支版本。
-对象关系映射 ORM：用于实现面向对象编程语言里不同类型系统的数据之间的转换。数据库的字段与实体类相对应。 
+Spring 管理事务的方式分为编程式事务与声明式事务。
+编程式事务：硬编码，不推荐使用。通过 Transaction Template 手动管理事务。
+声明式事务：基于 XML 和基于注解，在配置文件中配置，推荐使用。实际是通过 AOP 实现，代码侵入性小。
+实现声明式事务的四种方式：基于 TransactionInterceptor、基于 TransactionProxyFactoryBean、基于 <tx> 和 <aop> 命名空间、基于 @Transactional。
 
-在 MyBatis 中我们可以定义一个叫做 TypeHandler 类型处理器的东西，通过它可以实现 Java 类型跟数据库类型的相互转换。
-insert 可以加 selectKey 获取新增的属性值。
-以查询所有满足条件的 User 并封装为 List 为例（自己编写 DAO 实现类）：findAll() -> selectList() -> query() -> queryFromDatabase() -> doQuery() -> query() 出现 JDBC 的 PreparedStatement 对象完成查询 -> handleResultSets() 完成查询结果的封装。
-insert 和 delete 最终调用的都是 update。
-MyBatis 在 DAO 类中设置 SqlSession sqlSession=sqlSessionFactory.openSession(true); 设置事务自动提交。
-抽取重复的 SQL 语句。
-
-动态 SQL 是 MyBatis 的主要特性之一，在 MyBatis 中我们可以把参数传到 xml 文件，由 MyBatis 对 SQL 及其语法进行解析，MyBatis 支 持使用 ${} 和 #{}。
-# 和 $ 的区别：
-使用 ${} 方式传入的参数，MyBatis 不会对它进行特殊处理，一般用于传入数据库对象。MyBatis 排序时使用 order by 动态参数时需要注意，用 $ 而不是 #。
-使用 #{} 传进来的参数，MyBatis 默认会将其当成字符串，加双引号。
-# 和 $ 在预编译处理中是不一样的。# 类似 JDBC 中的 PreparedStatement，对于传入的参数，在预处理阶段会使用 ? 代替，待真正查询的时候即在数据库管理系统 DBMS 中才会代入参数。而 ${} 则是简单的替换。
-由于 PreparedStatement，#{} 可以有效防止 SQL 注入，${} 则可能导致 SQL 注入成功。因此能使用 #{} 的地方应尽量使用 #{}。
-
-MyBatis 使用 OGNL 表达式解析对象字段的值，#{} 和 ${} 括号中的值为 POJO 属性名称。
-
-MyBatis 的 DAO 接口也叫 Mapper。
-xml 配置文件分为主配置文件 configuration（配置环境和指定映射配置文件或注解方式）和映射配置文件 mapper。
-xml 配置文件和注解的差别在得到 mappers 对象的过程，后面创建代理对象和执行查询是一样的。
-
-MyBatis 无需写 DAO 实现类的要求（当然也可以写实现类，但不推荐）：
-MyBatis 的映射配置文件位置必须和 DAO 接口的包结构相同。
-映射配置文件 mapper 标签的 namespace 属性的值必须是 DAO 接口的全限定类名。
-映射配置文件的操作（如 select）的 id 属性的取值必须是 DAO 接口的方法名。
-
-映射配置文件的作用：
-根据 namespace + id 找到一条 SQL 语句。获取到 PreparedStatement 对象。
-获取结果对象 resultTyepe。
- 
-使用 xml 配置文件方式的步骤：
-读取配置文件
-创建 SqlSessionFactory 
-创建 SqlSession。两条分支：自己写 DAO 接口实现类实现 CRUD，或者生成代理对象。
-创建 DAO 接口的代理对象。动态代理。
-执行 DAO 中的方法
-释放资源
-
-MyBatis XML 标签类型
-resultTyepe：在配置中指定把 select 结果封装到一实体类（全限定类名）。用到反射技术。如果是注解方式则是范型代表的实体类。
-parameterType：insert update delete。
-resultMap：查询结果的列名和实体类的属性名相对应。对应在 SQL 语句中起别名，但开发效率要高。
-property：配置连接池。
-typeAlias：配置别名。package 也是配置别名，配置后该包下的所有类都会注册别名，而且类名就是别名，不再区分大小写。
-id，result 标签的类型属性为 javaType（可选）。
-
-注解：在 DAO 接口上方法上加注解，@Select，@Insert，@Update，@Delete。
-使用了注解方式就不能在项目里的特定位置有映射配置文件，否则会报错。
-@Results 能将数据库列名与实体类属性相对应。并且可以被多个方法使用。@Results 内有 @One 属性，能完成一对一查询。@Many 一对多。多表查询的 @One 和 @Many 有 select 和 fetchType 属性。
-注解使用二级缓存：@CacheNamespace。
-
-在主配置文件中 dataSource 指定 POOLED 和 UNPOOLED 配置数据库连接池。
-
-动态 SQL
-if 标签：条件，放在 where 标签里。
-foreach 标签：与 SQL 的 in 一起使用表示在某一范围内查询。
-
-多表查询
-一对一：resultMap 封装主表属性和从表属性 association，再在主表的 select 标签写 SQL。
-一对多：resultMap 从表改为 collection。
-多对多：SQL 额外加 left outer join 让数据库表中有多行数据。
-
-一对一、多对一需要立即加载，而一对多、多对多需要延迟加载。
-在主配置文件设置延迟加载 lazyLoadingEnabled。
-
-一级缓存：SqlSession 对象的缓存，当调用增删改、commit()、close() 方法时会清空缓存。
-二级缓存：SqlSessionFactory 对象的缓存，同一个 SqlSessionFactory 创建的 SqlSession 共享其缓存。需要配置支持二级缓存。二级缓存内存放的数据而不是对象。
-
-EL 表达式：表达式语言，能替换和简化 JSP 页面中 Java 代码的编写。
-语法：${表达式}。
-JSP 默认支持 EL 表达式，但也能忽略。
-使用：运算和获取值。
-隐式对象
-
-JSTL：JSP 标准标签库。和 EL 表达式作用一样。
-
-10.springBoot Starter
+9.springBoot Starter
 starter 会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater 机制帮我们完成了项目起步所需要的的相关 jar 包。
 ConfigurationProperties 和 AutoConfiguration，application.properties 文件满足自定义配置。
 利用 starter 实现自动化配置只需要两个条件——maven 依赖、配置文件。
