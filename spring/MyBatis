@@ -4,8 +4,10 @@ MyBatis 是在 Apache 许可证 2.0 下分发的自由软件，是 iBATIS 3.0 �
 对象关系映射 ORM：用于实现面向对象编程语言里不同类型系统的数据之间的转换。数据库的字段与实体类相对应。 
 
 2.特点
-提供 DAO 层，将业务逻辑和数据访问逻辑分离，解除 SQL 与程序代码的耦合。
-MyBatis 屏蔽了原始的 JDBC 样板代码。
+MyBatis 中的 SQL 语句和主要业务代码分离，我们一般会把 MyBatis 中的 SQL 语句统一放在 XML 配置文件中，便于统一维护。解偶，提供 DAO 层，系统的设计更清晰，更容易单元测试。
+本身就很小且简单，没有任何第三方依赖，易于使用。
+MyBatis 屏蔽了原始的 JDBC 样板代码，专注于 SQL 的书写和属性与字段映射上。
+MyBatis 最主要的特点就是可以手动编写 SQL 语句，能够支持多表关联查询。
 
 3.整体架构
 接口层：开发人员在 Mapper 或者是 Dao 接口中的接口定义，是查询、新增、更新还是删除操作。
@@ -37,7 +39,7 @@ Binding 模块：在调用 SqlSession 相应方法执行数据库操作时，需
 执行 DAO 中的方法
 释放资源
 
-SqlSessionFactory
+SqlSessionFactory：主要负责 MyBatis 框架初始化操作，为开发人员提供 SqlSession 对象。
 String resource = "*/mybatis-config.xml";
 InputStream inputStream = Resources.getResourceAsStream(resource);
 SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
@@ -73,13 +75,9 @@ Executor 执行器，它有两个实现类，分别是 BaseExecutor 和 CachingE
 Executor 是由 Configuration 创建的。ExecutorType。
 当有一个查询请求访问的时候，首先会经过 Executor 的实现类 CachingExecutor，先从缓存中查询 SQL 是否是第一次执行。如果是第一次执行的话，那么就直接执行 SQL 语句，并创建缓存（创建 Executor 执行器执行 SQL 语句）。如果第二次访问相同的 SQL 语句的话，那么就会直接从缓存中提取。
 
-StatementHandler
-StatementHandler 是四大组件中最重要的一个对象，负责操作 Statement 对象与数据库进行交互，在工作时还会使用 ParameterHandler 和 ResultSetHandler 对参数进行映射，对结果进行实体类的绑定。
-管理创建 Statement 对象或者是 PreparedStatement 对象。
-
-ParameterHandler
-
-ResultSetHandler
+StatementHandler：是四大组件中最重要的一个对象，负责操作 Statement 对象与数据库进行交互，在工作时还会使用 ParameterHandler 和 ResultSetHandler 对参数进行映射，对结果进行实体类的绑定。管理创建 Statement 对象或者是 PreparedStatement 对象。
+ParameterHandler：负责为 PreparedStatement 的 SQL 语句参数动态赋值。Executor 的 parameterSize() -> StatementHandler 的 setParameters() -> ParameterHandler。
+ResultSetHandler：处理 Statement 执行后产生的结果集，生成结果列表处理存储过程执行后的输出参数。按照 Mapper 文件中配置的 ResultType 或 ResultMap 来封装成对应的对象，最后将封装的对象返回即可。
 
 5.动态 SQL 
 动态 SQL 是 MyBatis 的主要特性之一，在 MyBatis 中我们可以把参数传到 XML 文件，由 MyBatis 对 SQL 及其语法进行解析，MyBatis 支持使用 ${} 和 #{}。
