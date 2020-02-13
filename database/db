@@ -174,4 +174,5 @@ Statement 执行 sql 的对象。
 PreparedStatement 执行 sql 的对象。
 ResultSet 结果集对象，封装查询结果。
 
-在 JDBC 之上做了封装的有：Spring 的 JDBCTemplate、common-dbutil、MyBatis、hibernate
+在 JDBC 之上做了封装的有：Spring 的 JDBCTemplate、common-dbutil、MyBatis、hibernate。
+数据库 MySQL、Oracle 等 -> 数据库驱动 -> JDBC -> 对 JDBC 作封装的 -> 数据访问层 -> 业务逻辑层 -> 表现层。 
