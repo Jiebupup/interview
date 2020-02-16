@@ -1,6 +1,7 @@
 1.简介
 Spring 是一种轻量级开发框架，旨在提高开发人员的开发效率以及系统的可维护性。
 Spring 框架包括：Core、Testing、Data Access、Spring MVC、Spring WebFlux、Integration、Languages。
+Spring5 基于 JDK8，支持候选组件索引代替类路径扫描（对于大型项目启动时间降低），支持 Kotlin，响应式编程，Junit5，更新依赖类库。
 
 2.AOP
 面向切面编程 aspect-oriented programming。代理模式。
@@ -21,7 +22,7 @@ Spring AOP 对于动态代理的选择：
 
 AspectJ 注解 @Aspect：
 连接点 joinpoint：准备增强的方法
-切入点 pointcut：实际增强的方法。@Pointcut 和 XML 中的 aop:aspect 标签，切面表达式包含指示器 designators、通配符 wildcards 和运算符 operators。
+切入点 pointcut：实际增强的方法。@Pointcut 和 XML 中的 aop:aspect 标签，切入点表达式包含指示器 designators、通配符 wildcards 和运算符 operators。
 通知/增强 advice：实现的功能
 切面 aspect：把增强应用到方法的过程
 引入 introduction：向现有的类添加新的方法或者属性
@@ -79,14 +80,15 @@ IOC 容器通过反射方式生成对象，在运行效率上有一定的损耗�
 4.MVC
 SpringMVC 框架是以请求为驱动，围绕 Servlet 设计，将请求发给控制器，然后通过模型对象，分派器来展示请求结果视图。其中核心类是 DispatcherServlet，它是一个 Servlet，顶层是实现的 Servlet 接口。
 耦合低，重用性高。但使项目架构变得复杂。
+SpringMVC 使用：需要在 web.xml 中配置 DispatcherServlet。并且需要配置 Spring 监听器ContextLoaderListener。
 
-模型 Model 是应用程序中用于处理应用程序数据逻辑的部分。
+模型 Model 是应用程序中用于处理应用程序数据逻辑的部分。JavaBean
 通常模型对象负责在数据库中存取数据。
 
-视图 View 是应用程序中处理数据显示的部分。
+视图 View 是应用程序中处理数据显示的部分。JSP
 通常视图是依据模型数据创建的。
 
-控制器 Controller 是应用程序中处理用户交互的部分。
+控制器 Controller 是应用程序中处理用户交互的部分。Servlet
 通常控制器负责读取用户输入，向模型发送数据，把数据交给视图展示。
 
 流程：
@@ -213,7 +215,7 @@ TransactionDefinition 接口中定义了 5 个方法以及一些表示事务属�
 传播行为：为了解决业务层方法之间互相调用的事务问题。当事务方法被另一个事务方法调用时，必须指定事务应该如何传播。
 超时属性：一个事务允许执行的最长时间。如果超过该时间限制但事务还没有完成，则自动回滚事务。
 只读属性：对事物资源是否执行只读操作。将事务标志为只读以提高事务处理的性能。
-回滚规则：定义事务回滚规则。默认情况下，事务只有遇到运行期异常时才会回滚，而在遇到检查型异常时不会回滚（与 EJB 的回滚行为一致）。但是你可以声明事务在遇到特定的检查型异常时像遇到运行期异常那样回滚。同样，你还可以声明事务遇到特定的异常不回滚，即使这些异常是运行期异常。
+回滚规则：定义事务回滚规则。默认情况下，事务只有遇到运行期异常时才会回滚，而在遇到检查型异常时不会回滚（与 EJB 的回滚行为一致）。但是你可以声明事务在遇到特定的检查型异常时像遇到运行期异常那样回滚。同样，你还可以声明事务遇到特定的异常不回滚，即使这些异常是运行期异常。           
 
 TransactionStatus 接口用来记录事务的状态，该接口定义了一组方法，用来获取或判断事务的相应状态信息。
 PlatformTransactionManager.getTransaction(…) 方法返回一个 TransactionStatus 对象。返回的 TransactionStatus 对象可能代表一个新的或已经存在的事务（如果在当前调用堆栈有一个符合条件的事务）。
@@ -222,11 +224,28 @@ PlatformTransactionManager.getTransaction(…) 方法返回一个 TransactionSta
 在 @Transactional 注解中如果不配置 rollbackFor 属性,那么事物只会在遇到 RuntimeException 的时候才会回滚。
 
 Spring 管理事务的方式分为编程式事务与声明式事务。
-编程式事务：硬编码，不推荐使用。通过 Transaction Template 手动管理事务。
+编程式事务：硬编码，不推荐使用。通过 TransactionTemplate 手动管理事务。
 声明式事务：基于 XML 和基于注解，在配置文件中配置，推荐使用。实际是通过 AOP 实现，代码侵入性小。
 实现声明式事务的四种方式：基于 TransactionInterceptor、基于 TransactionProxyFactoryBean、基于 <tx> 和 <aop> 命名空间、基于 @Transactional。
 
-9.springBoot Starter
+XML：在 XML 中配置事务管理器和事务通知（配置事务的属性），还要在 aop:config 中建立切入点表达式和事务通知之间的对应关系。
+注解：在 XML 中配置事务管理器和开启 Spring 对注解事务的支持，使用 @Transactional。
+使用 XML 方式可以避免多次 @Transactional。
+
+纯注解需要写 Configuration 类，连接数据库的配置类，事务管理器类。加上 @Configuration、@ComponentScan、@Import、@PropertySource、@EnableTransactionManagment、@Transactional、@Value、@Bean 等。
+
+9.JDBCTemplate
+准备数据源并设置属性
+创建 JDBCTemplate 对象
+设置数据源
+执行操作
+
+其中数据源和 JDBCTemplate 可以通过 IOC 配置，使用 ApplicationContext 和 getBean() 获取 JDBCTemplate。
+select 语句要加返回结果 RowMapper。在 Spring 中即 BeanPropertyRowMapper，节省了自己写 RowMapper 的过程。
+
+JDBCSupport
+
+10.springBoot Starter
 starter 会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater 机制帮我们完成了项目起步所需要的的相关 jar 包。
 ConfigurationProperties 和 AutoConfiguration，application.properties 文件满足自定义配置。
 利用 starter 实现自动化配置只需要两个条件——maven 依赖、配置文件。
