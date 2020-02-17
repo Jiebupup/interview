@@ -717,13 +717,14 @@ init 方法和 destroy 方法只会执行一次，service 方法客户端每次�
 Servlet 中有时会用到一些需要初始化与销毁的资源，因此可以把初始化资源的代码放入 init 方法中，销毁资源的代码放入 destroy 方法中，这样就不需要每次处理客户端的请求都要初始化与销毁资源。
 
 转发和重定向的区别：
-转发 Forward 是服务器行为，重定向 Redirect 是客户端行为。
-转发通过 RequestDispatcher 对象的 forward（HttpServletRequest request,HttpServletResponse response）方法实现的。RequestDispatcher 可以通过 HttpServletRequest 的 getRequestDispatcher() 方法获得。
-重定向是利用服务器返回的状态码来实现的。客户端浏览器请求服务器的时候，服务器会返回一个状态码。服务器通过 HttpServletResponse 的 setStatus(int status) 方法设置状态码。如果服务器返回 301 或者 302，则浏览器会到新的网址重新请求该资源。
+转发 Forward 通过 RequestDispatcher 对象的 forward（HttpServletRequest request,HttpServletResponse response）方法实现的。RequestDispatcher 可以通过 HttpServletRequest 的 getRequestDispatcher() 方法获得。
+重定向 Redirect 是利用服务器返回的状态码来实现的。客户端浏览器请求服务器的时候，服务器会返回一个状态码。服务器通过 HttpServletResponse 的 setStatus(int status) 方法设置状态码。如果服务器返回 301 或者 302，则浏览器会到新的网址重新请求该资源。
+转发是服务器行为，重定向是客户端行为。
 地址栏显示：forward 是服务器请求资源，服务器直接访问目标地址的 URL，把那个 URL 的响应内容读取过来，然后把这些内容再发给浏览器。浏览器根本不知道服务器发送的内容从哪里来的，所以它的地址栏还是原来的地址。redirect 是服务端根据逻辑，发送一个状态码，告诉浏览器重新去请求那个地址。所以地址栏显示的是新的 URL。
 数据共享：forward 转发页面和转发到的页面可以共享 request 里面的数据。redirect 不能共享数据。
 运用地方：forward 一般用于用户登陆的时候，根据角色转发到相应的模块。redirect 一般用于用户注销登陆时返回主页面和跳转到其它的网站等。
 效率：forward 高。redirect 低。
+
 转发只能访问当前服务器下的资源，重定向可以访问其他站点（服务器）的资源。
 转发是一次请求，重定向是两次请求。
 给浏览器使用需要加虚拟目录，给服务器使用不需要加虚拟目录。
@@ -740,7 +741,7 @@ Filter：当访问服务器的资源时，过滤器可以将请求拦截下来�
 默认直接请求才会过滤，转发不会过滤，可以设置 DispatcherTypes 属性改变。
 过滤器链和执行顺序。
 
-Listener：
+Listener
 
 15.补充
 JRE 和 JDK：
