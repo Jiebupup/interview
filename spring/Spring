@@ -88,20 +88,44 @@ SpringMVC 使用：需要在 web.xml 中配置 DispatcherServlet。并且需要�
 视图 View 是应用程序中处理数据显示的部分。JSP
 通常视图是依据模型数据创建的。
 
-控制器 Controller 是应用程序中处理用户交互的部分。Servlet
+控制器 Controller 是应用程序中处理用户交互的部分。Servlet，web.xml 和 springmvc.xml。
 通常控制器负责读取用户输入，向模型发送数据，把数据交给视图展示。
 
+web.xml 配置：
+DispatcherServlet
+加载 springmvc.xml：
+<init-param>
+  <param-name>contextConfigLocation</param-name>
+  <param-value>classpath:springmvc.xml</param-value>
+</init-param>
+
+过滤器，解决中文乱码问题：
+<filter></filter>
+<filter-mapping></filter-mapping>
+
+过滤器 HiddentHttpMethodFilter：改变 HTTP 请求方式，使得支持 GET、POST、PUT 和 DELETE 请求。
+监听器 <listener></listener> 加设置配置文件 applicationContext.xml 的位置 <context-param></context-param>。
+
+springmvc.xml 配置：
+视图解析器对象
+<mvc:annotation-driven/> 等于配置了 HandlerMapping 和 HandlerAdapter。
+自定义类型转换器 conversionService
+不拦截静态资源 <mvc:resources mapping= location=/> 
+文件解析器 multipartResolver
+异常处理器
+拦截器 <mvc:interceptors></mvc:interceptors> 
+ 
 流程：
-客户端/浏览器发送请求，直接请求到 DispatcherServlet。
-DispatcherServlet 根据请求信息调用 HandlerMapping，解析请求对应的 Handler。
-解析到对应的 Handler（也就是我们平常说的 Controller 控制器）后，开始由 HandlerAdapter 适配器处理。
+客户端/浏览器发送请求 request，直接请求到前端控制器 DispatcherServlet。
+DispatcherServlet 根据请求信息调用处理器映射器 HandlerMapping，解析请求对应的处理器 Handler。解析出具体的类.方法。
+解析到对应的 Handler（也就是我们平常说的控制器 Controller）后，开始由处理器适配器 HandlerAdapter 处理。任何类.方法都会被适配为可以被适配器执行的样子。
 HandlerAdapter 会根据 Handler 来调用真正的处理器开处理请求，并处理相应的业务逻辑。
 处理器处理完业务后，会返回一个 ModelAndView 对象，Model 是返回的数据对象，View 是个逻辑上的 View。
-ViewResolver 会根据逻辑 View 查找实际的 View。
+视图解析器 ViewResolver 会根据逻辑 View 查找实际的 View。
 DispaterServlet 把返回的 Model 传给 View（视图渲染）。
-把 View 返回给请求者。
+DispatcherServlet 返回响应 response。
 
-其中 Handler 和 View 需要自己开发，其他由框架提供。
+其中 Handler 和 View 需要自己开发，其他由框架提供。基于组件的方式。
 
 Model1 时代：整个 Web 应用几乎全部用 JSP 页面组成，只用少量的 JavaBean 来处理数据库连接、访问等操作，JSP 即是控制层又是表现层。
 Model2 时代：Java Bean（Model）+ JSP（View）+ Servlet（Controller），抽象和封装程度还远远不够。Struts2 比较笨重。
@@ -113,11 +137,36 @@ SSM 三层架构
 持久层 MyBatis：操作数据库。
 
 @RestController vs @Controller
-@Controller：返回一个页面，单独使用 @Controller 不加 @ResponseBody 的话一般使用在要返回一个视图的情况，这种情况属于比较传统的 Spring MVC 的应用，对应于前后端不分离的情况。
+@Controller：返回一个页面，单独使用 @Controller 不加 @ResponseBody 的话一般使用在要返回一个视图的情况，这种情况属于比较传统的 SpringMVC 的应用，对应于前后端不分离的情况。
 @RestController：返回 JSON 或 XML 形式数据，但只返回对象，对象数据直接以 JSON 或 XML 形式写入 HTTP 响应 Response 中，这种情况属于 RESTful web 服务，这也是目前日常开发所接触的最常用的情况（前后端分离）。Spring 4 之后新加的注解。         
-@Controller + @ResponseBody 等于 @RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的 view 对象通过适当的转换器转换为指定的格式之后，写入到 HTTP 响应 Response 对象的 body 中。返回 JSON 数据的情况比较多。                    
+@Controller + @ResponseBody 等于 @RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的 JavaBean 对象转换为指定的格式之后，写入到 HTTP 响应 Response 对象的 body 中。返回 JSON 格式的情况比较多。                    
 
-@RequestMapping 将对页面的 HTTP 请求映射到方法，并且默认映射所有 HTTP 方法。
+@RequestMapping 将对页面的 HTTP 请求映射到方法或者类，并且默认映射所有 HTTP 方法。映射路径 path/value，HTTP 方法 method，URL 参数限制 params，请求头限制 headers。
+请求参数的绑定：URL 的参数可以传到 Controller 中。参数过多可以封装到 JavaBean 中，方法参数传这个 JavaBean 类型，可以是表单的请求参数。还可以封装到容器中。
+
+在方法中传入 HttpServletRequest 和 HttpServletResponse 就可以获取这两个对象以及原生 API。
+@RequestParam：URL 参数的绑定。
+@PathVariable：.../{id} 和 name="id"。
+@RequestHeader
+@CookieValue
+@ModelAttribute：放在方法上会在控制器方法执行前执行。有有返回值和无返回值（需要 Map）两种情况，用来给在表单提交数据之外的参数赋值。加在参数前则可以从 Map 中取值。
+@SessionAttribute：model.addAttribute() 会把值存到 request 对象中，在多个控制器方法共享参数。
+
+响应返回值是 void 需要 forward 或者 redirect，分别为 request.getRequestDispatcher().forward(request,response) 和 response.sendRedirect(request.getContextPath()+)。
+或者直接进行响应：response.getWriter().print()。
+设置中文乱码问题：response.setCharacterEncoding("UTF-8");response.setContentType("text/html;charset=UTF-8");
+
+返回 ModelAndView：底层是 map。是返回 String 的底层。
+返回 String 中使用 forward 和 redirect。
+@RequestBody
+
+文件上传：传统方法 new File(path)，解析 upload.parseRequest(request)，上传。上传到服务端文件夹下。SpringMVC 方法配置文件解析器，并在 Controller 中传参 MultipartFile。跨服务器上传。
+异常处理：目标是浏览器显示友好的提示而不是出错信息。需要编写自定义异常类，Controller 抛出这个异常，还要编写异常处理类。
+拦截器 interceptor：预处理和后处理，只会拦截 Controller 的方法。编写拦截器类，配置。还有页面完成后处理。多个拦截器按先进后出的顺序。
+
+Spring 整合 SpringMVC：启动 Tomcat 服务器的时候加载 Spring 的配置文件 applicationContext.xml，用到监听器 ContextLoaderListener 监听 ServletContext 对象，让监听器取加载 Spring 的配置文件。
+Spring 整合 MyBatis：配置连接池，配置 SqlSessionFactory，配置 DAO 所在包。有了 applicationContext.xml 可以替代 MyBatis 的主配置文件 configuration.xml。
+Spring 整合声明式事务：配置事务管理器，事务通知，AOP。
 
 5.bean
 可重用组件。那些组成应用程序的主体及由 Spring IOC 容器所管理的对象。IOC 容器初始化、装配及管理的对象。bean 的定义以及 bean 相互间的依赖关系将通过配置元数据来描述。
