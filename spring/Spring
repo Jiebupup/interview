@@ -283,18 +283,7 @@ XML：在 XML 中配置事务管理器和事务通知（配置事务的属性）
 
 纯注解需要写 Configuration 类，连接数据库的配置类，事务管理器类。加上 @Configuration、@ComponentScan、@Import、@PropertySource、@EnableTransactionManagment、@Transactional、@Value、@Bean 等。
 
-9.JDBCTemplate
-准备数据源并设置属性
-创建 JDBCTemplate 对象
-设置数据源
-执行操作
-
-其中数据源和 JDBCTemplate 可以通过 IOC 配置，使用 ApplicationContext 和 getBean() 获取 JDBCTemplate。
-select 语句要加返回结果 RowMapper。在 Spring 中即 BeanPropertyRowMapper，节省了自己写 RowMapper 的过程。
-
-JDBCSupport
-
-10.springBoot Starter
+9.springBoot Starter
 starter 会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater 机制帮我们完成了项目起步所需要的的相关 jar 包。
 ConfigurationProperties 和 AutoConfiguration，application.properties 文件满足自定义配置。
 利用 starter 实现自动化配置只需要两个条件——maven 依赖、配置文件。
