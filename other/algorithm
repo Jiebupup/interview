@@ -77,8 +77,6 @@ public int calculate(String s){
     return res;
 }
 
-6.生产者消费者问题
-
 7.泛型实现最小值函数
 方法只能接受 Number 的子类并且实现了 Comparable 接口。
 private static <T extends Number & Comparable<? super T>> T min(T[] values) {
