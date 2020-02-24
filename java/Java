@@ -60,9 +60,8 @@ Java 的参数是按值传递，方法得到的是所有参数值的一个拷贝
 
 2.String 和数组
 + 表示字符连接，任何数据类型和字符串连接时都会得到字符串，如 "Java"+20+30 -> Java2030。
-所以双引号字符串都是 String 类的对象，不管是否 new。字符串的内容永不可变，是常量，可以共享使用。会生成新的字符串。
-双引号字符串在字符串常量池里。
-字符串缓冲区内的字符串是可以变的。StringBuilder 底层也是 byte[] value，但是没有被 final 修饰，超出了容量会自动扩容。
+字符串是常量，可以共享使用。
+StringBuilder 底层也是 byte[] value，但是没有被 final 修饰，超出了容量会自动扩容。
 链式编程：方法的返回值是一个对象，可以继续调用方法。
 
 String 被声明为 final，因此它不可被继承。
@@ -87,23 +86,19 @@ String Pool 的需要：如果一个 String 对象已经被创建过了，那么
 String，StringBuffer and StringBuilder：
 String 不可变，StringBuffer 和 StringBuilder 可变。
 String 是线程安全的，StringBuffer 是线程安全的（内部使用 synchronized 进行同步），StringBuilder 不是线程安全的。
-每次对 String 类型进行改变的时候，都会生成一个新的 String 对象，然后将指针指向新的 String 对象。StringBuffer（StringBuilder）每次都会对 StringBuffer 对象本身进行操作，而不是生成新的对象并改变对象引用。StringBuilder 比 StringBuffer 性能高，且适用于单线程。
-StringBuilder 占用空间少，效率高。
+每次对 String 类型进行改变的时候，都会生成一个新的 String 对象，然后将指针指向新的 String 对象。StringBuffer（StringBuilder）每次都会对 StringBuffer 对象本身进行操作，而不是生成新的对象并改变对象引用。
+StringBuilder 占用空间少，性能好。
 
-字符串常量池 String Pool：保存着所有字符串字面量，这些字面量在编译时期就确定。不仅如此，还可以使用 String 的 intern() 方法在运行过程中将字符串添加到 String Pool 中。
+字符串常量池 String Pool：保存着所有字符串字面量，这些字面量在编译时期就确定，直接使用双引号声明出来的 String 对象会直接存储在常量池中。不仅如此，还可以使用 String 的 intern() 方法在运行过程中将字符串添加到 String Pool 中。
 当一个字符串调用 intern() 方法时，如果 String Pool 中已经存在一个字符串和该字符串值相等（使用 equals() 方法进行确定），那么就会返回 String Pool 中字符串的引用；否则，就会在 String Pool 中添加一个新的字符串，并返回这个新字符串的引用。
-在 Java 7 之前，String Pool 被放在运行时常量池中，它属于永久代。而在 Java 7，String Pool 被移到堆中。这是因为永久代的空间有限，在大量使用字符串的场景下会导致 OutOfMemoryError 错误。
+JDK1.7 之前，String Pool 被放在运行时常量池中，它属于永久代。JDK1.7 及以后，String Pool 被移到堆中。这是因为永久代的空间有限，在大量使用字符串的场景下会导致 OutOfMemoryError 错误。
+JDK1.7 之前，是在常量池中创建与此 String 内容相同的字符串，并返回常量池中创建的字符串的引用。JDK1.7 及以后的处理方式是在常量池中记录此字符串的引用，并返回该引用。
 
 String 类和常量池
 String 对象的两种创建方式：
 String str1 = "abcd";  //先检查字符串常量池中有没有"abcd"，如果字符串常量池中没有，则创建一个，然后 str1 指向字符串常量池中的对象，如果有，则直接将 str1 指向"abcd""；
 String str2 = new String("abcd");  //堆中创建一个新的对象
 只要使用 new 方法，便需要创建新的对象。
-
-String 类型的常量池：
-直接使用双引号声明出来的 String 对象会直接存储在常量池中。
-String.intern() 是一个 Native 方法，它的作用是：如果运行时常量池中已经包含一个等于此 String 对象内容的字符串，则返回常量池中该字符串的引用；如果没有，JDK1.7 之前（不包含 1.7）的处理方式是在常量池中创建与此 String 内容相同的字符串，并返回常量池中创建的字符串的引用，JDK1.7 以及之后的处理方式是在常量池中记录此字符串的引用，并返回该引用。
-字符串拼接会新建对象。如果需要改变字符串的话，可以使用 StringBuilder 或者 StringBuffer。
 
 问：String s1 = new String("abc"); 这句话创建了几个字符串对象？
 将创建 1 或 2 个字符串。如果池中已存在字符串文字 “abc”，则池中只会创建一个字符串 “s1”。如果池中没有字符串文字 “abc”，那么它将首先在池中创建，然后在堆空间中创建，因此将创建总共 2 个字符串对象。
