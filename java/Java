@@ -62,6 +62,7 @@ Java 的参数是按值传递，方法得到的是所有参数值的一个拷贝
 字符串是常量，可以共享使用。
 StringBuilder 底层也是 byte[] value，但是没有被 final 修饰，超出了容量会自动扩容。
 链式编程：方法的返回值是一个对象，可以继续调用方法。
+把一个基本数据类型转为字符串，toString() 是最快的方式、String.valueOf() 次之、数据 + "" 最慢。String.valueOf() 底层调用了 toString() 方法，但是会在调用前做空判断。数据 + "" 底层使用了 StringBuilder 实现，先用 append 方法拼接，再用 toString() 方法获取字符串。
 
 String 被声明为 final，因此它不可被继承。
 在 Java 8 中，String 内部使用 char 数组存储数据。
@@ -109,9 +110,6 @@ String str2 = new String("abcd");  //堆中创建一个新的对象
 数组是一种效率最高的存储和随机访问对象引用序列的方式。
 实现了 Iterable 接口，可以用 foreach 方法来遍历。
 拷贝：多余赋默认值，不够只拷贝最前面的元素
-
-Arrays.asList() 将数组转换为集合后，底层其实还是数组，不能使用其修改集合相关的方法。体现了适配器模式，只是转换接口。
-注意传递的数组必须是对象数组，而不是基本类型。当传入一个基本数据类型数组时，Arrays.asList() 的真正得到的参数就不是数组中的元素，而是数组对象本身。
 
 查询快，增删慢。增删时需要新建数组，复制原数组的元素，销毁原数组，效率低下
 二维数组本质上也是一维数组，只是数组中的每一个元素都指向了另一个一维数组而已。
@@ -263,7 +261,7 @@ clone()：protected 方法，一个类不显式去重写 clone()，其它类就�
 使用 clone() 方法来拷贝一个对象即复杂又有风险，它会抛出异常，并且还需要类型转换。最好不要去使用 clone()，可以使用拷贝构造函数或者拷贝工厂来拷贝一个对象。
 反序列化 readObject() 从文件中还原类的对象，不通过构造函数创建对象。
 
-toString()：默认打印对象的地址值，重写后打印的是对象中的成员变量。Scanner 和 ArrayList 重写了 toString()。
+toString()：默认打印对象的地址值，重写后打印的是对象中的成员变量。Scanner 和 Collection 重写了 toString()。
 wait(), notify()，notifyAll()，getClass()
 finalize()：使用了本地方法，调用非 java 代码的方式，需要用 finalize()。
 
@@ -335,7 +333,7 @@ Throwable 可以用来表示任何可以作为异常抛出的类，分为 Error 
 Error 用来表示 JVM 无法处理的错误。它们在应用程序的控制和处理能力之外，这些错误发生时，JVM 一般会选择线程终止。
 Exception 分为受检异常（需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复）和非受检异常（是程序运行时错误）。
 
-常见运行时异常：NullPointerException 空指针异常，ClassCastException 类型强制转换异常，IndexOutOfBoundsException 下标越界异常，IllegalArgumentException 非法参数异常，NoSuchElementException 无所需元素异常。
+常见运行时异常：空指针异常 NullPointerException，类型强制转换异常 ClassCastException，下标越界异常 IndexOutOfBoundsException，非法参数异常 IllegalArgumentException，无所需元素异常 NoSuchElementException。
 
 异常处理：
 try 块：可能产生异常的代码。其后可接零个或多个 catch 块（异常有父子关系则子类必须写在上面），如果没有 catch 块，则必须跟一个 finally 块。
@@ -363,6 +361,9 @@ Throw 抛出指定类型的异常对象，就必须处理这个对象。用 try.
 异常的方法（打印内容由少变多）：getMessage()、toString()、printStackTrace()。
 父类方法没有抛出异常，子类重写该方法也不可以抛出异常。此时子类产生该异常，只能捕获处理，不能声明抛出。
 所有异常类都会有一个带异常信息的构造方法，方法内部 super() 让父类处理这个异常信息。
+异常对性能不利。抛出异常首先要创建一个新的对象，Throwable 接口的构造函数调用名为 fillInStackTrace() 的本地同步方法，fillInStackTrace() 方法检查堆栈，收集调用跟踪信息。只要有异常被抛出，Java虚拟机就必须调整调用堆栈，因为在处理过程中创建了一个新的对象。
+异常只能用于错误处理，不应该用来控制程序流程。
+不要在循环中使用 try...catch...，应该把其放在最外层。
 
 8.泛型
 使用参数化类型，使代码可以应用于多种类型。不能使用基本类型用作类型参数。
@@ -453,7 +454,7 @@ Java 不支持条件编译，C++ 通过 #ifdef #ifndef 等预处理命令从而�
 面向对象与面向过程的区别
 
 12.容器
-容器主要包括 Collection 和 Map 两种，Collection 存储着对象的集合，而 Map 存储着键值对（两个对象）的映射表。集合的长度可以改变。
+容器主要包括 Collection 和 Map 两种，Collection 存储着对象的集合，而 Map 存储着键值对的映射表。
 容器不能持有基本类型，需要使用自动包装。
 集合可以装不同类型的对象。集合不加泛型时默认为 Object 类的对象，但是不安全，会引发 ClassCastException。
 有序：存和取元素的顺序一致。
@@ -470,65 +471,79 @@ HashSet：基于 HashMap 实现，无序，查找的时间复杂度为 O(1)。�
 
 LinkedHashSet：内部使用双向链表维护元素的插入顺序，有序，具有 HashSet 的查找效率。
 
-List：有序，有索引（可以普通 for 循环），允许重复
+List：有序，有索引（可以普通 for 循环），允许重复。
 ArrayList：基于动态数组实现，支持快速随机访问。实现了 RandomAccess（只是标识），Cloneable 和 Serializable 接口。默认大小为 10。
-扩容：新容量的大小为旧容量的 1.5 倍，Arrays.copyOf() 把原数组整个复制到新数组中。
+扩容：新容量的大小为旧容量的 1.5 倍，Arrays.copyOf() 把原数组整个复制到新数组中，这个操作代价很高，因此最好在创建 ArrayList 对象时就指定大概的容量大小，减少扩容操作的次数。
 删除元素：System.arraycopy() 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为 O(N)。
-Fail-Fast：modCount 用来记录 ArrayList 结构发生变化的次数。在进行序列化或者迭代等操作时，若 modCount 发生变化，会抛出 ConcurrentModificationException。java.util 包下面的所有的集合类都是 fail-fast 的。java.util.concurrent 包下面的所有的类都是安全失败 fail-safe 的。
-序列化：ArrayList 中存储数据的数组 elementData 是用 transient 修饰的，因为这个数组是动态扩展的，并不是所有的空间都被使用，因此就不需要所有的内容都被序列化。
-ArrayList 实现了 writeObject() 序列化和 readObject() 反序列化来控制只序列化数组中有元素填充那部分内容。writeObject() 方法在传入的对象存在 writeObject() 的时候会去反射调用该对象的 writeObject() 来实现序列化。                  
-可以使用 Collections.synchronizedList()，得到一个线程安全的 ArrayList。
+
+序列化：动态数组，保存元素的数组不一定都会被使用，那么就没必要全部进行序列化。ArrayList 中存储数据的数组 elementData 是用 transient 修饰的，该关键字声明数组默认不会被序列化。
+ArrayList 实现了序列化 writeObject() 和反序列化 readObject() 来控制只序列化数组中有元素填充那部分内容。
+序列化时需要使用 ObjectOutputStream 的 writeObject() 将对象转换为字节流并输出。writeObject() 方法在传入的对象存在 writeObject() 的时候会去反射调用该对象的 writeObject() 来实现序列化。反序列化使用的是 ObjectInputStream 的 readObject() 方法。                  
+
+Fail-Fast：modCount 用来记录 ArrayList 结构发生变化的次数。结构发生变化是指添加或者删除至少一个元素的所有操作，或者是调整内部数组的大小，仅仅只是设置元素的值不算结构发生变化。
+在进行序列化或者迭代等操作时，若操作前后 modCount 发生变化，会抛出 ConcurrentModificationException。
+java.util 包下面的所有的集合类都是快速失败 fail-fast 的。java.util.concurrent 包下面的所有的类都是安全失败 fail-safe 的。
 
 List<Integer> list=new ArrayList<>();  //JDK 1.7 开始，右侧的 <> 内部可以不写。
 对于 ArrayList 来说，直接打印 list 得到的不是地址值（重写了 toString()）。
+
+Array 与 ArrayList 比较：
+Array 可以包含基本类型和对象类型，ArrayList 只能包含对象类型。
+Array 大小是固定的，ArrayList 的大小是动态变化的。
+基于效率和类型检查的考虑，应该尽可能使用 Array，无法确定数组大小时才使用 ArrayList。  
 
 Vector：JDK1.2 之前，和 ArrayList 类似，但它是线程安全的，使用了 synchronized 进行同步。
 与 ArrayList 的比较：
 Vector 是同步的，因此开销就比 ArrayList 要大，访问速度更慢。最好使用 ArrayList 而不是 Vector，因为同步操作完全可以由程序员自己来控制。
 Vector 每次扩容请求其大小的 2 倍空间，而 ArrayList 是 1.5 倍。
 
-Array 与 ArrayList 比较：
-Array 可以包含基本类型和对象类型，ArrayList 只能包含对象类型。
-Array 大小是固定的，ArrayList 的大小是动态变化的。
+代替方案：可以使用 Collections.synchronizedList()，得到一个线程安全的 ArrayList。也可以使用 concurrent 并发包下的 CopyOnWriteArrayList 类。
 
 CopyOnWriteArrayList
 读写分离：写操作在一个复制的数组上进行，读操作还是在原始数组中进行，读写分离，互不影响。写操作需要加锁，防止并发写入时导致写入数据丢失。写操作结束之后需要把原始数组指向新的复制数组。
-使用场景：CopyOnWriteArrayList 在写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景。实现的 fail-safe。
-缺陷：在写操作时需要复制一个新的数组，内存占用为原来的两倍左右；部分写操作的数据还未同步到读数组中导致数据不一致。因此不适合内存敏感以及对实时性要求很高的场景。
+适用场景：CopyOnWriteArrayList 在写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景。
 
-LinkedList：基于双向链表实现，只能顺序访问，查询慢增删快。实现了 Deque 接口。不仅如此，LinkedList 还可以用作栈、队列和双向队列。LinkedList 为双向链表。JDK1.6 之前为循环链表，JDK1.7 取消了循环。包含大量操作首尾元素的方法。
+缺陷
+内存占用：在写操作时需要复制一个新的数组，内存占用为原来的两倍左右。
+数据不一致：读操作不能读取实时性的数据，因为部分写操作的数据还未同步到读数组中。
+因此 CopyOnWriteArrayList 不适合内存敏感以及对实时性要求很高的场景。
+
+LinkedList：基于双向链表实现，只能顺序访问。实现了 Deque 接口。不仅如此，LinkedList 还可以用作栈、队列和双向队列。JDK1.6 之前为循环链表，JDK1.7 取消了循环。包含大量操作首尾元素的方法。
 使 LinkedList 变成线程安全的：List list=Collections.synchronizedList(new LinkedList(...))。或者 BlockingQueue 阻塞队列和 ConcurrentLinkedQueue 非阻塞队列（CAS）。
-与 ArrayList 的比较：ArrayList 基于动态数组实现，LinkedList 基于双向链表实现；ArrayList 支持随机访问，LinkedList 不支持；LinkedList 在任意位置添加删除元素更快。ArrayList 结尾会预留一定的容量空间花费空间，LinkedList 每一个元素都需要存放直接后继和直接前驱以及数据花费空间。
 
-实现了 RandomAccess 接口的 list，优先选择普通 for 循环，其次 foreach。
-未实现 RandomAccess 接口的 list，优先选择 foreach（底层通过 iterator 实现）。大 size 的数据，千万不要使用普通 for 循环。
+与 ArrayList 的比较：
+ArrayList 基于动态数组实现，LinkedList 基于双向链表实现。
+ArrayList 支持随机访问，查询快增删慢。LinkedList 不支持随机访问，查询慢增删快。
+ArrayList 结尾会预留一定的容量空间花费空间，LinkedList 每一个元素都需要存放直接后继和直接前驱以及数据花费空间。
+
+实现了 RandomAccess 接口的 list，优先选择普通 for 循环，其次 foreach。允许更改 list 的行为，提供良好的性能。
+未实现 RandomAccess 接口的 list，优先选择 foreach（底层通过 Iterator 实现）。大 size 的数据，千万不要使用普通 for 循环。
 
 Queue
-双向队列 Deque：通过 LinkedList 实现。
-PriorityQueue：基于堆结构实现。调用 remove 方法，总会获得当前优先级队列中的最小元素。PriorityQueue 不是线程安全的，入队和出队的时间复杂度是 O(log(n))。
+PriorityQueue：基于堆结构实现。调用 remove 方法，总会获得当前优先级队列中的最小元素。PriorityQueue 不是线程安全的，入队和出队的时间复杂度是 O(logN)。
 
 Stack
 
 Map：键不能重复，一个键只能映射一个值。
 TreeMap：基于红黑树实现。由 Comparable 或 Comparator 排序。
 
-HashMap：基于哈希表实现，查询快，无序。Entry<K,V>[] table，数组中的每个位置被当成一个桶，一个桶存放一个链表 Entry（存储着键值对）。根据哈希值放到数组中。
-拉链法解决冲突：put 操作头插法。要存入的元素与要存放位置上已有元素的 hash 值以及 key 相同的话直接覆盖。如果是红黑树节点则红黑树插入。
+HashMap：基于哈希表实现，查询快，无序。Entry<K,V>[] table，数组中的每个位置被当成一个桶，一个桶存放一个链表 Entry（存储着键值对）。根据哈希值确定桶下标，再在链表上顺序查找。
+拉链法解决冲突：put 操作头插法。要存入的元素与要存放位置上已有元素的 hash 值以及 key 相同的话直接覆盖。
 HashMap 只允许一个 key 为 null，允许多个 value 为 null。因为无法调用 null 的 hashCode()，也就无法确定该键值对的桶下标，HashMap 使用第 0 个桶存放键为 null 的键值对。
-使用扰动函数（hash()）之后可以减少碰撞。
 
-扩容 resize：为了让查找的成本降低，table 要尽可能大，HashMap 采用动态扩容来根据当前的键值对数量来调整 table 大小。
-默认的 table 容量 capacity 是 16，默认的装载因子 loadFactor 是 0.75（loadFactor 太大导致查找元素效率低，太小导致数组的利用率低）。默认的键值对数量 size 的临界值 threshold = capacity * loadFactor=12。
-当 Entry 的数量超过 threshold 且新建的 Entry 刚好落在一个非空的 table 上，触发扩容 capacity*2，并采用 transfer() 将原有的 Entry 对象插入到新数组中（会进行 rehash() 重新计算桶下标）。并发下的 Rehash 会造成元素之间会形成一个循环链表，jdk 1.8 后解决了这个问题。
+扩容 resize：为了让查找的成本降低，table 长度要尽可能大，HashMap 采用动态扩容来根据当前的键值对数量来调整 table 长度。
+默认的 table 容量 capacity 是 16。默认的装载因子 loadFactor 是 0.75（loadFactor 太大导致查找元素效率低，太小导致数组的利用率低）。默认的键值对数量 size 的临界值 threshold = capacity * loadFactor = 12。
+当 Entry 的数量超过 threshold 且新建的 Entry 刚好落在一个非空的 table 上，触发扩容 capacity * 2，并采用 transfer() 将原有的 Entry 对象插入到新数组中（会进行 rehash() 重新计算桶下标），这一步是很费时的。
+并发下的 rehash() 会造成元素之间会形成一个循环链表，JDK1.8 后解决了这个问题。
 
-从 JDK 1.8 开始，一个桶存储的链表长度大于等于 8 时会将链表转换为红黑树。Entry 改为了 Node。为了提高查询速度。
+从 JDK1.8 开始，一个桶存储的链表长度大于等于 8 时会将链表转换为红黑树。Entry 改为了 Node。为了提高查询速度。
 为什么要使用红黑树？
 
-HashMap 的容量是 2 的幂次方：tableSizeFor()。好处：
-通过限制 length 是一个 2 的幂数，indexFor()（求桶的位置）中 h & (length-1) 和 h % length 结果是一致的。取模转换成了&与操作更加高效。
+capacity 是 2 的幂次方：tableSizeFor()。好处：
+通过限制 length 是一个 2 的幂数，确定桶下标 indexFor() 中 h & (length-1) 和 h % length 结果是一致的。将取模操作转换成了 & 位运算，更加高效。在 rehash() 中也很有作用。
 通过右移可以使低位的数据尽量的不同，从而使 hash 值的均匀分布减少碰撞。
 
-Hashtable：和 HashMap 类似，但它是线程安全的，因此也效率低。Hashtable 与 HashMap 比较：
+Hashtable：和 HashMap 类似，但它是线程安全的，因此也效率低。遗留类。Hashtable 与 HashMap 比较：
 Hashtable 使用 synchronized 来进行同步。
 HashMap 可以插入键为 null 的 Entry。
 HashMap 的迭代器是 fail-fast 迭代器。
@@ -536,39 +551,38 @@ HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。
 初始容量和扩容不同。
 HashMap 链表长度大于 8 时，会转换为红黑树。
 
-ConcurrentHashMap 来支持线程安全，并且 ConcurrentHashMap 的效率会更高，因为 ConcurrentHashMap 引入了分段锁。HashEntry 代替 Entry。
-JDK 1.7 分段锁：将数据分成一段一段的存储，然后给每一段数据配一把锁。当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效的提高并发访问效率。默认创建 16 个 Segment 锁（继承自 ReentrantLock），并发度与 Segment 数量相等。volatile 修饰数据。
+ConcurrentHashMap 支持线程安全，效率更高，因为 ConcurrentHashMap 引入了分段锁。HashEntry 代替 Entry。
+JDK 1.7 分段锁 Segment：将数据分成一段一段的存储，然后给每一段数据配一把锁，每个分段锁维护着几个桶。实现并发更新操作。
+当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效的提高并发访问效率。默认创建 16 个 Segment 锁（继承自 ReentrantLock），并发度与 Segment 数量相等。volatile 修饰数据。
 ConcurrentHashMap 的 get 方法是非常高效的，因为整个过程都不需要加锁。put 需要加锁。 
+
 size 操作：每个 Segment 维护了一个 count 变量来统计该 Segment 中的键值对个数。在执行 size 操作时，需要遍历所有 Segment 然后把 count 累计起来。
 ConcurrentHashMap 在执行 size 操作时先尝试不加锁，如果连续两次不加锁操作得到的结果一致，那么可以认为这个结果是正确的。如果尝试的次数超过 3 次，就需要对每个 Segment 加锁。
 
-JDK 1.8 取消了分段锁，使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized（JDK1.6 以后 对 synchronized 锁做了很多优化）。synchronized 只锁定当前链表或红黑二叉树的首节点（只要 hash 不冲突，就不会产生并发）。也在链表过长时会转换为红黑树。
+JDK 1.8 取消了分段锁，使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized（只锁定当前链表或红黑二叉树的首节点，只要 hash 不冲突，就不会产生并发）。也在链表过长时会转换为红黑树。
 
 为什么 HashMap 支持 key 或者 value 为 null，而 HashTable 和 ConcurrentHashmap 不支持？
 Hashtable 和 ConcurrentHashmap 都是支持并发的，这样会有一个问题，当你通过 get(k) 获取对应的 value 时，如果获取到的是 null 时，你无法判断，它是 put（k,v）的时候 value 为 null，还是这个 key 从来没有做过映射。
-HashMap 是非并发的，可以通过 contains(key) 来做这个判断。而支持并发的 Map 在调用 m.contains（key）和 m.get(key),m 可能已经不同了。
+HashMap 是非并发的，可以通过 contains(key) 来做这个判断。而支持并发的 Map 在调用 m.contains（key）和 m.get(key)，m 可能已经不同了。
 
-LinkedHashMap：使用双向链表来维护元素的顺序，有序，顺序为插入顺序或者最近最少使用（LRU）顺序。可以使用 LinkedHashMap 实现的一个 LRU 缓存。
+LinkedHashMap：使用双向链表来维护元素的顺序，有序，顺序为插入顺序或者最近最少使用 LRU 顺序。可以使用 LinkedHashMap 实现的一个 LRU 缓存。
 
-WeakHashMap：Entry 继承自 WeakReference，被 WeakReference 关联的对象在下一次垃圾回收时会被回收。主要用来实现缓存，通过使用 WeakHashMap 来引用缓存对象，由 JVM 对这部分缓存进行回收。。
+WeakHashMap：Entry 继承自 WeakReference，被 WeakReference 关联的对象在下一次垃圾回收时会被回收。主要用来实现缓存，通过使用 WeakHashMap 来引用缓存对象，由 JVM 对这部分缓存进行回收。
 Tomcat 中的 ConcurrentCache 使用了 WeakHashMap 来实现缓存功能。
-采取的是分代缓存：
-经常使用的对象放入 eden 中，eden 使用 ConcurrentHashMap 实现，不用担心会被回收。
-不常用的对象放入 longterm，longterm 使用 WeakHashMap 实现，这些老对象会被垃圾收集器回收。
-当调用 get() 方法时，会先从 eden 区获取，如果没有找到的话再到 longterm 获取，当从 longterm 获取到就把对象放入 eden 中，从而保证经常被访问的节点不容易被回收。
-当调用 put() 方法时，如果 eden 的大小超过了 size，那么就将 eden 中的所有对象都放入 longterm 中，利用虚拟机回收掉一部分不经常使用的对象。
 
 IdentityHashMap:使用 == 代替 equals 对键进行比较。
 
 容器中的设计模式：
 迭代器模式：JDK1.2 开始，Collection 继承了 Iterable 接口，其中的 iterator() 方法能够产生一个 Iterator 对象，通过这个对象就可以迭代遍历 Collection 中的元素。hasNext() 判断，next() 取出下个元素（Object 类）。
-JDK 1.5 之后使用 foreach 方法来遍历实现了 Iterable 接口的聚合对象。
+JDK1.5 之后使用 foreach 方法来遍历实现了 Iterable 接口的聚合对象。
 不要在 foreach 循环里进行集合类的 remove/add 操作，可以调用迭代器的 remove/add 方法。并发操作需要对 Iterator 对象加锁。
 Java 中的 Iterator 可用来遍历 Set 和 List 集合，并且只能单向移动。ListIterator 实现了 Iterator 接口，既可以前向也可以后向遍历，还可以添加对象和修改对象。
-Enumeration 接口和 Iterator 接口的区别：Enumeration 速度是 Iterator 的 2 倍，同时占用更少的内存。但是，Iterator 远远比 Enumeration 安全，因为其他线程不能够修改正在被 iterator 遍历的集合里面的对象。同时，Iterator 允许调用者删除底层集合里面的元素，这对 Enumeration 来说是不可能的。
+Enumeration 接口和 Iterator 接口的区别：Enumeration 速度是 Iterator 的 2 倍，同时占用更少的内存。但是，Iterator 远远比 Enumeration 安全，因为其他线程不能够修改正在被 Iterator 遍历的集合里面的对象。同时，Iterator 允许调用者删除底层集合里面的元素，这对 Enumeration 来说是不可能的。
 迭代：获取集合元素。迭代器的泛型和集合泛型一致。NoSuchElementException。Iterator 指针一开始在 -1。
 
-适配器模式
+适配器模式：Arrays.asList() 把数组类型转换为 List 类型，底层其实还是数组，不能使用其修改集合相关的方法。
+注意传递的数组必须是对象数组，而不是基本类型。
+也可以使用 List list = Arrays.asList(1, 2, 3);
 
 集合类没有实现 Cloneable 和 Serializable 接口：应该由集合类的具体实现来决定如何被克隆或者是序列化。
 
