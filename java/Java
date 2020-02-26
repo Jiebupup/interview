@@ -520,7 +520,7 @@ ArrayList 结尾会预留一定的容量空间花费空间，LinkedList 每一�
 未实现 RandomAccess 接口的 list，优先选择 foreach（底层通过 Iterator 实现）。大 size 的数据，千万不要使用普通 for 循环。
 
 Queue
-PriorityQueue：基于堆结构实现。调用 remove 方法，总会获得当前优先级队列中的最小元素。PriorityQueue 不是线程安全的，入队和出队的时间复杂度是 O(logN)。
+PriorityQueue：基于堆结构实现，默认最小堆。调用 remove 方法，总会获得当前优先级队列中的最小元素。PriorityQueue 不是线程安全的，入队和出队的时间复杂度是 O(logN)。JDK1.5 开始。
 
 Stack
 
