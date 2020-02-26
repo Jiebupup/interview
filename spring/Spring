@@ -80,7 +80,7 @@ IOC 容器通过反射方式生成对象，在运行效率上有一定的损耗�
 4.MVC
 SpringMVC 框架是以请求为驱动，围绕 Servlet 设计，将请求发给控制器，然后通过模型对象，分派器来展示请求结果视图。其中核心类是 DispatcherServlet，它是一个 Servlet，顶层是实现的 Servlet 接口。
 耦合低，重用性高。但使项目架构变得复杂。
-SpringMVC 使用：需要在 web.xml 中配置 DispatcherServlet。并且需要配置 Spring 监听器ContextLoaderListener。
+SpringMVC 使用：需要在 web.xml 中配置 DispatcherServlet。并且需要配置 Spring 监听器 ContextLoaderListener。
 
 模型 Model 是应用程序中用于处理应用程序数据逻辑的部分。JavaBean
 通常模型对象负责在数据库中存取数据。
@@ -141,7 +141,7 @@ SSM 三层架构
 @RestController：返回 JSON 或 XML 形式数据，但只返回对象，对象数据直接以 JSON 或 XML 形式写入 HTTP 响应 Response 中，这种情况属于 RESTful web 服务，这也是目前日常开发所接触的最常用的情况（前后端分离）。Spring 4 之后新加的注解。         
 @Controller + @ResponseBody 等于 @RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的 JavaBean 对象转换为指定的格式之后，写入到 HTTP 响应 Response 对象的 body 中。返回 JSON 格式的情况比较多。                    
 
-@RequestMapping 将对页面的 HTTP 请求映射到方法或者类，并且默认映射所有 HTTP 方法。映射路径 path/value，HTTP 方法 method，URL 参数限制 params，请求头限制 headers。
+@RequestMapping：将对页面的 HTTP 请求映射到方法或者类，并且默认映射所有 HTTP 方法。映射路径 path/value，HTTP 方法 method，URL 参数限制 params，请求头限制 headers。
 请求参数的绑定：URL 的参数可以传到 Controller 中。参数过多可以封装到 JavaBean 中，方法参数传这个 JavaBean 类型，可以是表单的请求参数。还可以封装到容器中。
 
 在方法中传入 HttpServletRequest 和 HttpServletResponse 就可以获取这两个对象以及原生 API。
@@ -218,7 +218,7 @@ global-session：全局 session 作用域，仅仅在基于 portlet 的 web 应�
 
 6.注解
 元注解：
-@Target({ElementType})
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
@@ -230,15 +230,6 @@ global-session：全局 session 作用域，仅仅在基于 portlet 的 web 应�
 @Import：导入子配置类。
 @PropertySource：指定 properties 文件的位置。
 @RunWith 和 @ContextConfiguration：Spring 整合 JUnit。版本要对应。
-
-@SpringbootConfiguration：
-@ComponentScan：
-@EnableAutoConfiguration：
-
-@Enable 开头的注解
-
-@RequestMapping：处理请求地址映射
-@ResponseBody：返回 json 数据。
 
 7.Spring 用到的设计模式
 代理模式
@@ -281,9 +272,19 @@ XML：在 XML 中配置事务管理器和事务通知（配置事务的属性）
 注解：在 XML 中配置事务管理器和开启 Spring 对注解事务的支持，使用 @Transactional。
 使用 XML 方式可以避免多次 @Transactional。
 
-纯注解需要写 Configuration 类，连接数据库的配置类，事务管理器类。加上 @Configuration、@ComponentScan、@Import、@PropertySource、@EnableTransactionManagment、@Transactional、@Value、@Bean 等。
+纯注解需要写 Configuration 类，连接数据库的配置类，事务管理器类。加上 @Configuration、@ComponentScan、@ 、@PropertySource、@EnableTransactionManagment、@Transactional、@Value、@Bean 等。
 
-9.springBoot Starter
-starter 会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater 机制帮我们完成了项目起步所需要的的相关 jar 包。
-ConfigurationProperties 和 AutoConfiguration，application.properties 文件满足自定义配置。
-利用 starter 实现自动化配置只需要两个条件——maven 依赖、配置文件。
+9.Spring Boot
+spring-boot-starter 会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater 机制帮我们完成了项目起步所需要的的相关 JAR 包。
+
+@SpringBootApplication：启动类，@SpringbootConfiguration、@EnableAutoConfiguration 和 @ComponentScan 对其注解。和启动类同级和其子包下会自动扫描。
+spring-boot-devtools：热部署。
+spring-boot-starter-parent 依赖于 spring-boot-dependencies，包含了依赖的软件的版本。
+spring-boot-starter-web
+autoconfigure 下 META-INF 的 spring.factories，有很多 *AutoConfiguration，@ConfigurationProperties 包含要配置的属性。
+写一个 application.yml/.properties 文件来自定义配置。@Value 获取这个配置文件的属性，@ConfigurationProperties 获取对象并填充到对象对应的各条属性中。
+spring-boot-configuration-processor 在写 .yml 文件时会根据类的属性提示。
+
+Spring Boot 整合 MyBatis：application.yml 中写数据库连接信息、MyBatis 包扫描和加载 MyBatis 映射文件。JPA 类似。
+@SpringBootTest
+Spring Boot 整合 Redis：RedisTemplate。
