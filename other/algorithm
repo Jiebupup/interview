@@ -20,7 +20,7 @@ TreeSet：floor(val) 返回小于 val 的值，ceiling() 大于。
 sequence 不需要连续
 
 快排稳定版：创建一个数组存储要交换的数据，记录位置信息。
-堆排序：Java 的 PriorityQueue 默认小根堆，复杂度 CNlogN（堆排序会有很多无用的比较，C 会比较大）。
+堆排序：复杂度 CNlogN（堆排序会有很多无用的比较，C 会比较大）。
 
 1.二分查找
 public int binarySearch1(int[] a, int n) {
