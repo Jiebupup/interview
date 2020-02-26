@@ -162,6 +162,26 @@ select 语句要加返回结果 RowMapper。在 Spring 中即 BeanPropertyRowMap
 JDBCSupport
 
 8.JPA
+Java 持久化 API，是一种规范，Hibernate 和 TopLink 都是其实现方式。优点：
+标准化：任何符合 JPA 标准的框架都遵循同样的架构，提供相同的访问 API，经过少量的修改就能够在环境下运行。
+容器级特性的支持：JPA 框架中支持大数据集、事务、并发等容器级事务。
+查询能力：JPA 的查询语言是面向对象而非面向数据库的，它的查询语句 JPQL 查询的是实体类和实体类的属性。
+高级特性：JPA 中能够支持面向对象的高级特性，如类之间的继承、多态和类之间的复杂关系。
+
+核心配置文件 persistence.xml：
+META-INF 文件夹下
+需要配置 persistence-unit，包括 provider 和 properties。
+properties 包含数据库信息和 JPA 实现方的配置信息。
+hibernate.hbm2ddl.auto 对应的 value 为 create 时运行时创建数据库表，并且原来有表先删除再创建新表。update 如果有表不会创建表，none 不会创建表。
+
+JPA 在实体类上进行注解，完成实体类与数据库表以及实体类属性和数据库表字段的映射。
+@GeneratedValue：配置主键的生成策略。
+Persistence
+EntityManagerFactory
+EntityManager：有很多方法实现增删改查。entityManager.find() 立即加载，entityManager.getReference() 通过动态代理延迟加载
+Tansaction
+工具类 JPAUtils：静态代码块。
+
 如何使用 JPA 在数据库中非持久化一个字段？
 static
 final
@@ -177,3 +197,36 @@ MyBatis 自身缓存机制较差，Hibernate 自身缓存机制较好，可避�
 MyBatis 是 POJO 与 SQL 的映射，半 ORM。Hibernate 是 POJO 与数据库的映射，完全 ORM。
 MyBatis 性能稍高，Hibernate 的封装方法性能低，Native 方法性能与 MyBatis 差不多。
 MyBatis 适合复杂查询，集群间跨数据库事务时。Hibernate 适合单数据库，数据量小，无多表关联，数据库结构不稳定。
+
+Spring Data JPA：是对 JPA 的封装。
+applicationContext.xml：
+创建 EntityManagerFactory 对象并交给 Spring 容器管理，包括扫描实体类所在包，JPA 实现方和数据库相关的实现方适配器。
+jpaDialect
+jpaProperties
+数据库连接池
+整合 Spring Data JPA
+事务管理器和声明式事务
+配置包扫描
+
+注解：实体类和表的映射为 @Entity 和 @Table，实体类属性和表字段的映射为 @Id、@GeneratedValue 和 @Column。
+DAO 层继承 JpaRepository 和 JpaSpecificationExecutor。使用动态代理 JdkDynamicAopProxy 和 SimpleJpaRepository，最后通过 EntityManager 完成增删改查。
+count() exist() findOne() getOne()
+@Query：JPQL 或者 SQL 语句。
+方法命名规则查询 findBy
+
+Specification 动态查询
+JpaSpecificationExecutor 的方法：findOne()，findAll() 分页和排序（方法中的参数），count() 统计。
+自定义查询条件：实现 Specification 和 toPredicate(Root,CriteriaBuilder)。其中，Root 获取需要查询的对象属性，CriteriaBuilder 构造查询条件。
+root.get()  cb.equal() 
+多条件 and 拼接
+模糊查询 cb.like()，指定参数类型 .as()
+
+多表关系
+ORM 思想，用类的关系表示多表关系。
+主表在从表对应实体类的集合上加声明关系 @OneToMany(targetEntity) 和配置外键 @JoinColumn(name,referenceColumnName)。需要主表维护外键。
+从表 @ManyToOne(targetEntity) 和外键。
+主表 @OneToMany(mappedBy,cascade) 放弃对外键的维护，添加级联。
+
+多对多：@ManyToMany(targetEntity) 和 @JoinTable(name,joinColumns,inverseJoinColumns)。joinColumns 为当前对象在中间表的外键，inverseJoinColumns 对方。
+
+导航查询：多表关系里查询可以查到主表和从表的数据。主表默认延迟加载，从表默认立即加载 。@OneToMany(mappedBy,cascade,fetch) 中的 fetch 可以更改加载方式。
