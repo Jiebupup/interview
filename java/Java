@@ -190,7 +190,7 @@ interface 接口没有任何的方法实现（Java8 开始也可以拥有默认�
 不管是抽象类还是接口，都不能通过抽象类或者接口直接创建对象，但可以通过匿名内部类的方式访问（让接口的引用来指向内部类对象，该内部类实现了接口）。
 
 Comparator 接口：外部排序，定制比较器。出自 java.util 包。compare(Object obj1, Object obj2)，升序：obj1 - obj2。new Comparator<E>(){@Override public int compare(){}}。
-Comparable 接口：在集合内部定义的方法实现的排序。出自 java.lang 包。compareTo(Object obj)，升序：this - obj。compareTo 可以比较 Integer.MAX_VALUE 和 MIN。
+Comparable 接口：在集合内部定义的方法实现的排序。出自 java.lang 包。compareTo(Object obj)，升序：this - obj。compareTo 和 Integer.compare 可以比较 Integer.MAX_VALUE 和 MIN。
 
 枚举类 enum：
 Java 5 中引入，以这种方式定义的常量使代码更具可读性，允许进行编译时检查，预先记录可接受值的列表，并避免由于传入无效值而引起的意外行为。
