@@ -288,3 +288,28 @@ spring-boot-configuration-processor 在写 .yml 文件时会根据类的属性�
 Spring Boot 整合 MyBatis：application.yml 中写数据库连接信息、MyBatis 包扫描和加载 MyBatis 映射文件。JPA 类似。
 @SpringBootTest
 Spring Boot 整合 Redis：RedisTemplate。
+
+线程池的的创建：
+Spring Boot 启动类上加 @EnableAsync。
+我们可以使用 Spring Boot 默认的线程池，不过一般我们会自定义线程池，因为比较灵活，配置方式有：XML 文件和 @Configuration。
+applicationContext.xml 中引入：开启异步并引入线程池和定义线程池。
+或者引入线程池的配置 <import resource="threadPool.xml" /> <task:annotation-driven executor="WhifExecutor" />
+@Async 创建异步方法。
+
+注解方式：@Configuration 和 @EnableAsync 写一个配置类，创建异步方法。
+@PostConstruct：项目启动时就执行一次该方法。
+
+如下方式会使 @Async 失效：
+异步方法使用 static 修饰。
+异步类没有使用 @Component 注解（或其他注解）导致 Spring 无法扫描到异步类。
+异步方法不能与被调用的异步方法在同一个类中。
+类中需要使用 @Autowired 或 @Resource 等注解自动注入，不能自己手动 new 对象。
+没加 @EnableAsync。
+
+
+
+
+
+
+
+
