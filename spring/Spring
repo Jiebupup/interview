@@ -1,15 +1,25 @@
 1.简介
-Spring 是一种轻量级开发框架，旨在提高开发人员的开发效率以及系统的可维护性。
-Spring 框架包括：Core、Testing、Data Access、Spring MVC、Spring WebFlux、Integration、Languages。
+Spring 框架是 Java 平台的一个开源的全栈应用程序框架和控制反转容器实现。该框架的一些核心功能理论上可用于任何 Java 应用，但 Spring 还为基于 Java 企业版平台构建的 Web 应用提供了大量的拓展支持，基本上完全代替了 EJB 模型。
+
+Spring 框架特性 
+Core technologies：依赖注入，AOP，事件，资源，i18n，验证，数据绑定，类型转换，SpEL。
+Testing：模拟对象，TestContext 框架，Spring MVC 测试，WebTestClient。
+Data Access：事务，DAO 支持，JDBC，ORM，编组 XML。
+Spring MVC 和 Spring WebFlux
+Integration：远程处理，JMS，JCA，JMX，电子邮件，任务，调度，缓存。
+Languages：Kotlin，Groovy，动态语言。
+
+其他模块：Aspects。
+
 Spring5 基于 JDK8，支持候选组件索引代替类路径扫描（对于大型项目启动时间降低），支持 Kotlin，响应式编程，Junit5，更新依赖类库。
 
 2.AOP
-面向切面编程 aspect-oriented programming。代理模式。
+面向切面编程。代理模式。
 横切关注点可以被描述为那些与业务无关，却为业务模块所共同调用的逻辑或责任。
-切面能帮助我们模块化横切关注点，在系统运行时需要的地方进行动态插入运行。扩展功能不修改源代码。降低模块间的耦合度，并有利于未来的可拓展性和可维护性。把一些通用功能抽象出来，在需要用到的地方直接使用即可，这样大大简化了代码量。
+切面能帮助我们模块化横切关注点，在系统运行时需要的地方进行动态插入运行。扩展功能不修改源代码。减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。
 分离业务逻辑与系统服务，应用对象只完成业务逻辑。可用于事务处理、日志管理、权限控制、缓存控制、性能监控、异常处理等。 
 JDK & CGLIB 动态代理。
-Spring AOP 已经集成了 AspectJ。Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。Spring AOP 基于代理，而 AspectJ 基于字节码操作。Spring AOP 相对来说更简单。当切面太多的话，最好选择 AspectJ，它比 Spring AOP 快很多。 
+Spring AOP 已经集成了 AspectJ。Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。Spring AOP 基于代理，而 AspectJ 基于字节码操作。AspectJ 功能更加强大，而 Spring AOP 相对来说更简单。当切面太多的话，最好选择 AspectJ，它比 Spring AOP 快很多。 
 
 注意事项：
 无法拦截 static、final、private 方法。
@@ -45,9 +55,9 @@ security：MethodSecurityInterceptor、PreInvocationAuthrizationAdviceVote、Exp
 cache：AnnotationCacheSupport、CacheInterceptor、CacheAspectSupport，时序图 invoke -> execute -> doGet -> invokeJoinpoint -> cachePutRequest.apply
 
 3.IOC
-控制反转 inverse of control，将原本在程序中手动创建对象的控制权，交由 Spring 框架来管理。IOC 容器是 Spring 用来实现 IOC 的载体，IOC 容器实际上就是个 Map，存放的是各种对象。
-将对象之间的相互依赖关系交给 IOC 容器来管理，并由 IOC 容器完成对象的注入。这样可以很大程度上简化应用的开发，把应用从复杂的依赖关系中解放出来。IOC 容器就像是一个工厂一样，当我们需要创建一个对象的时候，只需要配置好配置文件/注解即可，完全不用考虑对象是如何被创建出来的。
-如果利用 IOC 的话，你只需要配置好，然后在需要的地方引用就行了，这大大增加了项目的可维护性且降低了开发难度。
+控制反转，将原本在程序中手动创建对象的控制权，交由 Spring 框架来管理。IOC 容器是 Spring 用来实现 IOC 的载体，IOC 容器实际上就是个 Map，存放的是各种对象。
+将对象之间的相互依赖关系交给 IOC 容器来管理，并由 IOC 容器完成对象的注入。这样可以很大程度上简化应用的开发，把应用从复杂的依赖关系中解放出来。
+IOC 容器就像是一个工厂一样，当我们需要创建一个对象的时候，只需要配置好配置文件或注解即可，完全不用考虑对象是如何被创建出来的。然后在需要的地方引用就行了，这大大增加了项目的可维护性且降低了开发难度。
 Spring 时代我们一般通过 XML 文件来配置 bean，后来开发人员觉得 XML 文件来配置不太好，于是 Spring Boot 注解配置就慢慢开始流行起来。
 Spring IOC 的初始化过程：XML 读取为 Resource，解析为 BeanDefinition，注册为 BeanFactory。
 
@@ -78,7 +88,8 @@ IOC 容器通过反射方式生成对象，在运行效率上有一定的损耗�
 需要进行大量的配制工作，比较繁琐。
 
 4.MVC
-SpringMVC 框架是以请求为驱动，围绕 Servlet 设计，将请求发给控制器，然后通过模型对象，分派器来展示请求结果视图。其中核心类是 DispatcherServlet，它是一个 Servlet，顶层是实现的 Servlet 接口。
+SpringMVC 框架是以请求为驱动，围绕 Servlet 设计，将请求发给控制器，然后通过模型对象，分派器来展示请求结果视图。
+其中核心类是 DispatcherServlet，它是一个 Servlet，顶层是实现的 Servlet 接口。作为 Spring MVC 的入口函数，作用是接收请求，响应结果。
 耦合低，重用性高。但使项目架构变得复杂。
 SpringMVC 使用：需要在 web.xml 中配置 DispatcherServlet。并且需要配置 Spring 监听器 ContextLoaderListener。
 
@@ -116,20 +127,21 @@ springmvc.xml 配置：
 拦截器 <mvc:interceptors></mvc:interceptors> 
  
 流程：
-客户端/浏览器发送请求 request，直接请求到前端控制器 DispatcherServlet。
+客户端或浏览器发送请求，直接请求到前端控制器 DispatcherServlet。
 DispatcherServlet 根据请求信息调用处理器映射器 HandlerMapping，解析请求对应的处理器 Handler。解析出具体的类.方法。
 解析到对应的 Handler（也就是我们平常说的控制器 Controller）后，开始由处理器适配器 HandlerAdapter 处理。任何类.方法都会被适配为可以被适配器执行的样子。
 HandlerAdapter 会根据 Handler 来调用真正的处理器开处理请求，并处理相应的业务逻辑。
 处理器处理完业务后，会返回一个 ModelAndView 对象，Model 是返回的数据对象，View 是个逻辑上的 View。
 视图解析器 ViewResolver 会根据逻辑 View 查找实际的 View。
-DispaterServlet 把返回的 Model 传给 View（视图渲染）。
-DispatcherServlet 返回响应 response。
+DispatcherServlet 把返回的 Model 传给 View（视图渲染）。
+DispatcherServlet 把 View 返回给请求者。
 
 其中 Handler 和 View 需要自己开发，其他由框架提供。基于组件的方式。
 
 Model1 时代：整个 Web 应用几乎全部用 JSP 页面组成，只用少量的 JavaBean 来处理数据库连接、访问等操作，JSP 即是控制层又是表现层。
-Model2 时代：Java Bean（Model）+ JSP（View）+ Servlet（Controller），抽象和封装程度还远远不够。Struts2 比较笨重。
-Spring MVC 下我们一般把后端项目分为 Service 层（处理业务）、Dao 层（数据库操作）、Entity 层（实体类）、Controller 层 (控制层，返回数据给前台页面)。
+Model2 时代：Java Bean（Model）+ JSP（View）+ Servlet（Controller），早期的 JavaWeb MVC 开发模式，抽象和封装程度还远远不够，重复造轮子，程序的可维护性和复用性低。
+Struts2 比较笨重，而 Spring MVC 使用更加简单和方便，开发效率更高，并且 Spring MVC 运行速度更快。
+Spring MVC 下我们一般把后端项目分为 Service 层（处理业务）、Dao 层（数据库操作）、Entity 层（实体类）、Controller 层（控制层，返回数据给前台页面）。
 
 SSM 三层架构
 表现层 SpringMVC：接受用户参数，显示页面。
@@ -138,8 +150,8 @@ SSM 三层架构
 
 @RestController vs @Controller
 @Controller：返回一个页面，单独使用 @Controller 不加 @ResponseBody 的话一般使用在要返回一个视图的情况，这种情况属于比较传统的 SpringMVC 的应用，对应于前后端不分离的情况。
-@RestController：返回 JSON 或 XML 形式数据，但只返回对象，对象数据直接以 JSON 或 XML 形式写入 HTTP 响应 Response 中，这种情况属于 RESTful web 服务，这也是目前日常开发所接触的最常用的情况（前后端分离）。Spring 4 之后新加的注解。         
-@Controller + @ResponseBody 等于 @RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的 JavaBean 对象转换为指定的格式之后，写入到 HTTP 响应 Response 对象的 body 中。返回 JSON 格式的情况比较多。                    
+@RestController：返回 JSON 或 XML 形式数据，但只返回对象，对象数据直接以 JSON 或 XML 形式写入 HTTP 响应 Response 中，这种情况属于 RESTful web 服务，这也是目前日常开发所接触最常用的前后端分离。Spring 4 之后新加的注解。         
+@Controller + @ResponseBody 等于 @RestController。@ResponseBody 注解的作用是将 Controller 的方法返回的 JavaBean 对象转换为指定的格式之后，写入到 HTTP 响应对象的 body 中。返回 JSON 格式的情况比较多。                    
 
 @RequestMapping：将对页面的 HTTP 请求映射到方法或者类，并且默认映射所有 HTTP 方法。映射路径 path/value，HTTP 方法 method，URL 参数限制 params，请求头限制 headers。
 请求参数的绑定：URL 的参数可以传到 Controller 中。参数过多可以封装到 JavaBean 中，方法参数传这个 JavaBean 类型，可以是表单的请求参数。还可以封装到容器中。
@@ -172,24 +184,24 @@ Spring 整合声明式事务：配置事务管理器，事务通知，AOP。
 可重用组件。那些组成应用程序的主体及由 Spring IOC 容器所管理的对象。IOC 容器初始化、装配及管理的对象。bean 的定义以及 bean 相互间的依赖关系将通过配置元数据来描述。
 bean 的生命周期（bean 实例化过程，不同作用域的 bean 不同，@PostConstruct 和 @PreDestory 注解生命周期）：
 bean 容器找到配置文件中 Spring bean 的定义。bean 容器利用 Java Reflection API 创建一个 bean 的实例。
-设置对象属性（setter 等）（依赖注入），构造器
-如果 bean 实现了 BeanNameAware 接口，调用 setBeanName() 传入 bean 的 ID（检查 Aware 接口）
-如果 bean 实现了 BeanFactoryAware 接口，调用 setBeanFactory() 传入 ClassLoader 对象的实例
-同理，其他 Aware 接口
-将 bean 传递给 BeanPostProcessor，调用 postProcessBeforeInitialization()
-调用 InitializingBean 的 afterPropertiesSet()
-调用自定义的初始化方法
-将 bean 传递给 BeanPostProcessor，调用 postProcessAfterInitialization()
-使用 bean，将一直存在于应用上下文中，直到该应用上下文被销毁
-调用 DisposableBean 的 destroy()
-调用自定义的销毁方法
+使用 set() 设置对象属性。
+如果 bean 实现了 BeanNameAware 接口，调用 setBeanName() 传入 bean 的名字。
+如果 bean 实现了 BeanClassLoaderAware 接口，调用 setBeanClassLoader()，传入 ClassLoader 对象的实例。
+同理，其他 Aware 接口。
+将 bean 传递给 BeanPostProcessor，调用 postProcessBeforeInitialization()。
+调用 InitializingBean 的 afterPropertiesSet()。
+调用自定义的初始化方法：如果 bean 在配置文件中的定义包含 init-method 属性，执行指定的方法。
+将 bean 传递给 BeanPostProcessor，调用 postProcessAfterInitialization()。
+使用 bean，将一直存在于应用上下文中，直到该应用上下文被销毁。
+调用 DisposableBean 的 destroy()。
+调用自定义的销毁方法：如果 bean 在配置文件中的定义包含 destroy-method 属性，执行指定的方法。
 
 bean 的作用域：
 @scope 注解定义 bean 的作用域。
 
-singleton：唯一 bean 实例，Spring 中的 bean 默认都是单例的。创建容器时就同时自动创建了一个 bean 对象，或者指定延迟初始化。容器销毁 bean 死亡，
+singleton：唯一 bean 实例，Spring 中的 bean 默认都是单例的。创建容器时就同时自动创建了一个 bean 对象，或者指定延迟初始化。容器销毁 bean 死亡。
 Spring 的单例是基于 Spring 容器的，单例 Bean 在此容器内只有一个，Java 的单例是基于 JVM，每个 JVM 内只有一个实例。
-线程安全问题：当多个线程操作同一个对象的时候，对这个对象的非静态成员变量的写操作会存在线程安全问题。
+单例 bean 的线程安全问题：当多个线程操作同一个对象的时候，对这个对象的非静态成员变量的写操作会存在线程安全问题。
 解决方法：在类中定义一个 ThreadLocal 成员变量，将需要的可变成员变量保存在 ThreadLocal 中。
 
 prototype：每次请求都会创建一个新的 bean 实例。创建容器的时候并没有实例化，而是延迟初始化。JVM 垃圾回收。
@@ -204,7 +216,7 @@ global-session：全局 session 作用域，仅仅在基于 portlet 的 web 应�
 @Component 通常是通过类路径扫描来自动侦测以及自动装配到 Spring 容器中，@Bean 注解通常是在标有该注解的方法中定义产生这个 bean。
 @Bean 注解比 Component 注解的自定义性更强，而且很多地方我们只能通过 @Bean 注解来注册 bean。比如当我们引用第三方库中的类需要装配到 Spring 容器时，则只能通过 @Bean 来实现。
 
-将一个类声明为 Spring 的 bean 的注解：
+将一个类声明为 bean 的注解：
 使用 @Autowired 注解自动装配 bean，要想把类标识成可用于 @Autowired 注解自动装配的 bean 的类，采用以下注解可实现：
 @Component：通用的注解，可标注任意类为 Spring 组件。如果一个 bean 不知道属于哪个层，可以使用 @Component 注解标注。创建对象，把当前对象存入 Spring 容器中，相当于 XML 的 <bean>。
 @Repository：对应持久层即 DAO 层，主要用于数据库相关操作。
@@ -224,7 +236,7 @@ global-session：全局 session 作用域，仅仅在基于 portlet 的 web 应�
 @Documented
 
 @Configuration：指定配置类。
-@ComponentScan：相当于在 XML 中加了 context:component-scan 标签。
+@ComponentScan：从扫描的路径中找出标识了需要装配的类，自动装配到 Spring 的 bean 容器中。相当于在 XML 中加了 context:component-scan 标签。
 @Bean：把当前方法的返回值作为 bean 对象放入 Spring 容器中。如果方法有参数，会去 Spring 容器中查找可用的 bean 对象，查找方式和 @Autowired 一样。
 @AnnotationConfigApplicationContext：代替 XML，当传入了所有需要的 .class 时 @Configuration 可以不写。
 @Import：导入子配置类。
@@ -235,10 +247,10 @@ global-session：全局 session 作用域，仅仅在基于 portlet 的 web 应�
 代理模式
 工厂模式
 单例模式：Spring 中的 Bean 默认都是单例的。把已经初始过的变量放在一个 map 中，下次再要使用这个变量的时候，先判断 map 中有没有。
-模板模式：Spring 中 jdbcTemplate、hibernateTemplate 等以 Template 结尾的对数据库操作的类，它们就使用到了模板模式。
+模板模式：Spring 中以 Template 结尾的对数据库操作的类，它们就使用到了模板模式。
 装饰器模式：连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。
 观察者模式：Spring 事件驱动模型。
-适配器模式：Spring AOP 的增强或通知 advice 使用到了适配器模式、Spring MVC 中也是用到了适配器模式适配 controller。
+适配器模式：Spring AOP 的 advice 使用到了适配器模式，Spring MVC 中也是用到了适配器模式适配 controller。
 
 8.事务
 Spring 事务管理接口
@@ -260,7 +272,7 @@ TransactionDefinition 接口中定义了 5 个方法以及一些表示事务属�
 TransactionStatus 接口用来记录事务的状态，该接口定义了一组方法，用来获取或判断事务的相应状态信息。
 PlatformTransactionManager.getTransaction(…) 方法返回一个 TransactionStatus 对象。返回的 TransactionStatus 对象可能代表一个新的或已经存在的事务（如果在当前调用堆栈有一个符合条件的事务）。
 
-@Transactional(rollbackFor = Exception.class)：这个类里面的方法抛出异常，就会回滚，数据库里面的数据也会回滚。
+@Transactional(rollbackFor = Exception.class)：这个类里面的方法抛出异常，就会回滚，数据库里面的数据也会回滚。保证数据的一致性。
 在 @Transactional 注解中如果不配置 rollbackFor 属性,那么事物只会在遇到 RuntimeException 的时候才会回滚。
 
 Spring 管理事务的方式分为编程式事务与声明式事务。
