@@ -182,11 +182,7 @@ EntityManager：有很多方法实现增删改查。entityManager.find() 立即�
 Tansaction
 工具类 JPAUtils：静态代码块。
 
-如何使用 JPA 在数据库中非持久化一个字段？
-static
-final
-transient
-@Transient
+如何使用 JPA 在数据库中非持久化一个字段？static、final，推荐 transient 和 @Transient。
 
 MyBatis 与 Hibernate 的比较：
 MyBatis 轻量级、上手快、插件丰富，Hibernate 重量级、功能齐全、精通较难。
