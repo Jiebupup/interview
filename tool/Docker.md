@@ -163,7 +163,7 @@ LXC 是 Linux containers 的简称，是一种基于容器的操作系统层级�
 
 Docker 引擎是一个 c/s 结构：
 
-![docker1](https://github.com/jiebcoder/interview/blob/master/pics/docker1.png)
+![docker1](https://github.com/Jiebupup/interview/blob/master/pic/docker1.png)
 
 server 是一个常驻进程。
 
@@ -173,4 +173,4 @@ CLI 实现容器和镜像的管理，为用户提供统一的操作界面。
 
 C/S 架构：Client 通过接口与 Server 进程通信实现容器的构建，运行和发布。client 和 server 可以运行在同一台集群，也可以通过跨主机实现远程通信。
 
-![docker2](https://github.com/jiebcoder/interview/blob/master/pics/docker2.jpg)
+![docker2](https://github.com/Jiebupup/interview/blob/master/pic/docker2.jpg)
