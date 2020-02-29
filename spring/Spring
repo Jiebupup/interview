@@ -287,7 +287,8 @@ XML：在 XML 中配置事务管理器和事务通知（配置事务的属性）
 纯注解需要写 Configuration 类，连接数据库的配置类，事务管理器类。加上 @Configuration、@ComponentScan、@ 、@PropertySource、@EnableTransactionManagment、@Transactional、@Value、@Bean 等。
 
 9.Spring Boot
-spring-boot-starter 会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater 机制帮我们完成了项目起步所需要的的相关 JAR 包。
+起步依赖：spring-boot-starter 会把所有用到的依赖都给包含进来，避免了开发者自己去引入依赖所带来的麻烦。stater 机制帮我们完成了项目起步所需要的的相关 JAR 包。
+自动配置 端点监控
 
 @SpringBootApplication：启动类，@SpringbootConfiguration、@EnableAutoConfiguration 和 @ComponentScan 对其注解。和启动类同级和其子包下会自动扫描。
 spring-boot-devtools：热部署。
