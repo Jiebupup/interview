@@ -93,7 +93,7 @@ SpringMVC 框架是以请求为驱动，围绕 Servlet 设计，将请求发给�
 耦合低，重用性高。但使项目架构变得复杂。
 SpringMVC 使用：需要在 web.xml 中配置 DispatcherServlet。并且需要配置 Spring 监听器 ContextLoaderListener。
 
-模型 Model 是应用程序中用于处理应用程序数据逻辑的部分。JavaBean
+模型 Model 是应用程序中用于处理应用程序数据逻辑的部分。JavaBean。
 通常模型对象负责在数据库中存取数据。
 
 视图 View 是应用程序中处理数据显示的部分。JSP
