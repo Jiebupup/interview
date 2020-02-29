@@ -318,11 +318,3 @@ applicationContext.xml 中引入：开启异步并引入线程池和定义线程
 异步方法不能与被调用的异步方法在同一个类中。
 类中需要使用 @Autowired 或 @Resource 等注解自动注入，不能自己手动 new 对象。
 没加 @EnableAsync。
-
-
-
-
-
-
-
-
