@@ -158,7 +158,7 @@ SSM 三层架构
 
 在方法中传入 HttpServletRequest 和 HttpServletResponse 就可以获取这两个对象以及原生 API。
 @RequestParam：URL 参数的绑定。
-@PathVariable：.../{id} 和 name="id"。
+@PathVariable：.../{id} 和 name="id"。传参。
 @RequestHeader
 @CookieValue
 @ModelAttribute：放在方法上会在控制器方法执行前执行。有有返回值和无返回值（需要 Map）两种情况，用来给在表单提交数据之外的参数赋值。加在参数前则可以从 Map 中取值。
