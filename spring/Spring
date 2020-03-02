@@ -177,7 +177,7 @@ SSM 三层架构
 拦截器 interceptor：预处理和后处理，只会拦截 Controller 的方法。编写拦截器类，配置。还有页面完成后处理。多个拦截器按先进后出的顺序。
 
 Spring 整合 SpringMVC：启动 Tomcat 服务器的时候加载 Spring 的配置文件 applicationContext.xml，用到监听器 ContextLoaderListener 监听 ServletContext 对象，让监听器取加载 Spring 的配置文件。
-Spring 整合 MyBatis：配置连接池，配置 SqlSessionFactory，配置 DAO 所在包。有了 applicationContext.xml 可以替代 MyBatis 的主配置文件 configuration.xml。
+Spring 整合 MyBatis：配置连接池，配置 SqlSessionFactory，配置 DAO 所在包。有了 applicationContext.xml 可以替代 MyBatis 的主配置文件 configuration.xml。只需要编写 Mapper 和 SQL。 
 Spring 整合声明式事务：配置事务管理器，事务通知，AOP。
 
 5.bean
