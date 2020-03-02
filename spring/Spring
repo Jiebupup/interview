@@ -168,7 +168,7 @@ SSM 三层架构
 或者直接进行响应：response.getWriter().print()。
 设置中文乱码问题：response.setCharacterEncoding("UTF-8");response.setContentType("text/html;charset=UTF-8");
 
-返回 ModelAndView：底层是 map。是返回 String 的底层。
+返回 ModelAndView：底层是 map。是传入 model 返回 String 的底层。
 返回 String 中使用 forward 和 redirect。
 @RequestBody
 
