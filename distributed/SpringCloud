@@ -84,6 +84,11 @@ RPC TCP 协议
 未来 Dubbo 将会作为 Spring Cloud Alibaba 的 RPC 组件，并与 Spring Cloud 原生的 Feign 以及 RestTemplate 进行无缝整合，实现“零”成本迁移。
 在阿里巴巴的微服务解决方案中，Dubbo、Nacos 和 Sentinel，以及后续将开源的微服务组件，都是 Dubbo EcoSystem 的一部分。我们后续也会将 Dubbo EcoSystem 集成到 Spring Cloud 的生态中。
 
+Spring Cloud 是一个规范，Spring Cloud Netflix 和 Spring Cloud Alibaba 都是其实现。目前使用 Spring Cloud 的第一选择是 Spring Cloud Netflix。
+Spring Cloud Netflix 包括 Ribbon、Feign、Eureka（停止更新）、Hystrix 等。抽象了一套通用的开发模式，目的是让开发者更快更好地开发业务。但是这套开发模式运行时还是依赖于 RPC、网关、服务发现、配置管理、限流熔断、分布式链路跟踪等组件的具体实现。
+Spring Cloud Alibaba 包括 Sentinel、Dubbo、Nacos、RocketMQ、Seata 等。
+现在开发微服务也可以直接使用 Kubernetes。
+
 8.微服务开发
 Spring 目前是 Java web 开发人员必不可少的一个框架，Spring Boot 简化了 Spring 开发的配置目前也是业内主流开发框架。
 
