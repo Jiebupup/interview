@@ -107,7 +107,6 @@ insert 和 delete 最终调用的都是 update。
 MyBatis 在 DAO 类中设置 SqlSession sqlSession=sqlSessionFactory.openSession(true); 设置事务自动提交。
 抽取重复的 SQL 语句。
 映射配置文件中可以设置 *Fields 和 include refid="*Fields"，抽取需要查询属性。
-MyBatis 便于 debug，可以在主配置文件配置 logging.level.*=debug。
 
 MyBatis 的 DAO 接口也叫 Mapper。
 xml 配置文件分为主配置文件 configuration（配置环境和指定映射配置文件或注解方式）和映射配置文件 mapper。
