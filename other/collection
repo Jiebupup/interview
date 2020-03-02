@@ -126,11 +126,6 @@ CDN 加速：将一些静态资源比如图片、视频等等缓存到离用户�
 需求快速变更，发布频繁：和传统软件的版本发布频率不同，互联网产品为快速适应市场，满足用户需求，其产品发布频率是极高的；
 渐进式发展：与传统软件产品或企业应用系统一开始就规划好全部的功能和非功能需求不同，几乎所有的大型互联网网站都是从一个小网站开始，渐进地发展起来。
 
-Spring Cloud 是一个规范，Spring Cloud Netflix 和 Spring Cloud Alibaba 都是其实现。目前使用 Spring Cloud 的第一选择是 Spring Cloud Netflix。
-Spring Cloud Netflix 包括 Ribbon、Feign、Eureka（停止更新）、Hystrix 等。抽象了一套通用的开发模式，目的是让开发者更快更好地开发业务。但是这套开发模式运行时还是依赖于 RPC、网关、服务发现、配置管理、限流熔断、分布式链路跟踪等组件的具体实现。
-Spring Cloud Alibaba 包括 Sentinel、Dubbo、Nacos、RocketMQ、Seata 等。
-现在开发微服务也可以直接使用 Kubernetes。
-
 单台服务器无法处理越来越多的流量
 简单的扩容，增加系统的服务器，提高硬件能力。
 水平拆分和垂直拆分数据/应用，来提升系统的伸缩性，进一步扩容提升系统负载能力。
