@@ -242,6 +242,7 @@ global-session：全局 session 作用域，仅仅在基于 portlet 的 web 应�
 @Import：导入子配置类。
 @PropertySource：指定 properties 文件的位置。
 @RunWith 和 @ContextConfiguration：Spring 整合 JUnit。版本要对应。
+@Param：给参数取别名，如果只有一个参数且在 <if> 里使用，必须加 @Param。
 
 7.Spring 用到的设计模式
 代理模式
