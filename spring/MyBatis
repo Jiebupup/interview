@@ -136,7 +136,7 @@ id，result 标签的类型属性为 javaType（可选）。
 
 在主配置文件中 dataSource 指定 POOLED 和 UNPOOLED 配置数据库连接池。
 
-动态 SQL
+动态 SQL：根据条件产生不同的 SQL。
 if 标签：条件，放在 where 标签里。
 foreach 标签：与 SQL 的 in 一起使用表示在某一范围内查询。
 
