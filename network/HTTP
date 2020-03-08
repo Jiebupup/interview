@@ -140,7 +140,7 @@ Domain：指定了哪些主机可以接受 Cookie。如果不指定，默认为�
 Path：指定了主机下的哪些路径可以接受 Cookie（该 URL 路径必须存在于请求 URL 中）。setPath() 实现 Cookie 共享（默认情况下 Cookie 不能共享）。
 HttpOnly：标记为 HttpOnly 的 Cookie 不能被 JavaScript 脚本调用。跨站脚本攻击 XSS 常常使用 JavaScript 的 document.cookie API 窃取用户的 Cookie 信息，因此使用 HttpOnly 标记可以在一定程度上避免 XSS 攻击。
 Secure：标记为 Secure 的 Cookie 只能通过被 HTTPS 协议加密过的请求发送给服务端。但即便设置了 Secure 标记，敏感信息也不应该通过 Cookie 传输，因为 Cookie 有其固有的不安全性，Secure 标记也无法提供确实的安全保障。
-Expires
+MaxAge
 
 Session 将用户信息存储在服务器端，存储在服务器端的信息更加安全。
 Session 可以存储在服务器上的文件、数据库或者内存中。也可以将 Session 存储在 Redis 这种内存型数据库中，效率会更高。
