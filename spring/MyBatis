@@ -19,7 +19,7 @@ MyBatis 最主要的特点就是可以手动编写 SQL 语句，能够支持多�
 在 Mybatis 初始化过程中，会加载 mybatis-config.xml 配置文件、映射配置文件以及 Mapper 接口中的注解信息，解析后的配置信息会形成相应的对象并保存到 Configration 对象中。
 之后，根据该对象创建 SqlSessionFactory 对象。待 Mybatis 初始化完成后，可以通过 SqlSessionFactory 创建 SqlSession 对象并开始数据库操作。
 
-动态 SQL 语句：几乎可以编写出所有满足需要的 SQL。Mybatis 中 scripting 模块会根据用户传入的参数，解析映射文件中定义的动态 SQL 节点，形成数据库能执行的SQL 语句。
+动态 SQL 语句：几乎可以编写出所有满足需要的 SQL。Mybatis 中 scripting 模块会根据用户传入的参数，解析映射文件中定义的动态 SQL 节点，形成数据库能执行的 SQL 语句。
 SQL 语句的执行：涉及多个组件，包括 MyBatis 的四大核心，它们是：Executor、StatementHandler、ParameterHandler、ResultSetHandler。
 
 基础支持层：给上两层提供功能支撑，包括连接管理，事务管理，配置加载，缓存处理等。
