@@ -175,7 +175,7 @@ Session Server：使用一个单独的服务器存储 Session 数据，可以使
 共同之处：Cookie 和 Session 都是用来跟踪浏览器用户身份的会话方式。
 Cookie 与 Session 比较：
 Cookie 只能存储 ASCII 码字符串，而 Session 则可以存储任何类型的数据，因此在考虑数据复杂性时首选 Session。 
-Cookie 存储在浏览器中，容易被恶意查看。如果非要将一些隐私数据存在 Cookie 中，可以将 Cookie 值进行加密，然后在服务器进行解密。Cookie 更容易被伪造，Session 安全性高。
+Cookie 存储在浏览器中，容易被恶意查看。如果非要将一些隐私数据存在 Cookie 中，可以将 Cookie 值进行加密，然后在服务器进行解密。Cookie 容易被伪造，而 Session 存储在服务器中，安全性高。
 对于大型网站，如果用户所有的信息都存储在 Session 中，那么开销是非常大的，因此不建议将所有的用户信息都存储到 Session 中。
 Cookie 是需要浏览器支持的，可能被禁用。而 Session 不会。
 Cookie 支持跨域名访问，Session 仅在所在的域名内有效。
