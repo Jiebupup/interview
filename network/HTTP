@@ -140,7 +140,7 @@ Domain：指定了哪些主机可以接受 Cookie。如果不指定，默认为�
 Path：指定了主机下的哪些路径可以接受 Cookie（该 URL 路径必须存在于请求 URL 中）。setPath() 实现 Cookie 共享（默认情况下 Cookie 不能共享）。
 HttpOnly：标记为 HttpOnly 的 Cookie 不能被 JavaScript 脚本调用。跨站脚本攻击 XSS 常常使用 JavaScript 的 document.cookie API 窃取用户的 Cookie 信息，因此使用 HttpOnly 标记可以在一定程度上避免 XSS 攻击。
 Secure：标记为 Secure 的 Cookie 只能通过被 HTTPS 协议加密过的请求发送给服务端。但即便设置了 Secure 标记，敏感信息也不应该通过 Cookie 传输，因为 Cookie 有其固有的不安全性，Secure 标记也无法提供确实的安全保障。
-MaxAge
+Expires/Max-Age
 
 Session 将用户信息存储在服务器端，存储在服务器端的信息更加安全。
 Session 可以存储在服务器上的文件、数据库或者内存中。也可以将 Session 存储在 Redis 这种内存型数据库中，效率会更高。
@@ -201,12 +201,12 @@ max-age 指令出现在响应报文，表示缓存资源在缓存服务器中保
 Expires 首部字段也可以用于告知缓存服务器该资源什么时候会过期。
 在 HTTP/1.1 中，会优先处理 max-age 指令。在 HTTP/1.0 中，max-age 指令会被忽略掉。
 
-Expires 和 max-age 的区别：
-Expires 在 HTTP/1.0 中已经定义。Cache-Control:max-age 在 HTTP/1.1 中才有定义，为了向下兼容，仅使用 max-age 不够。
+Expires 和 Max-Age 的区别：
+Expires 在 HTTP/1.0 中已经定义。Cache-Control:Max-Age 在 HTTP/1.1 中才有定义，为了向下兼容，仅使用 Max-Age 不够。
 Expires 指定一个绝对的过期时间（GMT 格式），这么做会导致客户端和服务器时间不同步，使 Expires 的配置出现问题。很容易在配置后忘记具体的过期时间，导致过期来临出现浪涌现象。
-max-age 指定的是从文档被访问后的存活时间，这个时间是个相对值，相对的是文档第一次被请求时服务器记录的 Request_time。
+Max-Age 指定的是从文档被访问后的存活时间，这个时间是个相对值，相对的是文档第一次被请求时服务器记录的 Request_time。
 Expires 指定的时间可以是相对文件的最后访问时间 Atime 或者修改时间 MTime。
-Apache 中，max-age 是根据 Expires 的时间来计算出来的。
+Apache 中，Max-Age 是根据 Expires 的时间来计算出来的。
 
 缓存验证：
 ETag：资源的唯一标识。URL 不能唯一表示资源，例如 http://www.google.com/ 有中文和英文两个资源，只有 ETag 才能对这两个资源进行唯一标识。
