@@ -230,7 +230,7 @@ global-session：全局 session 作用域，仅仅在基于 portlet 的 web 应�
 
 6.注解
 元注解：
-@Target({ElementType.TYPE})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
