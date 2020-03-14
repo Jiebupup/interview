@@ -161,7 +161,6 @@ SSM 三层架构
 @PathVariable：.../{id} 和 name="id"。传参。
 @RequestHeader
 @CookieValue
-@ModelAttribute：放在方法上会在控制器方法执行前执行。有有返回值和无返回值（需要 Map）两种情况，用来给在表单提交数据之外的参数赋值。加在参数前则可以从 Map 中取值。用于为 Model 对象绑定参数。
 @SessionAttribute：model.addAttribute() 会把值存到 request 对象中，在多个控制器方法共享参数。
 
 响应返回值是 void 需要 forward 或者 redirect，分别为 request.getRequestDispatcher().forward(request,response) 和 response.sendRedirect(request.getContextPath()+)。
@@ -243,6 +242,9 @@ global-session：全局 session 作用域，仅仅在基于 portlet 的 web 应�
 @PropertySource：指定 properties 文件的位置。
 @RunWith 和 @ContextConfiguration：Spring 整合 JUnit。版本要对应。
 @Param：给参数取别名，如果只有一个参数且在 <if> 里使用，必须加 @Param。
+@ControllerAdvice：修饰类，表示 Controller 的全局配置类，在此类中可加 @ExceptionHandler、@ModelAttribute 和 @DataBinder。
+@ExceptionHandler：修饰方法会在 Controller 出现异常后被调用，用于处理捕获到的异常。
+@ModelAttribute：放在方法上会在控制器方法执行前执行。有有返回值和无返回值（需要 Map）两种情况，用来给在表单提交数据之外的参数赋值。加在参数前则可以从 Map 中取值。用于为 Model 对象绑定参数。
 @DataBinder：修饰的方法会在 Controller 方法执行前被调用，用于绑定参数的转换器。
 
 7.Spring 用到的设计模式
