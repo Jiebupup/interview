@@ -25,10 +25,7 @@ Spring AOP 已经集成了 AspectJ。Spring AOP 属于运行时增强，而 Aspe
 无法拦截 static、final、private 方法。
 无法拦截内部方法调用。
 
-Spring AOP 对于动态代理的选择：
-默认使用 CGLIB 动态代理。
-如果目标对象实现了接口，则默认使用 JDK 动态代理。
-如果目标对象实现了接口，且强制使用 CGLIB 动态代理，则使用 CGLIB 动态代理。
+Spring AOP 对于动态代理的选择：默认使用 JDK 动态代理。目标对象不存在接口时，使用 CGLIB。
 
 AspectJ 注解 @Aspect：
 连接点 joinpoint：准备增强的方法
