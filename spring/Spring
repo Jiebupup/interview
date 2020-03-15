@@ -277,7 +277,7 @@ PlatformTransactionManager.getTransaction(…) 方法返回一个 TransactionSta
 在 @Transactional 注解中如果不配置 rollbackFor 属性,那么事物只会在遇到 RuntimeException 的时候才会回滚。
 
 Spring 管理事务的方式分为编程式事务与声明式事务。
-编程式事务：硬编码，不推荐使用。通过 TransactionTemplate 手动管理事务。
+编程式事务：硬编码，不推荐使用。通过 TransactionTemplate 手动管理事务。但是管理事务的范围更小（到方法内），而声明式事务对于整个方法而言。
 声明式事务：基于 XML 和基于注解，在配置文件中配置，推荐使用。实际是通过 AOP 实现，代码侵入性小。
 实现声明式事务的四种方式：基于 TransactionInterceptor、基于 TransactionProxyFactoryBean、基于 <tx> 和 <aop> 命名空间、基于 @Transactional。
 
