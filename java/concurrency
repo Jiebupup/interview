@@ -112,9 +112,9 @@ SingleThreadExecutor：相当于大小为 1 的 FixedThreadPool。
 线程池过小：许多空闲的处理器无法执行工作，从而降低吞吐率。
 
 阻塞队列 BlockingQueue：实现生产者消费者问题。
-FIFO 队列 ：LinkedBlockingQueue（单向链表）、ArrayBlockingQueue（固定长度）。其并发控制采用可重入锁来控制，分非公平性（默认）和公平性。
-优先级队列 ：PriorityBlockingQueue，无界，空间不够的话会自动扩容，排序，并发控制采用的是 ReentrantLock，不可以插入 null 值，插入队列的对象必须是可比较大小的（comparable），否则报 ClassCastException 异常。
-提供了阻塞的 take() 和 put() 方法：如果队列为空 take() 将阻塞，直到队列中有内容；如果队列为满 put() 将阻塞，直到队列有空闲位置。
+FIFO 队列：ArrayBlockingQueue，LinkedBlockingQueue。其并发控制采用可重入锁来控制，分非公平性（默认）和公平性。
+优先级队列：PriorityBlockingQueue，无界，空间不够的话会自动扩容，排序，并发控制采用的是 ReentrantLock，不可以插入 null 值，插入队列的对象必须是可比较大小的 comparable，否则报 ClassCastException 异常。
+提供了阻塞的 put() 和 take() 方法：如果队列为满 put() 将阻塞，直到队列有空闲位置。如果队列为空 take() 将阻塞，直到队列中有内容。
 自己实现 BlockingQueue：参考 ArrayBlockingQueue，put()、take() 用 ReentrantLock 和 Condition 实现可中断、公平、选择性通知，消费者 wait()、生产者 notify()，enqueue()、dequeue()。
 
 Daemon 守护线程：程序运行时在后台提供服务的线程，不属于程序中不可或缺的部分。当所有非守护线程结束时，程序也就终止，同时会杀死所有守护线程。main() 属于非守护线程。在线程启动之前使用 setDaemon() 方法可以将一个线程设置为守护线程。
