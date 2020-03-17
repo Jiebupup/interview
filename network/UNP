@@ -8,7 +8,7 @@ TCP 状态转换图，netstat 命令诊断网络问题。
 
 TCP 套接字编程：
 socket()
-客户：connect()
+客户：connect()，将触发三次握手。
 服务器：bind()，listen()，accept()
 close()
 并发：fork()，exec()
