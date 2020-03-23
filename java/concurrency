@@ -311,7 +311,7 @@ J.U.C 包提供了一个带有标记的原子引用类 AtomicStampedReference �
 大部分使用消费队列的架构模式（如生产者-消费者模式），都会将产品的消费过程尽量在一个线程中消费完。
 其中最重要的一个应用实例就是经典 web 交互模型中的一个请求对应一个服务器线程 Thread-per-Request 的处理方式，这种处理方式的广泛应用使得很多 web 服务端应用都可以使用线程本地存储来解决线程安全问题。
 可以使用 java.lang.ThreadLocal 类来实现线程本地存储功能。每个 Thread 都有一个 ThreadLocal.ThreadLocalMap 对象。
-ThreadLocal 从理论上讲并不是用来解决多线程并发问题的，因为根本不存在多线程竞争。
+ThreadLocal 解决多线程中相同变量的访问冲突问题。同步机制采用了时间换空间的方式，仅提供一份变量，不同的线程在访问前需要获取锁，没获得锁的线程则需要排队。而 ThreadLocal 采用了空间换时间的方式。
 在一些场景 (尤其是使用线程池) 下，由于 ThreadLocal.ThreadLocalMap 的底层数据结构导致 ThreadLocal 有内存泄漏的情况，应该尽可能在每次使用 ThreadLocal 后手动调用 remove()。
 
 JDK 中提供的 ThreadLocal 类使每一个线程都有自己的专属本地变量，ThreadLocal 类主要解决的就是让每个线程绑定自己的值。
