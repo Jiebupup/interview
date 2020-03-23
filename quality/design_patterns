@@ -102,7 +102,8 @@ Iterator 主要定义了 hasNext() 和 next() 方法。
 缺点：每一个代理类只能为一个接口服务，会产生过多的代理和重复代码，同时一旦接口增加方法，则目标对象和代理类都需要维护。
 
 动态代理：在程序运行时，运用反射机制动态创建而成。一个代理类完成全部的代理功能。同时接口增加方法也无需再维护目标对象和代理对象。
-Proxy.newProxyInstance()、invoke()。
+InvocationHandler、invoke()、Proxy.newProxyInstance()。
+MethodInterceptor、intercept()、Enhancer.create()。
 JDK 代理接口，CGLIB 代理类。CGLIB 是一个字节码增强库，为 AOP 等提供了底层支持。CGLIB 基于继承实现代理，无法对 static、final 类和 private、static 方法进行代理。
 CGLIB 的底层使用 ASM 在内存中动态的生成被代理类的子类，使 CGLIB 即使代理类没有实现任何接口也可以实现动态代理功能。ASM 是一个 Java 字节码操控框架。  
 反射机制在生成类的过程中比较高效，而 ASM 在生成类之后的相关执行过程中比较高效。可以通过将 ASM 生成的类进行缓存，这样解决 ASM 生成类过程低效问题。因此，对于 singleton 的代理对象或者具有实例池的代理，因为无需频繁的创建代理对象，所以比较适合采用 CGLIB。
