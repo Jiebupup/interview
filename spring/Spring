@@ -357,3 +357,14 @@ applicationContext.xml 中引入：开启异步并引入线程池和定义线程
 异步方法不能与被调用的异步方法在同一个类中。
 类中需要使用 @Autowired 或 @Resource 等注解自动注入，不能自己手动 new 对象。
 没加 @EnableAsync。
+
+Spring Boot 处理异常
+@ControllerAdvice 处理全局异常，让异常处理类只处理特定类抛出的异常：异常信息实体类、自定义异常类型、@ControllerAdvice 异常处理类、controller、测试类。
+@ExceptionHandler 处理 controller 级别的异常，也是用在异常处理类上，会优先找到最匹配的。源码中 getMappedMethod() 会首先找到可以匹配处理异常的所有方法信息，然后对其进行从小到大的排序，最后取最小（即匹配度最高的）那一个匹配的方法。
+@ResponseStatus 也是用在异常处理类上，比较简单，但是通过 ResponseStatusException 会更加方便，可以避免额外的异常类。
+
+或者写一个枚举封装全局异常处理：
+枚举类包含了异常的唯一标识、HTTP 状态码以及错误信息。
+异常对象作为异常信息返回给客户端。
+BaseException 继承自 RuntimeException，系统中的异常类都要继承自这个类，可以写自定义异常。
+然后再用上面的异常处理类全局捕获异常。
