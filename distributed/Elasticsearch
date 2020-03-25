@@ -23,7 +23,7 @@ shard 的数据实际是有多个备份，每个 shard 都有一个 primary shar
 es 集群多个节点，会自动选举一个节点为 master 节点负责管理，要是 master 节点宕机了，那么会重新选举一个节点为 master 节点。
 如果是非 master 节点宕机了，那么会由 master 节点，让那个宕机节点上的 primary shard 的身份转移到其他机器上的 replica shard。接着你要是修复了那个宕机机器，重启了之后，master 节点会控制将缺失的 replica shard 分配过去，同步后续修改的数据。如果宕机的机器修复了，修复后的节点是 replica shard。              
 
-2.读写搜索数据
+3.读写搜索数据
 ES 写数据过程：
 客户端选择一个 node 发送请求过去，这个 node 就是协调节点 coordinating node。
 coordinating node 对 document 进行路由，将请求转发给对应的 node（有 primary shard）。
@@ -80,7 +80,7 @@ QueryParser：先分词，再根据分词结果查询。
 Spring Data ElasticSearch：applicationContext 中配置 elastic 客户对象，包扫描器来扫描 DAO 和 elasticsearchTemplate 对象。
 使用 NativeSearchQuery 查询
 
-3.ES 在数据量很大的情况下如何提高查询效率？
+4.ES 在数据量很大的情况下如何提高查询效率？
 性能优化的杀手锏 filesystem cache：你往 ES 里写的数据，实际上都写到磁盘文件里去了，查询的时候，操作系统会将磁盘文件里的数据自动缓存到 filesystem cache 里面去。
 ES 的搜索引擎严重依赖于底层的 filesystem cache，你如果给 filesystem cache 更多的内存，尽量让内存可以容纳所有的 idx segment file 索引数据文件，那么你搜索的时候就基本都是走内存的，性能会非常高。
 最佳的情况下，就是你的机器的内存，至少可以容纳你的总数据量的一半。在 ES 中就存少量用来搜索的那些索引，数据几乎全部走内存来搜索，性能非常之高。
