@@ -191,8 +191,8 @@ Comparator 接口：外部排序，定制比较器。出自 java.util 包。comp
 Comparable 接口：在集合内部定义的方法实现的排序。出自 java.lang 包。compareTo(Object obj)，升序：this - obj。compareTo 和 Integer.compare 可以比较 Integer.MAX_VALUE 和 MIN。
 
 枚举类 enum：
-Java 5 中引入，以这种方式定义的常量使代码更具可读性，允许进行编译时检查，预先记录可接受值的列表，并避免由于传入无效值而引起的意外行为。
-枚举类型确保 JVM 中仅存在一个常量实例，因此我们可以安全地使用 == 运算符比较两个变量。== 运算符可提供编译时和运行时的安全性。而如果使用 equals 方法，将抛出 NullPointerException。
+Java5 中引入，以这种方式定义的常量使代码更具可读性，允许进行编译时检查，预先记录可接受值的列表，并避免由于传入无效值而引起的意外行为。
+枚举类型确保 JVM 中仅存在一个常量实例，因此我们可以安全地使用 == 运算符比较两个变量。== 运算符可提供编译时和运行时的安全性。两个不同枚举类型进行比较，编译器会表示类型不兼容错误。如果两个值均为 null，都不会引发 NullPointerException。相反，如果使用 equals 方法，将抛出 NullPointerException。
 可以有属性，方法和构造函数。
 EnumSet 和 EnumMap
 枚举可以用在单例模式和策略模式。
