@@ -78,7 +78,7 @@ Spring 的自动装配：
 对象无需自己查找或创建与其关联的其他对象，由容器负责把需要相互协作的对象引用赋予各个对象。
 在 Spring 框架 XML 配置中共有 5 种自动装配：no、byName、byType、constructor 和 autodetect。
 
-基于注解的方式：使用@Autowired 注解来自动装配指定的 bean。在使用 @Autowired 注解之前需要在 Spring 配置文件进行配置，<context:annotation-config />。
+基于注解的方式：使用 @Autowired 注解来自动装配指定的 bean。在使用 @Autowired 注解之前需要在 Spring 配置文件进行配置，<context:annotation-config />。
 在启动 Spring IOC 时，容器自动装载了一个 AutowiredAnnotationBeanPostProcessor 后置处理器，当容器扫描到 @Autowied、@Resource 或 @Inject 时，就会在 IOC 容器自动查找需要的 bean，并装配给该对象的属性。
 在使用 @Autowired 时，首先在容器中查询对应类型的 bean：
 如果查询结果刚好为一个，就将该 bean 装配给 @Autowired 指定的数据。
