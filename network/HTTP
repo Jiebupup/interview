@@ -120,27 +120,34 @@ HTTP/1.0 默认是短连接的，如果需要使用长连接，则使用 Connect
 流水线是在同一条长连接上连续发出请求，而不用等待响应返回，这样可以减少延迟。
 
 Cookie：
+一次会话包含多次请求和响应。Cookie 保存用户信息，在不登录的情况下完成服务端对客户端的身份识别，适合存储少量不太敏感的数据。
 HTTP 协议是无状态的，对于事务处理没有记忆能力，不对请求和响应之间的通信状态进行保存。主要是为了让 HTTP 协议尽可能简单，使得它能够处理大量事务。HTTP/1.1 引入 Cookie 来保存状态信息。
 Cookie 是服务器发送到用户浏览器并保存在本地的一小块数据，它会在浏览器之后向同一服务器再次发起请求时被携带上，用于告知服务端两个请求是否来自同一浏览器。由于之后每次请求都会需要携带 Cookie 数据，会带来额外的性能开销（尤其是在移动环境下）。
 Cookie 曾一度用于客户端数据的存储，但渐渐被淘汰，新的浏览器 API 已经允许开发者直接将数据存储到本地，如使用 Web storage API（本地存储和会话存储）或 IndexedDB。
-一般的网站都会有保持登录，也就是说下次你再访问网站的时候，不需要重新登录就能完成服务器对客户端的身份识别。这是因为用户登录的时候我们可以存放了一个 Token 在 Cookie 中，下次登录的时候只需要根据 Token 值来查找用户即可。为了安全考虑，重新登录一般要将 Token 重写。
 在 Tomcat 8 之前，Cookie 中不能直接存储中文数据，需要将中文数据转码，一般采用 URL 编码。在 Tomcat 8 之后，Cookie 支持中文数据。特殊字符还是不支持，建议使用 URL 编码存储，URL 解码解析。
 
+一般的网站都会有保持登录，也就是说下次你再访问网站的时候，不需要重新登录就能完成服务器对客户端的身份识别。这是因为用户登录的时候我们可以存放了一个令牌 Token 在 Cookie 中，下次登录的时候只需要根据 Token 值来查找用户即可。为了安全考虑，重新登录一般要将 Token 重写。
+在基于 Token 进行身份验证的的应用程序中，服务器通过 Payload、Header 和一个密钥 secret 创建 Token，并将 Token 发送给客户端，客户端将 Token 保存在 Cookie 或者 localStorage 里面，以后客户端发出的所有请求都会携带这个令牌。
+你可以把它放在 Cookie 里面自动发送，但是这样不能跨域，所以更好的做法是放在 HTTP Header 的 Authorization 字段中，Authorization: Bearer Token。
+JWT 本质上就一段签名的 JSON 格式的数据。由于它是带有签名的，因此接收者便可以验证它的真实性。
+
 用途：会话状态管理（如购物车），个性化设置，浏览器行为跟踪。
+下次访问网站的时候页面可以自动帮你登录的一些基本信息给填了。
 
 创建过程：服务器发送的响应报文包含 Set-Cookie 首部字段，客户端得到响应报文后把 Cookie 内容保存到浏览器中。客户端之后对同一个服务器发送请求时，会从浏览器中取出 Cookie 信息并通过 Cookie 请求首部字段发送给服务器。
-一次可以发送多个 Cookie：使用 response 调用多次 addCookie 方法发送 Cookie 对象。
+一次可以发送多个 Cookie：创建多个 Cookie 对象，使用 response 调用多次 addCookie 方法发送 Cookie 对象。
+new Cookie()，cookie.setMaxAge()，response.addCookie(cookie)，@CookieValue，request.getCookies()。
 
 分类
 会话期 Cookie：浏览器关闭之后它会被自动删除，也就是说它仅在会话期内有效。
 持久性 Cookie：指定过期时间 Expires 或有效期 max-age 之后就成为了持久性的 Cookie。
 
 Set-Cookie 首部字段属性
-Domain：指定了哪些主机可以接受 Cookie。如果不指定，默认为当前文档的主机（不包含子域名）。如果指定了 Domain，则一般包含子域名。
-Path：指定了主机下的哪些路径可以接受 Cookie（该 URL 路径必须存在于请求 URL 中）。setPath() 实现 Cookie 共享（默认情况下 Cookie 不能共享）。
+Domain：指定了哪些主机可以接受 Cookie。如果不指定，默认为当前文档的主机（不包含子域名）。如果指定了 Domain，则一般包含子域名。例如，如果设置 Domain=mozilla.org，则 Cookie 也包含在子域名中（如 developer.mozilla.org）。相同的一级域名，多个服务器可以共享 Cookie，如 tieba.baidu.com 和 news.baidu.com。
+Path：指定了主机下的哪些路径可以接受 Cookie（该 URL 路径必须存在于请求 URL 中）。setPath() 实现 Cookie 共享（默认情况下 Cookie 不能共享，只能在当前虚拟目录 application context 下共享）。
 HttpOnly：标记为 HttpOnly 的 Cookie 不能被 JavaScript 脚本调用。跨站脚本攻击 XSS 常常使用 JavaScript 的 document.cookie API 窃取用户的 Cookie 信息，因此使用 HttpOnly 标记可以在一定程度上避免 XSS 攻击。
 Secure：标记为 Secure 的 Cookie 只能通过被 HTTPS 协议加密过的请求发送给服务端。但即便设置了 Secure 标记，敏感信息也不应该通过 Cookie 传输，因为 Cookie 有其固有的不安全性，Secure 标记也无法提供确实的安全保障。
-Expires/Max-Age
+Expires/Max-Age：默认浏览器关闭后，Cookie 数据被销毁。setMaxAge 持久化存储。
 
 Session 将用户信息存储在服务器端，存储在服务器端的信息更加安全。
 Session 可以存储在服务器上的文件、数据库或者内存中。也可以将 Session 存储在 Redis 这种内存型数据库中，效率会更高。
@@ -154,7 +161,11 @@ Session 可以存储在服务器上的文件、数据库或者内存中。也可
 应该注意 Session ID 的安全性问题，不能让它被恶意攻击者轻易获取，那么就不能产生一个容易被猜到的 Session ID 值。此外，还需要经常重新生成 Session ID。在对安全性要求极高的场景下（如转账），除了使用 Session 管理用户状态之外，还需要对用户进行重新验证（如重新输入密码，或者使用短信验证码等）。
 典型的场景是购物车：要添加商品到购物车的时候，系统不知道是哪个用户操作的，服务端给特定的用户创建特定的 Session 之后就可以标识这个用户并且跟踪这个用户了。一般情况下，服务器会在一定时间内保存这个 Session，过了时间限制，就会销毁这个 Session。
 可以通过 Session 来统计网站的用户在线数。
+客户端关闭后，服务器不关闭，两次获取的 Session 默认不是同一个。如果需要相同，创建 Cookie 键为 JSESSIONID，设置最大存活时间，让 Cookie 持久化保存。
+客户端不关闭，服务器关闭后，两次获取的 Session 不是同一个。需要在服务器关闭前将 Session 对象持久化到硬盘，并在服务器启动后转化为内存中的 Session 对象。Tomcat 会自动完成这一步，IDEA 可以钝化但不可以活化（因为重新创建了 work 目录）。
 Session 的销毁：服务器关闭。Session 对象调用 invalidate()。Session 默认失效时间为 30 分钟（可以修改配置）。
+确保客户端开启了 Cookie，注意 Session 的过期时间。
+Spring Session 提供了一种跨多个应用程序或实例管理用户会话信息的机制。
 
 集群下的 Session 管理：一个用户的 Session 信息如果存储在一个服务器上，那么当负载均衡器把用户的下一个请求转发到另一个服务器，由于服务器没有用户的 Session 信息，那么该用户就需要重新进行登录等操作。
 
@@ -169,7 +180,7 @@ Session Server：使用一个单独的服务器存储 Session 数据，可以使
 缺点：需要去实现存取 Session 的代码。如果 Session 集中服务器有问题，会影响应用。 
 
 浏览器禁用 Cookie：使用 Session 和 URL 重写。
-此时无法使用 Cookie 来保存用户信息，只能使用 Session。除此之外，不能再将 Session ID 存放到 Cookie 中，而是使用 URL 重写技术，把 Session ID 直接附加在 URL 路径的后面，将 Session ID 作为 URL 的参数进行传递。服务器能够解析重写后的 URL 获取 Session ID。
+此时无法使用 Cookie 来保存用户信息，只能使用 Session。除此之外，不能再将 Session ID 存放到 Cookie 中，而是使用 URL 重写技术，把 Session ID 直接附加在 URL 路径的后面，将 Session ID 作为 URL 的参数进行传递。服务器能够解析重写后的 URL 获取 Session ID。但是安全性和用户体验感降低。
 隐藏的表单域：<input type="hidden" name ="session" value="..."/>，所有页面必须是表单提交之后的结果。
 
 共同之处：Cookie 和 Session 都是用来跟踪浏览器用户身份的会话方式。
@@ -179,7 +190,7 @@ Cookie 存储在浏览器中，容易被恶意查看。如果非要将一些隐�
 对于大型网站，如果用户所有的信息都存储在 Session 中，那么开销是非常大的，因此不建议将所有的用户信息都存储到 Session 中。
 Cookie 是需要浏览器支持的，可能被禁用。而 Session 不会。
 Cookie 支持跨域名访问，Session 仅在所在的域名内有效。
-Cookie 有数据大小限制，而 Session 没有。
+Cookie 有数据大小和数量的限制，而 Session 没有。
 
 缓存
 优点：
@@ -372,7 +383,7 @@ GPU 进程：最多一个，用于 3D 绘制等
 跨站请求伪造 CSRF：使用 Cookie 进行用户校验，在不登出受信任网站 A 的情况下，访问危险网站 B。冒用用户身份，进行恶意操作。通过浏览器间接实现。
 CSRF 的防御手段
 验证 HTTP Referer 字段：简单直接，完全依赖浏览器发送正确的 Referer 字段，无法保证一定安全。
-在请求地址中添加 token 并验证：譬如 post 中，以参数的形式加入一个随机产生的 token。
+在请求地址中添加 Token 并验证：譬如 post 中，以参数的形式加入一个随机产生的 Token。登录成功获得 Token 之后，一般会选择存放在 local storage 中。然后我们在前端通过某些方式会给每个发到后端的请求加上这个 Token，非法请求是不会携带 Token。
 
 CSRF 与 AJAX 无关，AJAX 受到浏览器的同源策略限制。
 
@@ -386,6 +397,9 @@ CORS 有两种请求，简单请求和复杂请求。复杂跨域请求会触发
 服务端在接受到预检时，检查头部，来源等信息是否合法，合法则接下来允许正常的请求，否则拒绝。
 浏览器端如果收到服务端拒绝的信息（响应头部检查），就抛出对应错误。
 否则就是正常的响应，接下来发出真正的请求（如 POST）。
+
+不论是 Cookie 还是 Token 都无法避免跨站脚本攻击 XSS。
+XSS 中攻击者会用各种方式将恶意代码注入到其他用户的页面中。就可以通过脚本盗用信息比如 Cookie。
 
 10.SOCKS 代理
 用于客户端与外网服务器之间通讯的中间传递。基本流程：
