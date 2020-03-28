@@ -182,7 +182,7 @@ SSM 三层架构
 @RequestParam：URL 参数的绑定。
 @PathVariable：.../{id} 和 name="id"。传参。
 @RequestHeader
-@CookieValue
+@CookieValue：获取特定的 Cookie 的值。
 @SessionAttribute：model.addAttribute() 会把值存到 request 对象中，在多个控制器方法共享参数。
 
 响应返回值是 void 需要 forward 或者 redirect，分别为 request.getRequestDispatcher().forward(request,response) 和 response.sendRedirect(request.getContextPath()+)。
