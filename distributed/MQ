@@ -129,9 +129,23 @@ RabbitMQ 弄丢了数据：开启 RabbitMQ 的持久化，故障恢复。可以�
 消费端弄丢了数据：ack 机制。
 
 Kafka：
-生产者设置了 acks=all，一定不会丢，要求是，你的 leader 接收到消息，所有的 follower 都同步到了消息之后，才认为本次写成功了。
-Kafka 弄丢了数据：leader 所在的 broker 宕机，重新选举 leader 的过程中有 follower 刚好还有些数据没有同步。配置 topic，Kafka 服务端，producer 端。
-消费端弄丢了数据：关闭自动提交 offset，在处理完之后自己手动提交 offset，就可以保证数据不会丢。此时可能会有重复消费，需要自己保证幂等性。
+消费端弄丢了数据：当消费者刚拿到这个消息准备进行真正消费的时候，突然挂掉了，消息实际上并没有被消费，但是 offset 却被自动提交了。需要关闭自动提交 offset，在处理完之后自己手动提交 offset，就可以保证数据不会丢。此时可能会有重复消费，因为刚刚消费完消息之后，还没提交 offset，结果自己挂掉了，那么这个消息理论上就会被消费两次，需要自己保证幂等性。                    
+
+Kafka 弄丢了数据：
+leader 所在的 broker 宕机，重新选举 leader 的过程中有 follower 刚好还有些数据没有同步。
+给 topic 设置 replication.factor 参数：这个值必须大于等于 3，要求每个 partition 必须有至少 3 个副本。
+在 Kafka 服务端设置 min.insync.replicas 参数：这个值必须大于 1，这个是要求一个 leader 至少感知到有至少一个 follower 还跟自己保持联系，没掉队，这样才能确保 leader 挂了还有一个 follower 吧。replication.factor = min.insync.replicas + 1。
+在 producer 端设置 acks=all：这个是要求每条数据，必须是写入所有 replica 之后，才能认为是写成功了。
+在 producer 端设置 retries=MAX：这个是要求一旦写入失败，就无限重试，卡在这里了。
+设置 unclean.leader.election.enable = false，当 leader 副本发生故障时就不会从 follower 副本中和 leader 同步程度达不到要求的副本中选择出 leader。 
+
+生产者 send 方法发送消息之后，消息可能因为网络问题并没有发送过去。所以，我们不能默认在调用 send 方法发送消息之后消息消息发送成功了。为了确定消息是发送成功，我们要判断消息发送的结果。
+send 方法发送消息实际上是异步的操作，我们可以通过 get 方法获取调用结果，但是这样也让它变为了同步操作。
+回调函数 future.addCallback，如果消息发送失败的话，我们检查失败的原因之后重新发送即可。
+推荐为 Producer 的重试次数 retries 设置一个比较合理的值，一般是 3，但是为了保证消息不丢失的话一般会设置比较大一点。设置完成之后，当出现网络问题之后能够自动重试消息发送，避免消息丢失。
+另外，建议还要设置重试间隔，因为间隔太小的话重试的效果就不明显了，网络波动一次你 3 次一下子就重试完了。
+
+生产者设置了 acks=all，一定不会丢，要求是，你的 leader 接收到消息，所有的 follower 都同步到了消息之后，才认为本次写成功了。如果没满足这个条件，生产者会自动不断的重试，重试无限次。
 
 Kafka 中的可靠性保证有如下四点：
 对于一个分区来说，它的消息是有序的。如果一个生产者向一个分区先写入消息 A，然后写入消息 B，那么消费者会先读取消息 A 再读取消息 B。
@@ -147,7 +161,8 @@ Kafka：
 一个 Topic，一个 Partition，一个 Consumer，内部单线程消费，单线程吞吐量太低，一般不会用这个。
 写 N 个内存 queue，具有相同 key 的数据都到同一个内存 queue。然后对于 N 个线程，每个线程分别消费一个内存 queue 即可，这样就能保证顺序性。
 
-顺序性包括局部有序和全局有序。Partition 内部具有顺序性（尾追加写、offset 读），而保证 Partition 间的顺序需要：
+顺序性包括局部有序和全局有序。Partition 内部具有顺序性，由于尾追加写、offset 读。
+而保证 Partition 间的顺序需要：
 发送端不能异步发送。
 存储端消息不能分区，发送消息的时候指定 key，发送到同一个 Partition。同步复制，且高可用问题里切机器之前，挂掉的机器上面，所有消息必须消费完。
 接收端不能并行消费。
@@ -290,10 +305,10 @@ Topic 注册：在 Kafka 中，同一个 Topic 的消息会被分成多个 Parti
 分区 Partition：
 顺序的、不可变的消息队列，并且可以持续的添加。
 Kafka 中可以将 Topic 从物理上划分成一个或多个 Partition，同一 Topic 下的 Partion 可以分布在不同的 Broker 上。每个 Partition 在物理上对应一个文件夹，以 ”topicName_partitionIndex” 的命名方式命名，该 dir 包含了这个分区的所有消息 .log 和索引文件 .index，这使得 Kafka 的吞吐率可以水平扩展。
-分区中的消息都被分了一个序列号，称之为偏移量 offset，在每个分区中此偏移量都是唯一的。
+分区中的消息都被分了一个序列号，称之为偏移量 offset，在每个分区中此偏移量都是唯一的。offset 表示 Consumer 当前消费到的 Partition 的所在的位置。
 Producer 在发布消息的时候，可以为每条消息指定 key，这样消息被发送到 Broker 时，会根据分区算法把消息存储到对应的分区中（一个分区存储多个消息），如果分区规则设置的合理，那么所有的消息将会被均匀的分布到不同的分区中，这样就实现了负载均衡，能提供比较好的并发能力。             
 消费者将从 Broker 拉取订阅的消息，生产者向 Broker 发送消息，生产者会根据 Topic 分发消息，并把消息关联到 Topic 上的具体 Partition。最简单的方式从分区列表中轮流选择。也可以根据某种算法依照权重选择分区。算法可由开发者定义。
-Kafka 为 Partion 引入了多副本 replica 机制。Partion 中的多个副本之间会有一个叫做 leader 的家伙，其他副本称为 follower。我们发送的消息会被发送到 leader 副本，然后 follower 副本才能从 leader 副本中拉取消息进行同步。为了高可用，故障时主备切换和重新选举 leader。
+Kafka 为 Partion 引入了多副本 replica 机制。Partion 中的多个副本之间会有一个叫做 leader 的家伙，其他副本称为 follower。我们发送的消息会被发送到 leader 副本，然后 follower 副本才能从 leader 副本中拉取消息进行同步。生产者和消费者只与 leader 副本交互。为了高可用，故障时主备切换和重新选举 leader。
 
 消费组 Cousumer Group：Cousumer 用 Consumer Group 来标识自己。同一个 Consumer Group 可以并发地消费多个 Partition 的消息，同一个 Partition 也可以由多个 Consumer Group 并发消费，但是在 Consumer Group 中一个 Partition 只能由一个 Cousumer 消费。
 
