@@ -185,6 +185,7 @@ Cookie & Session
 Token，JWT
 OAuth：授权机制，它的最终目的是为第三方应用颁发一个有时效性的令牌 Token，使得第三方应用能够通过该令牌获取相关的资源。
 SSO
+Spring Security 
 
 7.幂等性
 幂等性就是一个接口，多次发起同一个请求，必须保证操作只能执行一次。
