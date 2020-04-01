@@ -754,6 +754,7 @@ JSP 侧重于视图，Servlet 更侧重于控制逻辑，在 MVC 架构模式中
 Filter：当访问服务器的资源时，过滤器可以将请求拦截下来，完成一些特殊的功能，如登录验证、统一编码处理、敏感字符过滤等。
 默认直接请求才会过滤，转发不会过滤，可以设置 DispatcherTypes 属性改变。
 过滤器链和执行顺序。
+Filter->Servlet，Servlet 包含在 SpringMVC 中，称为 DispatcherServlet。SpringMVC 的 Interceptor 也能起过滤的作用，DispatcherServlet->Interceptor->Controller。
 
 Listener
 
