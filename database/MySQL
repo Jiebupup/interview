@@ -26,7 +26,7 @@ B+ Tree 索引：
 适用于全键值、键值范围和最左键前缀查找。如果不是按照索引列的顺序进行查找，则无法使用索引。
 
 最左前缀查找：
-创建了 lname_fname_age 多列索引,相当于创建了 lname 单列索引，(lname,fname) 联合索引以及 (lname,fname,age) 联合索引。
+创建了 lname_fname_age 多列索引，相当于创建了 lname 单列索引，(lname,fname) 联合索引以及 (lname,fname,age) 联合索引。
 联合索引 (col1,col2,col3) 也是一棵 B+ Tree，其节点存储的则是三个关键字 col1、col2、col3 三个关键字的数据，且按照 col1、col2、col3 的顺序进行排序。直接对 col2 或 col3 查询，无法发挥索引的作用，变为全表查询。
 在创建多列索引时，要根据业务需求，WHERE 子句中使用最频繁的一列放在最左边。多列索引对应 WHERE 中多个条件。ORDER BY 子句也遵循此规则。
 要想使用第二个索引，必须先使用第一个索引，而且第一个索引必须是等值匹配。
