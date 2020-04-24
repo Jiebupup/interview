@@ -3,7 +3,8 @@ byte（8）
 char（16），short（16）
 int（32），float（32）
 long（64），double（64）
-boolean（true or false）所占大小为 1B 或者 4B，取决于虚拟机。JVM 会在编译时期将 boolean 类型的数据转换为 int，使用 1 来表示 true，0 表示 false。JVM 支持 boolean 数组，但是是通过读写 byte 数组来实现的。
+boolean（true/false），单独存在时占 4B，在 boolean[] 中占 1B。因为 JVM 没有用于操作 boolean 的字节码指令，在编译后用 int 的数据类型代替 boolean，此时 boolean 占 4B。而 boolean[] 编译后会被 byte[] 代替，此时的 boolean 占 1B。
+
 基本数据类型储存在栈中，更加高效。所有数值类型都有正负号。 
 
 空常量 null 不能拿来打印输出。
