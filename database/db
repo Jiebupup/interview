@@ -32,8 +32,8 @@ ORDER BY 排序：升序 ASC（默认），降序 DESC。可以按多个列进�
 外连接：保留了没有关联的那些行。分为左外连接，右外连接以及全外连接。
 
 DELETE、TRUNCATE 和 DROP
-DELETE：删除表中 WHERE 语句指定的数据。
-TRUNCATE：清空表，相当于删除表中的所有数据。
+DELETE：删除表中 WHERE 语句指定行。
+TRUNCATE：清空表，相当于删除表中所有行。
 DROP：删除表结构。
 
 区别
