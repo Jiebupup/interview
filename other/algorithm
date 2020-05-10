@@ -24,3 +24,7 @@ sequence 不需要连续
 
 Integer.MAX_VALUE=2^31-1=2147483647。
 Integer.MAX_VALUE+1=-2^31 =-2147483648=Integer.MIN_VALUE。
+
+length 属性，针对数组。
+length() 方法，针对字符串。
+size() 方法，针对泛型集合。
