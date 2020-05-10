@@ -507,13 +507,14 @@ HashSet：基于 HashMap 实现，无序，查找的时间复杂度为 O(1)。�
 LinkedHashSet：内部使用双向链表维护元素的插入顺序，有序，具有 HashSet 的查找效率。
 
 List：有序，有索引（可以普通 for 循环），允许重复。
-ArrayList：基于动态数组实现，支持快速随机访问。实现了 RandomAccess（只是标识），Cloneable 和 Serializable 接口。默认大小为 10。
+ArrayList：基于动态数组实现，支持快速随机访问。实现了 RandomAccess、Cloneable 和 Serializable 接口。默认大小为 10。
 扩容：新容量的大小为旧容量的 1.5 倍，Arrays.copyOf() 把原数组整个复制到新数组中，这个操作代价很高，因此最好在创建 ArrayList 对象时就指定大概的容量大小，减少扩容操作的次数。
-删除元素：System.arraycopy() 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为 O(N)。
+多线程扩容
+删除元素：System.arraycopy() 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为 O(N)，删除元素的代价是非常高的。
 
 序列化：动态数组，保存元素的数组不一定都会被使用，那么就没必要全部进行序列化。ArrayList 中存储数据的数组 elementData 是用 transient 修饰的，该关键字声明数组默认不会被序列化。
 ArrayList 实现了序列化 writeObject() 和反序列化 readObject() 来控制只序列化数组中有元素填充那部分内容。
-序列化时需要使用 ObjectOutputStream 的 writeObject() 将对象转换为字节流并输出。writeObject() 方法在传入的对象存在 writeObject() 的时候会去反射调用该对象的 writeObject() 来实现序列化。反序列化使用的是 ObjectInputStream 的 readObject() 方法。                  
+序列化时需要使用 ObjectOutputStream 的 writeObject() 将对象转换为字节流并输出。writeObject() 方法在传入的对象存在 writeObject() 的时候会去反射调用该对象的 writeObject() 来实现序列化。反序列化使用的是 ObjectInputStream 的 readObject() 方法，原理类似。                 
 
 Fail-Fast：modCount 用来记录 ArrayList 结构发生变化的次数。结构发生变化是指添加或者删除至少一个元素的所有操作，或者是调整内部数组的大小，仅仅只是设置元素的值不算结构发生变化。
 在进行序列化或者迭代等操作时，若操作前后 modCount 发生变化，会抛出 ConcurrentModificationException。
