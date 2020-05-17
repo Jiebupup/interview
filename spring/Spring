@@ -368,3 +368,9 @@ Spring Boot 处理异常
 异常对象作为异常信息返回给客户端。
 BaseException 继承自 RuntimeException，系统中的异常类都要继承自这个类，可以写自定义异常。
 然后再用上面的异常处理类全局捕获异常。
+
+项目监控 Spring Boot Actuator
+端点 Endpoints：监控程序的入口，分为 Spring Boot 内置的端点和自定义端点。内置唯一关闭的端点，起关闭服务器的作用。
+监控方式：HTTP 或者 JMX。
+访问路径：如 /actuator/health。返回 JSON 格式。
+注意要对端点进行权限控制。
