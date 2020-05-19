@@ -810,7 +810,7 @@ Oracle JDK 与 OpenJDK 相比提供了更好的性能；
 javax 包是标准 API 的一部分。
 只有 java.lang 包不需要导。
 
-SimpleDateFormat 是一个以与语言环境有关的方式来格式化和解析日期的具体类(DateFormat 类是一个抽象类)，它允许进行格式化 format（日期→文本）、解析 parse（文本→日期）和规范化。
+SimpleDateFormat 是一个以与语言环境有关的方式来格式化和解析日期的具体类（DateFormat 类是一个抽象类），它允许进行格式化 format（日期→文本）、解析 parse（文本→日期）和规范化。
 new SimpleDateFormat(构造方法指定模式)，SimpleDateFormat.parse 当字符串和构造方法中的模式不一样时，会抛 ParseException。
 Date 类过时，被 Calendar 代替。Calendar 是一个抽象类，其中静态方法 getInstance() 返回 Calendar 子类对象。 
 
