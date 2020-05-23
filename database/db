@@ -71,10 +71,8 @@ DROP：删除表结构。
 
 3.关系数据库设计理论
 函数依赖：通过 A 属性可以唯一确定 B 属性则称 B 依赖于 A。完全依赖和部分依赖，传递依赖。
-码：某属性被其他属性所完全依赖。主属性码中的所有属性。
-异常
 
-范式：设计数据库时需要遵循的规则。高级别范式的依赖于低级别的范式。
+范式：设计数据库时需要遵循的规则，为了解决四种异常。高级别范式的依赖于低级别的范式。
 1NF：属性不可分。
 2NF：不能出现部分依赖。在 1NF 基础上，非码属性必须依赖于候选码。可以通过分解来满足。
 3NF：不能出现传递依赖。在 2NF 基础上，非主属性不依赖于其他非主属性。将一个实体信息的数据放在一个表内实现。
@@ -121,10 +119,10 @@ strSQL = "SELECT * FROM users WHERE (name = '1' OR '1'='1') and (pw = '1' OR '1'
 
 6.数据库连接池
 一般来说，Java 应用程序访问数据库的过程是：
-①装载数据库驱动程序；
-②通过 JDBC 建立数据库连接；
-③访问数据库，执行 SQL 语句；
-④断开数据库连接。
+装载数据库驱动程序。
+通过 JDBC 建立数据库连接。
+访问数据库，执行 SQL 语句。
+断开数据库连接。
 
 问题：
 每一次 web 请求都要建立一次数据库连接。建立连接是一个费时的活动，而且系统还要分配内存资源。
@@ -175,3 +173,14 @@ ResultSet 结果集对象，封装查询结果。
 
 在 JDBC 之上做了封装的有：Spring 的 JDBCTemplate、DbUtils、MyBatis、Hibernate。
 数据库 -> 数据库驱动 -> JDBC -> JDBC 的封装 -> 数据访问层 -> 业务逻辑层 -> 表现层。 
+
+JDBCTemplate：
+准备数据源并设置属性
+创建 JDBCTemplate 对象
+设置数据源
+执行操作
+
+其中数据源和 JDBCTemplate 可以通过 IOC 配置，使用 ApplicationContext 和 getBean() 获取 JDBCTemplate。
+select 语句要加返回结果 RowMapper。在 Spring 中即 BeanPropertyRowMapper，节省了自己写 RowMapper 的过程。
+
+JDBCSupport
