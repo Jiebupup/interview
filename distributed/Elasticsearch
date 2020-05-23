@@ -1,7 +1,5 @@
 1.简介
 Elasticsearch 是一个基于 Lucene 库的搜索引擎。
-它提供了一个分布式、支持多租户的全文搜索引擎，具有 HTTP Web 接口和无模式 JSON 文档。
-Elasticsearch 是用 Java 开发的。
 
 ES 之前用的 Solr，都是基于 Lucene。两者对比：
 Solr 利用 ZooKeeper 进行分布式管理，而 Elasticsearch 自身带有分布式协调管理功能。
