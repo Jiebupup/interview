@@ -1,5 +1,5 @@
 1.简介
-Spring 框架是 Java 平台的一个开源的全栈应用程序框架和控制反转容器实现。该框架的一些核心功能理论上可用于任何 Java 应用，但 Spring 还为基于 Java 企业版平台构建的 Web 应用提供了大量的拓展支持，基本上完全代替了 EJB 模型。
+Spring 是一个开发 Java 应用的框架。
 
 优点：
 低侵入式设计，代码的污染极低。
@@ -17,27 +17,27 @@ Languages：Kotlin，Groovy，动态语言。
 
 其他模块：Aspects。
 
-Spring5 基于 JDK8，支持候选组件索引代替类路径扫描（对于大型项目启动时间降低），支持 Kotlin，响应式编程，Junit5，更新依赖类库。
+Spring5 基于 JDK8，支持候选组件索引代替类路径扫描（大型项目启动时间降低），支持 Kotlin，响应式编程，Junit5，更新依赖类库。
 
 2.AOP
 面向切面编程。代理模式。
 面向对象 OOP：允许开发者定义纵向的关系，但并适用于定义横向的关系，导致了大量代码的重复，而不利于各个模块的重用。AOP 作为 OOP 的一种补充。
 横切关注点可以被描述为那些与业务无关，但却对多个对象产生影响的公共行为和逻辑。
-切面能将横切关注点抽取并封装为一个可重用的模块，在系统运行时需要的地方进行动态插入运行。扩展功能不修改源代码。减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。
+切面能将横切关注点抽取并封装为一个可重用的模块，在系统运行时需要的地方进行动态插入运行。
 分离业务逻辑与系统服务，应用对象只完成业务逻辑。可用于事务处理、日志管理、权限控制、缓存控制、性能监控、异常处理等。 
 
-Spring AOP 已经集成了 AspectJ。Spring AOP 属于运行时增强，而 AspectJ 是编译时增强（静态代理）。Spring AOP 基于代理，而 AspectJ 基于字节码操作。AspectJ 功能更加强大，而 Spring AOP 相对来说更简单。当切面太多的话，最好选择 AspectJ，它比 Spring AOP 快很多。AspectJ 需要特定的编译器进行处理，而 Spring AOP 则无需特定的编译器处理。
+优点：扩展功能不修改源代码，减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。
+
+Spring AOP 已经集成了 AspectJ。Spring AOP 属于运行时增强，而 AspectJ 是编译时增强（静态代理）。Spring AOP 基于代理，而 AspectJ 基于字节码操作。AspectJ 功能更加强大，需要特定的编译器进行处理，当切面太多的话，最好选择 AspectJ，它比 Spring AOP 快很多。
 
 JDK & CGLIB 动态代理。Spring AOP 对于动态代理的选择：默认使用 JDK 动态代理。目标对象不存在接口时，使用 CGLIB。
 
-注意事项：
-无法拦截 static、final、private 方法。
-无法拦截内部方法调用。
+注意事项：无法拦截 static、final、private 方法，无法拦截内部方法调用。
 
 AspectJ 注解 @Aspect：
 连接点 joinpoint：准备增强的方法。
-切入点 pointcut：实际增强的方法。@Pointcut 和 XML 中的 aop:aspect 标签，切入点表达式包含指示器 designators、通配符 wildcards 和运算符 operators。
-通知/增强 advice：实现的功能。
+切入点 pointcut：实际增强的方法。切入点表达式包含指示器 designators、通配符 wildcards 和运算符 operators。
+通知 advice：实现的功能。
 切面 aspect：被抽取的公共模块。
 引入 introduction：向现有的类添加新的方法或者属性。
 织入 weaving：把增强应用到目标对象来创建新的代理对象的过程。
@@ -51,31 +51,29 @@ AspectJ 注解 @Aspect：
 异常 @AfterThrowing：切入点方法产生异常后执行后。
 环绕 @Around：前面功能全有，在 @Before 或 @After 之前。环绕通知是最常用的一种通知类型，大部分基于拦截的 AOP 框架都只提供环绕通知。 
 
-采用 XML：xmlns:aop 和 aop:config 标签。前面四个通知采用 XML 实现，环绕通知需要自己编码实现 ProceedingJoinPoint 接口，并 proceed() 调用切入点方法
+采用 XML：xmlns:aop 和 aop:config 标签。前面四个通知采用 XML 实现，环绕通知需要自己编码实现 ProceedingJoinPoint 接口，并 proceed() 调用切入点方法。
 注解在 XML 中开启 AOP：aop:aspect-autoproxy。XML 可以被注解完全代替。
 
-多个 AOP 叠加：责任链模式 + 改进版本
-用 AOP 实现 transaction、security、cache
-security：MethodSecurityInterceptor、PreInvocationAuthrizationAdviceVote、ExpressionBasedPreInvocationAdvice
+多个 AOP 叠加：责任链模式+改进版本。
+用 AOP 实现 transaction、security、cache。
+security：MethodSecurityInterceptor、PreInvocationAuthrizationAdviceVote、ExpressionBasedPreInvocationAdvice。
 @PreAuthorize 验证机制：decide -> vote -> before 只需要一个注解就可以实现，debug 进源码看实现流程。
-cache：AnnotationCacheSupport、CacheInterceptor、CacheAspectSupport，时序图 invoke -> execute -> doGet -> invokeJoinpoint -> cachePutRequest.apply
+cache：AnnotationCacheSupport、CacheInterceptor、CacheAspectSupport，时序图 invoke -> execute -> doGet -> invokeJoinpoint -> cachePutRequest.apply。
 
 3.IOC
 控制反转，与依赖注入 DI 是同一个概念不同角度的描述。工厂模式。
-将原本在程序中手动创建对象的控制权，交由 Spring 框架来管理。IOC 容器是 Spring 用来实现 IOC 的载体，IOC 容器实际上就是个 Map，存放的是各种对象。
-将对象之间的相互依赖关系交给 IOC 容器来管理，并在运行时由 IOC 容器来动态注入对象需要的外部资源。这样可以很大程度上简化应用的开发，把应用从复杂的依赖关系中解放出来，也利于功能的复用。
-IOC 容器就像是一个工厂一样，当我们需要创建一个对象的时候，只需要配置好配置文件或注解即可，完全不用考虑对象是如何被创建出来的。然后在需要的地方通过反射机制，在运行时动态创建对象。这大大增加了项目的可维护性且降低了开发难度。
+将原本在程序中手动创建对象的控制权，交由 Spring 框架来管理。IOC 容器负责管理对象之间的依赖关系，实际上就是个 map，存放的是各种对象。
+IOC 容器就像是一个工厂一样，当我们需要创建一个对象的时候，只需要配置好配置文件或注解即可，完全不用考虑对象是如何被创建出来的。然后在需要的地方通过反射机制，在运行时动态创建对象。
+
 Spring 时代我们一般通过 XML 文件来配置 bean，后来开发人员觉得 XML 文件来配置不太好，于是 Spring Boot 注解配置就慢慢开始流行起来。
 Spring IOC 的初始化过程：XML 读取为 Resource，解析为 BeanDefinition，注册为 BeanFactory。
-
 能注入的类型：基本类型和 String（配置文件的 value 属性，其他类型用 ref 且需要配置过）、XML 或注解配置的 bean、复杂类型（构造函数和 setter 来注入）和集合类型（结构相同的标签可以互换，map 对应 property，只能用 XML 实现）。
 注入方式：构造函数（配置文件的 constructor-arg 标签）、setter（配置文件的 property 标签，更常用，类中加 set 方法）、注解（XML 中加 xmlns:context 和 context:component-scan 标签）。
 Spring 基于 XML 注入 bean 的几种方式：Set 方法注入，构造器注入，静态工厂和实例工厂注入。
 构造函数方式注入必须要注入数据，不然创建对象不成功，如果用不到这些数据也必须提供。
 选择 XML 或者 注解需要看是用别人的 JAR 包还是自己开发。
 
-Spring 的自动装配：
-对象无需自己查找或创建与其关联的其他对象，由容器负责把需要相互协作的对象引用赋予各个对象。
+Spring 的自动装配：对象无需自己查找或创建与其关联的其他对象，由容器负责把需要相互协作的对象引用赋予各个对象。
 在 Spring 框架 XML 配置中共有 5 种自动装配：no、byName、byType、constructor 和 autodetect。
 
 基于注解的方式：使用 @Autowired 注解来自动装配指定的 bean。在使用 @Autowired 注解之前需要在 Spring 配置文件进行配置，<context:annotation-config />。
@@ -90,11 +88,10 @@ Spring 的自动装配：
 @Autowired 默认是按照类型装配注入的，默认情况下它要求依赖对象必须存在，也可以设置它 required 属性为 false。
 @Resource 默认是按照名称来装配注入的，只有当找不到与名称匹配的 bean 才会按照类型来装配注入。
 
-使用 IOC 的好处：
-降低耦合。
-提高了模块的可复用性。
-在创建实例的时候不需要了解其中的细节。
-把对象生成放在配置文件里进行定义，更换一个实现子类将会变得很简单，只要修改配置文件就可以，具有热插拨特性。
+优点：
+把应用从复杂的依赖关系中解放出来，在创建实例的时候不需要了解其中的细节，简化应用的开发，增加了项目的可维护性。
+降低耦合，把对象生成放在配置文件里进行定义，更换一个实现子类将会变得很简单，只要修改配置文件就可以，具有热插拨特性。
+利于功能的复用。
 
 缺点：
 引入了第三方 IOC 容器，生成对象的步骤变得复杂。
