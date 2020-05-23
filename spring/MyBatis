@@ -1,6 +1,5 @@
 1.简介
 MyBatis 是一个 Java 持久化框架，它通过 XML 描述符或注解把对象与存储过程或 SQL 语句关联起来。
-MyBatis 是在 Apache 许可证 2.0 下分发的自由软件，是 iBATIS 3.0 的分支版本。
 与其他的对象关系映射框架不同，MyBatis 并没有将 Java 对象与数据库表关联起来，而是将 Java 方法与 SQL 语句关联。
 
 对象关系映射 ORM：用于实现面向对象编程语言里不同类型系统的数据之间的转换。数据库表与实体类相对应，数据库表的字段与实体类的属性相对应。减少对 SQL 语句的关注。
@@ -151,18 +150,7 @@ foreach 标签：与 SQL 的 in 一起使用表示在某一范围内查询。
 一级缓存：SqlSession 对象的缓存，当调用增删改、commit()、close() 方法时会清空缓存。
 二级缓存：SqlSessionFactory 对象的缓存，同一个 SqlSessionFactory 创建的 SqlSession 共享其缓存。需要配置支持二级缓存。二级缓存内存放的数据而不是对象。
 
-7.JDBCTemplate
-准备数据源并设置属性
-创建 JDBCTemplate 对象
-设置数据源
-执行操作
-
-其中数据源和 JDBCTemplate 可以通过 IOC 配置，使用 ApplicationContext 和 getBean() 获取 JDBCTemplate。
-select 语句要加返回结果 RowMapper。在 Spring 中即 BeanPropertyRowMapper，节省了自己写 RowMapper 的过程。
-
-JDBCSupport
-
-8.JPA
+7.JPA
 Java 持久化 API，是一种规范，Hibernate 和 TopLink 都是其实现方式。优点：
 标准化：任何符合 JPA 标准的框架都遵循同样的架构，提供相同的访问 API，经过少量的修改就能够在环境下运行。
 容器级特性的支持：JPA 框架中支持大数据集、事务、并发等容器级事务。
