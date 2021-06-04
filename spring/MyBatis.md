@@ -8,6 +8,8 @@ MyBatis 是一个 Java 持久化框架，它通过 XML 描述符或注解把对�
 
 实现 ORM 思想的框架：MyBatis 和 Hibernate。
 
+MyBatis 中的 plugin 实现责任链模式。
+
 
 
 ## 2.特点

@@ -2,13 +2,19 @@
 
 Elasticsearch 是一个基于 Lucene 库的搜索引擎。
 
-ES 之前用的 Solr，都是基于 Lucene。两者对比：
-Solr 利用 ZooKeeper 进行分布式管理，而 Elasticsearch 自身带有分布式协调管理功能。
-Solr 支持更多格式的数据，而 Elasticsearch 仅支持 JSON 文件格式。
-Solr 官方提供的功能更多，而 Elasticsearch 本身更注重于核心功能，高级功能多有第三方插件提供。
-Solr 在传统的搜索应用中表现好于 Elasticsearch，但在处理实时搜索应用时效率明显低于 Elasticsearch。
-
 可以使用 elasticsearch-head 和 Postman 创建索引库和增删改查。
+
+**ES 与 Solr 的对比**
+
+都是基于 Lucene。
+
+Solr 利用 ZooKeeper 进行分布式管理，而 Elasticsearch 自身带有分布式协调管理功能。
+
+Solr 支持更多格式的数据，而 Elasticsearch 仅支持 JSON 文件格式。
+
+Solr 官方提供的功能更多，而 Elasticsearch 本身更注重于核心功能，高级功能多有第三方插件提供。
+
+Solr 在传统的搜索应用中表现好于 Elasticsearch，但在处理实时搜索应用时效率明显低于 Elasticsearch。
 
 
 
@@ -65,24 +71,42 @@ buffer 每 refresh 一次，就会产生一个 segment file，所以默认情况
 Lucene：一个 JAR 包，里面包含了封装好的各种建立倒排索引的算法代码。
 通过 Lucene，我们可以将已有的数据建立索引，Lucene 会在本地磁盘上面，给我们组织索引的数据结构。
 
-倒排索引：关键词到文档 ID 的映射，每个关键词都对应着一系列的文件，这些文件中都出现了关键词。
+#### 倒排索引
+
+是关键词到文档 ID 的映射，每个关键词都对应着一系列的文件，这些文件中都出现了关键词。
+
 在搜索引擎中，每个文档都有一个对应的文档 ID，文档内容被表示为一系列关键词的集合。例如，文档 1 经过分词，提取了 20 个关键词，每个关键词都会记录它在文档中出现的次数和出现位置。
+
 另外，实用的倒排索引还可以记录更多的信息，比如文档频率信息，表示在文档集合中有多少个文档包含某个单词。
+
 有了倒排索引，搜索引擎可以很方便地响应用户的查询。
-倒排索引中的所有词项对应一个或多个文档。
+
 倒排索引中的词项根据字典顺序升序排列。
 
-创建索引过程：获取文档 -> 构建文档对象 -> 分析文档（分词，手动或使用分析器）-> 创建索引。
+**创建索引过程**
+
+获取文档 -> 构建文档对象 -> 分析文档（分词，手动或使用分析器）-> 创建索引。
+
 基于关键词 term 创建索引。索引库中包括关键词、Document 和两者之间的对应关系。
+
 传统方法根据文件找到文件内容，顺序扫描，数据量大，索引慢。
-查询索引过程：用户查询接口 -> 把关键词映射为一个查询对象 -> 执行查询（Query，包括 term 和 range，或者 ID） -> 渲染结果（分页等）
+
+**查询索引过程**
+
+用户查询接口 -> 把关键词映射为一个查询对象 -> 执行查询（Query，包括 term 和 range，或者 ID） -> 渲染结果（分页等）
+
+
+
 可以使用 Luke 查看索引库的信息。
+
 中文分析器 IKAnalyze，是 ES 的一个插件。
+
 QueryParser：先分词，再根据分词结果查询。 
-设置分页：client.prepareSearch().setTypes().setQuery().setFrom().setSize().get()，主要是 from 和 size。
-设置高亮
+
+设置分页和高亮
 
 Spring Data ElasticSearch：applicationContext 中配置 elastic 客户对象，包扫描器来扫描 DAO 和 elasticsearchTemplate 对象。
+
 使用 NativeSearchQuery 查询
 
 
